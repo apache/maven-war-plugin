@@ -626,7 +626,7 @@ public abstract class AbstractWarMojo
          * @param resourceEncoding The resource encoding.
          * @param useJvmChmod use Jvm chmod or not.
          */
-        public DefaultWarPackagingContext( File webappDirectory, final WebappStructure webappStructure,
+        DefaultWarPackagingContext( File webappDirectory, final WebappStructure webappStructure,
                                            final OverlayManager overlayManager,
                                            List<FileUtils.FilterWrapper> filterWrappers,
                                            List<String> nonFilteredFileExtensions,
