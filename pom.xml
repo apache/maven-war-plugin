@@ -124,7 +124,7 @@
     <dependency>
       <groupId>com.thoughtworks.xstream</groupId>
       <artifactId>xstream</artifactId>
-      <version>1.4.9</version>
+      <version>1.4.10</version>
     </dependency>
 
     <dependency>
@@ -194,8 +194,10 @@
                         ! Added the following two ignores cause those classes
                         ! are JDK 8 classes.
                       -->
-                      <ignoreClass>com.thoughtworks.xstream.mapper.LambdaMapper</ignoreClass>
                       <ignoreClass>com.thoughtworks.xstream.converters.reflection.LambdaConverter</ignoreClass>
+                      <ignoreClass>com.thoughtworks.xstream.mapper.LambdaMapper</ignoreClass>
+                      <ignoreClass>com.thoughtworks.xstream.converters.time.*</ignoreClass>
+                      <ignoreClass>com.thoughtworks.xstream.core.util.ISO8601JavaTimeConverter</ignoreClass>
                     </ignoreClasses>
                   </enforceBytecodeVersion>
                 </rules>
