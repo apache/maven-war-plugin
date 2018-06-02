@@ -27,6 +27,10 @@ under the License.
     set to ISO-8859-1:
     Characters that should be encoded in UTF-8: åäö
   -->
+  <!--
+    Filter a complex expression:
+    Author id: ${project.developers[0].id}
+  -->
   <New id="MyDS" class="org.mortbay.jetty.plus.naming.Resource">
     <Arg>jdbc/EventdialogDS</Arg>
     <Arg>
