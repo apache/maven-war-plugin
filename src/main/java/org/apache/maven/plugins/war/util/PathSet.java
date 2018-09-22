@@ -271,8 +271,11 @@ public class PathSet
      * @return normalized path
      */
     public static String normalizeFilePathStatic( String path )
-    {
-        return trimTrailingSlashes( StringUtils.replace( path, '\\', '/' ) );
+    {   
+    	  if (path == null || path.trim().length() == 0  ) {
+    	  	path = "/";
+    	  }
+    	  return trimAjdacentSlashes( trimTrailingSlashes( StringUtils.replace( path, '\\', '/' ) ) );
     }
 
     /**
@@ -291,4 +294,22 @@ public class PathSet
         return str.substring( i );
     }
 
+    /**
+     * 
+     * @param str a string
+     * @return string without any occurence of adjacents slashes
+     */
+    public static String trimAjdacentSlashes( String str )
+    {
+        char[] dest = new char[str.length()];
+        int destNdx =0;
+        for (int i=0;  i < str.length(); ++i ) 
+        {
+        	if( destNdx == 0 || dest[destNdx-1] != '/' || str.charAt(i) != '/' ) {
+        	  dest[destNdx++] = str.charAt(i);
+        	}
+        }
+        String destStr = new String(dest);
+        return destStr.trim();
+    }    
 }

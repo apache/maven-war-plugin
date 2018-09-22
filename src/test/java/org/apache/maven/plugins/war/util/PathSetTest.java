@@ -77,6 +77,19 @@ public class PathSetTest
         assertEquals( "Trimed path error", "\\\\\\\\abc/def/xyz",
                       PathSet.trimTrailingSlashes( "\\\\\\\\abc/def/xyz" ) );
     }
+    
+    /**
+     * Test method for 'org.apache.maven.plugin.war.PathSet.testTrimAjdacentSlashes(String)'
+     */
+    public void testTrimAjdacentSlashes() 
+    {
+    	  assertEquals( "Trimed adjacent slashes error", "", PathSet.trimAjdacentSlashes( "" ) );
+    	  assertEquals( "Trimed adjacent slashes error", "/a/b/", PathSet.trimAjdacentSlashes("////a//b/") );
+    	  assertEquals( "Trimed adjacent slashes error", "/a/b/c", PathSet.trimAjdacentSlashes("////a//b//c") );
+    	  assertEquals( "Trimed adjacent slashes error", "/a/b/c/d/", PathSet.trimAjdacentSlashes("////a//b//c/d/") );
+    	  assertEquals( "Trimed adjacent slashes error", "/\\/a/b/c/d/", PathSet.trimAjdacentSlashes("//\\//a//b//c/d/" ) );
+    	  assertEquals( "Trimed adjacent slashes error", "/\\/a/b/\\/c/d/", PathSet.trimAjdacentSlashes("//\\//a//b/\\/c/d/") );    	  
+    }
 
     /* -------------- Operations tests ------------------*/
 
