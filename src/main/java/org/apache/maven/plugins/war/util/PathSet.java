@@ -30,10 +30,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * Set of file's paths.
- * 
- * The class extends functionality of a "normal" set of strings by a process of the paths normalization. All paths are
- * converted to unix form (slashes) and they don't start with starting /.
+ * Set of file's paths. The class extends functionality of a "normal" set of strings by a process of the paths
+ * normalization. All paths are converted to unix form (slashes) and they don't start with starting /.
  *
  * @author Piotr Tabor
  * @version $Id$
@@ -218,9 +216,7 @@ public class PathSet
     }
 
     /**
-     * Adds given prefix to all paths in the set.
-     * 
-     * The prefix should be ended by '/'. The generated paths are normalized.
+     * Adds given prefix to all paths in the set. The prefix should be ended by '/'. The generated paths are normalized.
      *
      * @param prefix to be added to all items
      */
@@ -261,7 +257,6 @@ public class PathSet
     /*-------------------- Universal static mathods ------------------------*/
     /**
      * The method normalizes the path.
-     * 
      * <ul>
      * <li>changes directory separator to unix's separator(/)</li>
      * <li>deletes all trailing slashes</li>
@@ -271,11 +266,12 @@ public class PathSet
      * @return normalized path
      */
     public static String normalizeFilePathStatic( String path )
-    {   
-    	  if (path == null || path.trim().length() == 0  ) {
-    	  	path = "/";
-    	  }
-    	  return trimAjdacentSlashes( trimTrailingSlashes( StringUtils.replace( path, '\\', '/' ) ) );
+    {
+        if ( path == null || path.trim().length() == 0 )
+        {
+            path = "/";
+        }
+        return trimAjdacentSlashes( trimTrailingSlashes( StringUtils.replace( path, '\\', '/' ) ) );
     }
 
     /**
@@ -295,21 +291,21 @@ public class PathSet
     }
 
     /**
-     * 
      * @param str a string
      * @return string without any occurence of adjacents slashes
      */
     public static String trimAjdacentSlashes( String str )
     {
         char[] dest = new char[str.length()];
-        int destNdx =0;
-        for (int i=0;  i < str.length(); ++i ) 
+        int destNdx = 0;
+        for ( int i = 0; i < str.length(); ++i )
         {
-        	if( destNdx == 0 || dest[destNdx-1] != '/' || str.charAt(i) != '/' ) {
-        	  dest[destNdx++] = str.charAt(i);
-        	}
+            if ( destNdx == 0 || dest[destNdx - 1] != '/' || str.charAt( i ) != '/' )
+            {
+                dest[destNdx++] = str.charAt( i );
+            }
         }
-        String destStr = new String(dest);
+        String destStr = new String( dest );
         return destStr.trim();
-    }    
+    }
 }
