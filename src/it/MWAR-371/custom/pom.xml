@@ -1,0 +1,47 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>mwar371</groupId>
+		<artifactId>mwar371</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<artifactId>custom</artifactId>
+	<packaging>war</packaging>
+	<dependencies>
+		<dependency>
+			<groupId>mwar371</groupId>
+			<artifactId>generic</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<type>war</type>
+		</dependency>
+	</dependencies>
+	<build>
+
+		<plugins>
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>3.2.3-SNAPSHOT</version>
+				<configuration>
+					<webResources>
+						<webResource>
+							<directory>src/main/custom</directory>
+							<includes>
+								<include>a1.txt</include>
+							</includes>
+							<targetPath>x/</targetPath>
+						</webResource>
+						<webResource>
+							<directory>src/main/custom</directory>
+							<includes>
+								<include>a2.txt</include>
+							</includes>
+							<targetPath>x</targetPath>
+						</webResource>
+					</webResources>
+				</configuration>
+			</plugin>
+		</plugins>
+
+	</build>
+</project>
