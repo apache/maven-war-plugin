@@ -357,7 +357,7 @@ public abstract class AbstractWarMojo
     @Parameter
     private MavenArchiveConfiguration archive = new MavenArchiveConfiguration();
 
-    private final WebappStructureSerializer webappStructureSerialier = new WebappStructureSerializer();
+    private final WebappStructureSerializer webappStructureSerializer = new WebappStructureSerializer();
 
     private final Overlay currentProjectOverlay = Overlay.createInstance();
 
@@ -465,7 +465,7 @@ public abstract class AbstractWarMojo
         if ( useCache && cacheFile.exists() )
         {
             // CHECKSTYLE_OFF: LineLength
-            cache = new WebappStructure( mavenProject.getDependencies(), webappStructureSerialier.fromXml( cacheFile ) );
+            cache = new WebappStructure( mavenProject.getDependencies(), webappStructureSerializer.fromXml( cacheFile ) );
             // CHECKSTYLE_ON: LineLength
         }
         else
@@ -513,7 +513,7 @@ public abstract class AbstractWarMojo
         }
         catch ( MavenFilteringException e )
         {
-            getLog().error( "fail to build filering wrappers " + e.getMessage() );
+            getLog().error( "fail to build filtering wrappers " + e.getMessage() );
             throw new MojoExecutionException( e.getMessage(), e );
         }
 
@@ -613,7 +613,7 @@ public abstract class AbstractWarMojo
 
         private boolean filteringDeploymentDescriptors;
 
-        private boolean useJvmChmod = true;
+        private boolean useJvmChmod;
 
         /**
          * @param webappDirectory The web application directory.

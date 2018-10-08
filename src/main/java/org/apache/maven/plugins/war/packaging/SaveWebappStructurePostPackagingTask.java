@@ -19,12 +19,12 @@ package org.apache.maven.plugins.war.packaging;
  * under the License.
  */
 
+import java.io.File;
+import java.io.IOException;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.war.util.WebappStructureSerializer;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * Saves the webapp structure cache.
@@ -38,7 +38,7 @@ public class SaveWebappStructurePostPackagingTask
 
     private final File targetFile;
 
-    private final WebappStructureSerializer serialier;
+    private final WebappStructureSerializer serializer;
 
     /**
      * @param targetFile {@link #targetFile}
@@ -46,7 +46,7 @@ public class SaveWebappStructurePostPackagingTask
     public SaveWebappStructurePostPackagingTask( File targetFile )
     {
         this.targetFile = targetFile;
-        this.serialier = new WebappStructureSerializer();
+        this.serializer = new WebappStructureSerializer();
     }
 
     /**
@@ -63,7 +63,7 @@ public class SaveWebappStructurePostPackagingTask
         {
             try
             {
-                serialier.toXml( context.getWebappStructure(), targetFile );
+                serializer.toXml( context.getWebappStructure(), targetFile );
                 context.getLog().debug( "Cache saved successfully." );
             }
             catch ( IOException e )

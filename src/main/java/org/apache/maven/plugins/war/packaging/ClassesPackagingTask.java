@@ -19,6 +19,9 @@ package org.apache.maven.plugins.war.packaging;
  * under the License.
  */
 
+import java.io.File;
+import java.io.IOException;
+
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -27,9 +30,6 @@ import org.apache.maven.plugins.war.util.ClassesPackager;
 import org.apache.maven.plugins.war.util.PathSet;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.interpolation.InterpolationException;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * Handles the classes directory that needs to be packaged in the web application.
@@ -90,7 +90,7 @@ public class ClassesPackagingTask
 
     /**
      * @param context The warPackingContext.
-     * @throws MojoExecutionException In casae of an error.
+     * @throws MojoExecutionException In case of an error.
      */
     protected void generateJarArchive( WarPackagingContext context )
         throws MojoExecutionException

@@ -19,6 +19,13 @@ package org.apache.maven.plugins.war;
  * under the License.
  */
 
+import static org.junit.Assert.assertNotEquals;
+
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.LinkedList;
+import java.util.Locale;
+
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.plugin.testing.stubs.ArtifactStub;
 import org.apache.maven.plugins.war.stub.AarArtifactStub;
@@ -36,11 +43,6 @@ import org.apache.maven.plugins.war.stub.TLDArtifactStub;
 import org.apache.maven.plugins.war.stub.WarArtifactStub;
 import org.apache.maven.plugins.war.stub.XarArtifactStub;
 import org.codehaus.plexus.util.FileUtils;
-
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.LinkedList;
-import java.util.Locale;
 
 public class WarExplodedMojoTest
     extends AbstractWarExplodedMojoTest
@@ -937,8 +939,8 @@ public class WarExplodedMojoTest
 
         // 1st phase destination is older than source
         // destination starts with a value of error replaced with a blank source
-        assertFalse( "source files not updated with new copy: " + expectedWebSourceFile.toString(),
-                     "error".equals( FileUtils.fileRead( expectedWebSourceFile ) ) );
+        assertNotEquals( "source files not updated with new copy: " + expectedWebSourceFile.toString(),
+                "error", FileUtils.fileRead( expectedWebSourceFile ) );
 
         // TODO: uncomment when lastModified problem is resolved
         // FileWriter writer = new FileWriter(expectedWebSourceFile);

@@ -67,7 +67,7 @@ public abstract class AbstractArtifactStub
     }
 
     /*
-     * TODO: Coppied from org/apache/maven/artifact/DefaultArtifact.java; Consider merging...
+     * TODO: Copied from org/apache/maven/artifact/DefaultArtifact.java; Consider merging...
      */
     public int compareTo( Artifact a )
     {
@@ -121,7 +121,7 @@ public abstract class AbstractArtifactStub
     }
 
     /*
-     * TODO: Coppied from org/apache/maven/artifact/DefaultArtifact.java; Consider merging...
+     * TODO: Copied from org/apache/maven/artifact/DefaultArtifact.java; Consider merging...
      */
     public boolean equals( Object o )
     {
