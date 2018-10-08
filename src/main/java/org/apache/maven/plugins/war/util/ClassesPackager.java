@@ -19,6 +19,9 @@ package org.apache.maven.plugins.war.util;
  * under the License.
  */
 
+import java.io.File;
+import java.io.IOException;
+
 import org.apache.maven.archiver.MavenArchiveConfiguration;
 import org.apache.maven.archiver.MavenArchiver;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
@@ -29,9 +32,6 @@ import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.jar.ManifestException;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * Packages the content of the classes directory.
@@ -74,19 +74,7 @@ public class ClassesPackager
             archiver.getArchiver().addDirectory( classesDirectory );
             archiver.createArchive( session, project, archiveConfiguration );
         }
-        catch ( ArchiverException e )
-        {
-            throw new MojoExecutionException( "Could not create classes archive", e );
-        }
-        catch ( ManifestException e )
-        {
-            throw new MojoExecutionException( "Could not create classes archive", e );
-        }
-        catch ( IOException e )
-        {
-            throw new MojoExecutionException( "Could not create classes archive", e );
-        }
-        catch ( DependencyResolutionRequiredException e )
+        catch ( ArchiverException | ManifestException | DependencyResolutionRequiredException | IOException e )
         {
             throw new MojoExecutionException( "Could not create classes archive", e );
         }

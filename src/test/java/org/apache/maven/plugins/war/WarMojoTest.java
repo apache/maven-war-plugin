@@ -27,12 +27,10 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.zip.ZipEntry;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.war.WarMojo;
 import org.apache.maven.plugins.war.stub.JarArtifactStub;
 import org.apache.maven.plugins.war.stub.MavenProject4CopyConstructor;
 import org.apache.maven.plugins.war.stub.MavenProjectArtifactsStub;
@@ -507,7 +505,7 @@ public class WarMojoTest
         Enumeration<JarEntry> enumeration = jarFile.entries();
         while ( enumeration.hasMoreElements() )
         {
-            entry = (JarEntry) enumeration.nextElement();
+            entry = enumeration.nextElement();
             Object previousValue = jarContent.put( entry.getName(), entry );
             assertNull( "Duplicate Entry in Jar File: " + entry.getName(), previousValue );
         }
@@ -520,7 +518,7 @@ public class WarMojoTest
             if ( filesContent[i] != null )
             {
                 assertEquals( "Content of file[" + file + "] does not match", filesContent[i],
-                              IOUtil.toString( jarFile.getInputStream( (ZipEntry) jarContent.get( file ) ) ) );
+                              IOUtil.toString( jarFile.getInputStream( jarContent.get( file ) ) ) );
             }
         }
         if ( mustNotBeInJar != null )

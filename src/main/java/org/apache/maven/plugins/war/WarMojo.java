@@ -196,21 +196,13 @@ public class WarMojo
         {
             performPackaging( warFile );
         }
-        catch ( DependencyResolutionRequiredException e )
+        catch ( DependencyResolutionRequiredException | ArchiverException e )
         {
             throw new MojoExecutionException( "Error assembling WAR: " + e.getMessage(), e );
         }
-        catch ( ManifestException e )
+        catch ( ManifestException | IOException e )
         {
             throw new MojoExecutionException( "Error assembling WAR", e );
-        }
-        catch ( IOException e )
-        {
-            throw new MojoExecutionException( "Error assembling WAR", e );
-        }
-        catch ( ArchiverException e )
-        {
-            throw new MojoExecutionException( "Error assembling WAR: " + e.getMessage(), e );
         }
     }
 
