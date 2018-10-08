@@ -37,7 +37,7 @@ public class WebappStructureTest
 
     public void testDependencyAnalysisNoChange()
     {
-        final List<Dependency> dependencies = new ArrayList<Dependency>();
+        final List<Dependency> dependencies = new ArrayList<>();
         dependencies.add( createDependency( "groupTest", "artifactTest", "1.0" ) );
         final WebappStructure cache = new WebappStructure( dependencies );
 
@@ -96,10 +96,10 @@ public class WebappStructureTest
 
     public void testDependencyAnalysisWithNewDependency()
     {
-        final List<Dependency> dependencies = new ArrayList<Dependency>();
+        final List<Dependency> dependencies = new ArrayList<>();
         dependencies.add( createDependency( "groupTest", "artifactTest", "1.0" ) );
         final WebappStructure cache = new WebappStructure( dependencies );
-        final List<Dependency> newDependencies = new ArrayList<Dependency>( dependencies );
+        final List<Dependency> newDependencies = new ArrayList<>( dependencies );
         final Dependency newDependency = createDependency( "groupTest", "nexArtifact", "2.0" );
         newDependencies.add( newDependency );
 
@@ -160,13 +160,13 @@ public class WebappStructureTest
 
     public void testDependencyAnalysisWithRemovedDependency()
     {
-        final List<Dependency> dependencies = new ArrayList<Dependency>();
+        final List<Dependency> dependencies = new ArrayList<>();
         dependencies.add( createDependency( "groupTest", "artifactTest", "1.0" ) );
         final Dependency removedDependency = createDependency( "groupTest", "removedDep", "5.2" );
         dependencies.add( removedDependency );
         final WebappStructure cache = new WebappStructure( dependencies );
 
-        final List<Dependency> newDependencies = new ArrayList<Dependency>( dependencies );
+        final List<Dependency> newDependencies = new ArrayList<>( dependencies );
         newDependencies.remove( removedDependency );
         final WebappStructure webappStructure = new WebappStructure( newDependencies, cache );
 

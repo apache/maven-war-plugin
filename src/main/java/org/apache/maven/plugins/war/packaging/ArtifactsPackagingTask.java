@@ -171,8 +171,8 @@ public class ArtifactsPackagingTask
     private List<String> findDuplicates( WarPackagingContext context, Set<Artifact> artifacts )
         throws InterpolationException
     {
-        List<String> duplicates = new ArrayList<String>();
-        List<String> identifiers = new ArrayList<String>();
+        List<String> duplicates = new ArrayList<>();
+        List<String> identifiers = new ArrayList<>();
         for ( Artifact artifact : artifacts )
         {
             String candidate = getArtifactFinalName( context, artifact );

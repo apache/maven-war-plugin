@@ -60,7 +60,7 @@ public class WebappStructure
     public WebappStructure( List<Dependency> dependencies )
     {
         this.dependenciesInfo = createDependenciesInfoList( dependencies );
-        this.registeredFiles = new HashMap<String, PathSet>();
+        this.registeredFiles = new HashMap<>();
         this.cache = null;
     }
 
@@ -73,7 +73,7 @@ public class WebappStructure
     public WebappStructure( List<Dependency> dependencies, WebappStructure cache )
     {
         this.dependenciesInfo = createDependenciesInfoList( dependencies );
-        this.registeredFiles = new HashMap<String, PathSet>();
+        this.registeredFiles = new HashMap<>();
         if ( cache == null )
         {
             this.cache = new WebappStructure( dependencies );
@@ -101,7 +101,7 @@ public class WebappStructure
      */
     public List<Dependency> getDependencies()
     {
-        final List<Dependency> result = new ArrayList<Dependency>();
+        final List<Dependency> result = new ArrayList<>();
         if ( dependenciesInfo == null )
         {
             return result;
@@ -305,8 +305,8 @@ public class WebappStructure
             return;
         }
 
-        final List<Dependency> currentDependencies = new ArrayList<Dependency>( getDependencies() );
-        final List<Dependency> previousDependencies = new ArrayList<Dependency>( cache.getDependencies() );
+        final List<Dependency> currentDependencies = new ArrayList<>( getDependencies() );
+        final List<Dependency> previousDependencies = new ArrayList<>( cache.getDependencies() );
         final Iterator<Dependency> it = currentDependencies.listIterator();
         while ( it.hasNext() )
         {
@@ -467,7 +467,7 @@ public class WebappStructure
         {
             return Collections.emptyList();
         }
-        final List<DependencyInfo> result = new ArrayList<DependencyInfo>();
+        final List<DependencyInfo> result = new ArrayList<>();
         for ( Dependency dependency : dependencies )
         {
             result.add( new DependencyInfo( dependency ) );

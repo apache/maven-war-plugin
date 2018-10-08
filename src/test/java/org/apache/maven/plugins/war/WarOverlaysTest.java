@@ -98,7 +98,7 @@ public class WarOverlaysTest
         final ArtifactStub overlay = buildWarOverlayStub( "overlay-one" );
 
         final File webAppDirectory = setUpMojo( testId, new ArtifactStub[] { overlay } );
-        final List<File> assertedFiles = new ArrayList<File>();
+        final List<File> assertedFiles = new ArrayList<>();
         try
         {
             mojo.execute();
@@ -132,7 +132,7 @@ public class WarOverlaysTest
         final ArtifactStub overlay2 = buildWarOverlayStub( "overlay-two" );
 
         final File webAppDirectory = setUpMojo( testId, new ArtifactStub[] { overlay, overlay2 } );
-        final List<File> assertedFiles = new ArrayList<File>();
+        final List<File> assertedFiles = new ArrayList<>();
         try
         {
             mojo.execute();
@@ -207,7 +207,7 @@ public class WarOverlaysTest
                 "org/sample/company/test.jsp", "jsp/b.jsp" } );
 
         // Add the tags
-        final List<Overlay> overlays = new ArrayList<Overlay>();
+        final List<Overlay> overlays = new ArrayList<>();
         overlays.add( new DefaultOverlay( overlay1 ) );
         overlays.add( new DefaultOverlay( overlay2 ) );
         overlays.add( new DefaultOverlay( overlay3 ) );
@@ -240,7 +240,7 @@ public class WarOverlaysTest
                 "org/sample/company/test.jsp", "jsp/b.jsp" } );
 
         // Add the tags
-        final List<Overlay> overlays = new ArrayList<Overlay>();
+        final List<Overlay> overlays = new ArrayList<>();
 
         // Add the default project explicitely
         overlays.add( mojo.getCurrentProjectOverlay() );
@@ -265,7 +265,7 @@ public class WarOverlaysTest
     private void assertScenariOne( String testId, File webAppDirectory )
         throws Exception
     {
-        final List<File> assertedFiles = new ArrayList<File>();
+        final List<File> assertedFiles = new ArrayList<>();
         try
         {
             mojo.execute();
@@ -337,7 +337,7 @@ public class WarOverlaysTest
         mojo.addOverlay( mojo.getCurrentProjectOverlay() );
         mojo.addOverlay( over4 );
 
-        final List<File> assertedFiles = new ArrayList<File>();
+        final List<File> assertedFiles = new ArrayList<>();
         try
         {
             mojo.execute();
@@ -407,7 +407,7 @@ public class WarOverlaysTest
         mojo.addOverlay( mojo.getCurrentProjectOverlay() );
         mojo.addOverlay( over4 );
 
-        final List<File> assertedFiles = new ArrayList<File>();
+        final List<File> assertedFiles = new ArrayList<>();
         try
         {
             mojo.execute();
@@ -454,14 +454,14 @@ public class WarOverlaysTest
         final ArtifactStub overlay2 = buildWarOverlayStub( "overlay-two" );
 
         final File webAppDirectory = setUpMojo( testId, new ArtifactStub[] { overlay, overlay2 } );
-        final List<File> assertedFiles = new ArrayList<File>();
+        final List<File> assertedFiles = new ArrayList<>();
         try
         {
             // Use the cache
             setVariableValueToObject( mojo, "useCache", Boolean.TRUE );
             setVariableValueToObject( mojo, "cacheFile", new File( mojo.getWorkDirectory(), "cache.xml" ) );
 
-            final LinkedList<Overlay> overlays = new LinkedList<Overlay>();
+            final LinkedList<Overlay> overlays = new LinkedList<>();
             overlays.add( new DefaultOverlay( overlay ) );
             overlays.add( new DefaultOverlay( overlay2 ) );
             mojo.setOverlays( overlays );
@@ -469,7 +469,7 @@ public class WarOverlaysTest
             mojo.execute();
 
             // Now change the overlay order and make sure the right file is overwritten
-            final LinkedList<Overlay> updatedOverlays = new LinkedList<Overlay>();
+            final LinkedList<Overlay> updatedOverlays = new LinkedList<>();
             updatedOverlays.add( new DefaultOverlay( overlay2 ) );
             updatedOverlays.add( new DefaultOverlay( overlay ) );
             mojo.setOverlays( updatedOverlays );
@@ -507,14 +507,14 @@ public class WarOverlaysTest
         final ArtifactStub overlay2 = buildWarOverlayStub( "overlay-two" );
 
         final File webAppDirectory = setUpMojo( testId, new ArtifactStub[] { overlay, overlay2 } );
-        final List<File> assertedFiles = new ArrayList<File>();
+        final List<File> assertedFiles = new ArrayList<>();
         try
         {
             // Use the cache
             setVariableValueToObject( mojo, "useCache", Boolean.TRUE );
             setVariableValueToObject( mojo, "cacheFile", new File( mojo.getWorkDirectory(), "cache.xml" ) );
 
-            final LinkedList<Overlay> overlays = new LinkedList<Overlay>();
+            final LinkedList<Overlay> overlays = new LinkedList<>();
             overlays.add( new DefaultOverlay( overlay ) );
             overlays.add( new DefaultOverlay( overlay2 ) );
             mojo.setOverlays( overlays );
@@ -522,7 +522,7 @@ public class WarOverlaysTest
             mojo.execute();
 
             // Now remove overlay one the right file is overwritten
-            final LinkedList<Overlay> updatedOverlays = new LinkedList<Overlay>();
+            final LinkedList<Overlay> updatedOverlays = new LinkedList<>();
             updatedOverlays.add( new DefaultOverlay( overlay2 ) );
             mojo.setOverlays( updatedOverlays );
 

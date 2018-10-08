@@ -48,7 +48,7 @@ public class MavenProjectBasicStub
 
     public Set<Artifact> getArtifacts()
     {
-        return new HashSet<Artifact>();
+        return new HashSet<>();
     }
 
     public String getName()

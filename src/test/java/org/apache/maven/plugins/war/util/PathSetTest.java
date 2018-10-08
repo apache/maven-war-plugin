@@ -154,7 +154,7 @@ public class PathSetTest
      */
     public void testPathsSetAddAlls()
     {
-        Set<String> s1set = new HashSet<String>();
+        Set<String> s1set = new HashSet<>();
         s1set.add( "/a/b" );
         s1set.add( "a/b/c" );
         s1set.add( "a\\b/c" );

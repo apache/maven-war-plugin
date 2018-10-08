@@ -38,7 +38,7 @@ public class MavenZipProject
         throws Exception
     {
         super();
-        this.artifacts = new HashSet<Artifact>();
+        this.artifacts = new HashSet<>();
     }
 
     public Set<Artifact> getArtifacts()

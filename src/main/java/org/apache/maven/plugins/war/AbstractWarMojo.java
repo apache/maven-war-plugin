@@ -276,7 +276,7 @@ public abstract class AbstractWarMojo
      * @since 2.1-alpha-1
      */
     @Parameter
-    private List<Overlay> overlays = new ArrayList<Overlay>();
+    private List<Overlay> overlays = new ArrayList<>();
 
     /**
      * A list of file extensions that should not be filtered. <b>Will be used when filtering webResources and
@@ -376,7 +376,7 @@ public abstract class AbstractWarMojo
      */
     protected String[] getExcludes()
     {
-        List<String> excludeList = new ArrayList<String>();
+        List<String> excludeList = new ArrayList<>();
         if ( StringUtils.isNotEmpty( warSourceExcludes ) )
         {
             excludeList.addAll( Arrays.asList( StringUtils.split( warSourceExcludes, "," ) ) );
@@ -547,7 +547,7 @@ public abstract class AbstractWarMojo
     private List<WarPackagingTask> getPackagingTasks( OverlayManager overlayManager )
         throws MojoExecutionException
     {
-        final List<WarPackagingTask> packagingTasks = new ArrayList<WarPackagingTask>();
+        final List<WarPackagingTask> packagingTasks = new ArrayList<>();
 
         packagingTasks.add( new CopyUserManifestTask() );
 
@@ -581,7 +581,7 @@ public abstract class AbstractWarMojo
      */
     private List<WarPostPackagingTask> getPostPackagingTasks()
     {
-        final List<WarPostPackagingTask> postPackagingTasks = new ArrayList<WarPostPackagingTask>();
+        final List<WarPostPackagingTask> postPackagingTasks = new ArrayList<>();
         if ( useCache )
         {
             postPackagingTasks.add( new SaveWebappStructurePostPackagingTask( cacheFile ) );

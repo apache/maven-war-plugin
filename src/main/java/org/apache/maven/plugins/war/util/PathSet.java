@@ -46,7 +46,7 @@ public class PathSet
     /**
      * Set of normalized paths
      */
-    private Set<String> pathsSet = new LinkedHashSet<String>();
+    private Set<String> pathsSet = new LinkedHashSet<>();
 
     /**
      * The method normalizes the path.
@@ -226,7 +226,7 @@ public class PathSet
      */
     public void addPrefix( String prefix )
     {
-        final Set<String> newSet = new HashSet<String>();
+        final Set<String> newSet = new HashSet<>();
         for ( String path : pathsSet )
         {
             newSet.add( normalizeFilePath( prefix + path ) );

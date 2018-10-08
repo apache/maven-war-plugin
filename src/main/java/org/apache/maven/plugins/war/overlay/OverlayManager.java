@@ -61,7 +61,7 @@ public class OverlayManager
                            String[] defaultExcludes, Overlay currentProjectOverlay )
         throws InvalidOverlayConfigurationException
     {
-        this.overlays = new ArrayList<Overlay>();
+        this.overlays = new ArrayList<>();
         if ( overlays != null )
         {
             this.overlays.addAll( overlays );
@@ -92,7 +92,7 @@ public class OverlayManager
      */
     public List<String> getOverlayIds()
     {
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<>();
         for ( Overlay overlay : overlays )
         {
             result.add( overlay.getId() );
@@ -115,7 +115,7 @@ public class OverlayManager
 
         // Build the list of configured artifacts and makes sure that each overlay
         // refer to a valid artifact
-        final List<Artifact> configuredWarArtifacts = new ArrayList<Artifact>();
+        final List<Artifact> configuredWarArtifacts = new ArrayList<>();
         final ListIterator<Overlay> it = overlays.listIterator();
         while ( it.hasNext() )
         {
@@ -241,7 +241,7 @@ public class OverlayManager
         ScopeArtifactFilter filter = new ScopeArtifactFilter( Artifact.SCOPE_RUNTIME );
         final Set<Artifact> artifacts = project.getArtifacts();
 
-        final List<Artifact> result = new ArrayList<Artifact>();
+        final List<Artifact> result = new ArrayList<>();
         for ( Artifact artifact : artifacts )
         {
             if ( !artifact.isOptional() && filter.include( artifact ) && ( "war".equals( artifact.getType() ) ) )
