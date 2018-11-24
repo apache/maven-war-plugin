@@ -269,6 +269,7 @@ public class WarExplodedMojoTest
 
     /**
      * Merge a dependent WAR when a file in the war source directory overrides one found in the WAR.
+     * 
      * @throws Exception in case of an error.
      */
     public void testExplodedWarMergeWarLocalFileOverride()
@@ -719,7 +720,8 @@ public class WarExplodedMojoTest
         assertTrue( "source files not found: " + expectedWebSourceFile.toString(), expectedWebSourceFile.exists() );
         assertTrue( "source files not found: " + expectedWebSource2File.toString(), expectedWebSource2File.exists() );
         assertTrue( "ejb artifact not found: " + expectedEJBArtifact.toString(), expectedEJBArtifact.exists() );
-        assertTrue( "ejb dup artifact not found: " + expectedEJBDupArtifact.toString(), expectedEJBDupArtifact.exists() );
+        assertTrue( "ejb dup artifact not found: " + expectedEJBDupArtifact.toString(),
+                    expectedEJBDupArtifact.exists() );
 
         // house keeping
         expectedWebSourceFile.delete();
@@ -771,7 +773,8 @@ public class WarExplodedMojoTest
         assertTrue( "source files not found: " + expectedWebSourceFile.toString(), expectedWebSourceFile.exists() );
         assertTrue( "source files not found: " + expectedWebSource2File.toString(), expectedWebSource2File.exists() );
         assertTrue( "ejb artifact not found: " + expectedEJBArtifact.toString(), expectedEJBArtifact.exists() );
-        assertTrue( "ejb dup artifact not found: " + expectedEJBDupArtifact.toString(), expectedEJBDupArtifact.exists() );
+        assertTrue( "ejb dup artifact not found: " + expectedEJBDupArtifact.toString(),
+                    expectedEJBDupArtifact.exists() );
 
         // house keeping
         expectedWebSourceFile.delete();
@@ -1037,7 +1040,8 @@ public class WarExplodedMojoTest
         assertTrue( "source files not found: " + expectedWebSourceFile.toString(), expectedWebSourceFile.exists() );
         assertTrue( "source files not found: " + expectedWebSource2File.toString(), expectedWebSource2File.exists() );
         assertTrue( "ejb artifact not found: " + expectedEJBArtifact.toString(), expectedEJBArtifact.exists() );
-        assertTrue( "ejb dup artifact not found: " + expectedEJBDupArtifact.toString(), expectedEJBDupArtifact.exists() );
+        assertTrue( "ejb dup artifact not found: " + expectedEJBDupArtifact.toString(),
+                    expectedEJBDupArtifact.exists() );
 
         // house keeping
         expectedWebSourceFile.delete();

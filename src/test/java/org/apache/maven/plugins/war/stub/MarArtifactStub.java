@@ -75,4 +75,3 @@ public class MarArtifactStub
         return artifactHandler;
     }
 }
-

@@ -29,8 +29,8 @@ import java.util.LinkedList;
 public class WarInPlaceMojoTest
     extends AbstractWarMojoTest
 {
-    protected static final String pomFilePath = getBasedir()
-        + "/target/test-classes/unit/warexplodedinplacemojo/plugin-config.xml";
+    protected static final String pomFilePath =
+        getBasedir() + "/target/test-classes/unit/warexplodedinplacemojo/plugin-config.xml";
 
     protected File getTestDirectory()
         throws Exception

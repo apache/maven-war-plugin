@@ -53,7 +53,7 @@ public abstract class AbstractArtifactStub
 
     public VersionRange getVersionRange()
     {
-        return VersionRange.createFromVersion( getVersion());
+        return VersionRange.createFromVersion( getVersion() );
     }
 
     public boolean isOptional()

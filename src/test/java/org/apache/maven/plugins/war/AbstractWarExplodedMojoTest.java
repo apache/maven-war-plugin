@@ -64,9 +64,8 @@ public abstract class AbstractWarExplodedMojoTest
     protected abstract File getTestDirectory();
 
     /**
-     * Configures the exploded mojo for the specified test.
-     * 
-     * If the <tt>sourceFiles</tt> parameter is <tt>null</tt>, sample JSPs are created by default.
+     * Configures the exploded mojo for the specified test. If the <tt>sourceFiles</tt> parameter is <tt>null</tt>,
+     * sample JSPs are created by default.
      *
      * @param testId the id of the test
      * @param artifactStubs the dependencies (may be null)
@@ -238,10 +237,8 @@ public abstract class AbstractWarExplodedMojoTest
     }
 
     /**
-     * Builds the list of files and directories from the specified dir.
-     * 
-     * Note that the filter is not used the usual way. If the filter does not accept the current file, it's not added
-     * but yet the subdirectories are added if any.
+     * Builds the list of files and directories from the specified dir. Note that the filter is not used the usual way.
+     * If the filter does not accept the current file, it's not added but yet the subdirectories are added if any.
      *
      * @param dir the base directory
      * @param filter the filter

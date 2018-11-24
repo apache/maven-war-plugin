@@ -32,7 +32,7 @@ import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.StringUtils;
 
 /**
- * Handles the project own resources, that is: 
+ * Handles the project own resources, that is:
  * <ul>
  * <li>The list of web resources, if any</li>
  * <li>The content of the webapp directory if it exists</li>
@@ -172,7 +172,8 @@ public class WarProjectPackagingTask
             context.getLog().info( "Copying webapp resources [" + context.getWebappSourceDirectory() + "]" );
             final PathSet sources =
                 getFilesToIncludes( context.getWebappSourceDirectory(), context.getWebappSourceIncludes(),
-                                    context.getWebappSourceExcludes(), context.isWebappSourceIncludeEmptyDirectories() );
+                                    context.getWebappSourceExcludes(),
+                                    context.isWebappSourceIncludeEmptyDirectories() );
 
             try
             {
@@ -276,8 +277,8 @@ public class WarProjectPackagingTask
                 }
                 else
                 {
-                    copyFile( context, containerConfigXML, new File( metainfDir, xmlFileName ), "META-INF/"
-                        + xmlFileName, true );
+                    copyFile( context, containerConfigXML, new File( metainfDir, xmlFileName ),
+                              "META-INF/" + xmlFileName, true );
                 }
             }
         }
@@ -305,12 +306,11 @@ public class WarProjectPackagingTask
         if ( !context.getWebappDirectory().exists() )
         {
             context.getLog().warn( "Not copying webapp webResources [" + resource.getDirectory()
-                                       + "]: webapp directory [" + context.getWebappDirectory().getAbsolutePath()
-                                       + "] does not exist!" );
+                + "]: webapp directory [" + context.getWebappDirectory().getAbsolutePath() + "] does not exist!" );
         }
 
         context.getLog().info( "Copying webapp webResources [" + resource.getDirectory() + "] to ["
-                                   + context.getWebappDirectory().getAbsolutePath() + "]" );
+            + context.getWebappDirectory().getAbsolutePath() + "]" );
         String[] fileNames = getFilesToCopy( resource );
         for ( String fileName : fileNames )
         {

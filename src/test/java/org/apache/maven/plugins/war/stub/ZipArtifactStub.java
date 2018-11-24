@@ -40,7 +40,6 @@ public class ZipArtifactStub
         this.zip = zipFile;
     }
 
-    
     public String getId()
     {
         return null;
@@ -76,7 +75,6 @@ public class ZipArtifactStub
         return "zip";
     }
 
-   
     public String getArtifactId()
     {
         return "zipId";

@@ -48,7 +48,7 @@ public class MavenProject4CopyConstructor
     // to prevent the MavenProject copy constructor from blowing up
     private void initializeParentFields()
     {
-        // the pom should be located in the isolated dummy root         
+        // the pom should be located in the isolated dummy root
         super.setFile( new File( getBasedir(), "pom.xml" ) );
         super.setDependencyArtifacts( new HashSet<Artifact>() );
         super.setArtifacts( new HashSet<Artifact>() );

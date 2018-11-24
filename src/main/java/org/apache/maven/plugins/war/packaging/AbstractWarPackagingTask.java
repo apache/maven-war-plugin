@@ -71,14 +71,11 @@ public abstract class AbstractWarPackagingTask
     public static final String LIB_PATH = "WEB-INF/lib/";
 
     /**
-     * Copies the files if possible with an optional target prefix.
-     * 
-     * Copy uses a first-win strategy: files that have already been copied by previous tasks are ignored. This method
-     * makes sure to update the list of protected files which gives the list of files that have already been copied.
-     * 
-     * If the structure of the source directory is not the same as the root of the webapp, use the <tt>targetPrefix</tt>
-     * parameter to specify in which particular directory the files should be copied. Use <tt>null</tt> to copy the
-     * files with the same structure
+     * Copies the files if possible with an optional target prefix. Copy uses a first-win strategy: files that have
+     * already been copied by previous tasks are ignored. This method makes sure to update the list of protected files
+     * which gives the list of files that have already been copied. If the structure of the source directory is not the
+     * same as the root of the webapp, use the <tt>targetPrefix</tt> parameter to specify in which particular directory
+     * the files should be copied. Use <tt>null</tt> to copy the files with the same structure
      *
      * @param sourceId the source id
      * @param context the context to use
@@ -119,10 +116,9 @@ public abstract class AbstractWarPackagingTask
     }
 
     /**
-     * Copies the files if possible as is.
-     * 
-     * Copy uses a first-win strategy: files that have already been copied by previous tasks are ignored. This method
-     * makes sure to update the list of protected files which gives the list of files that have already been copied.
+     * Copies the files if possible as is. Copy uses a first-win strategy: files that have already been copied by
+     * previous tasks are ignored. This method makes sure to update the list of protected files which gives the list of
+     * files that have already been copied.
      *
      * @param sourceId the source id
      * @param context the context to use
@@ -140,9 +136,8 @@ public abstract class AbstractWarPackagingTask
     }
 
     /**
-     * Copy the specified file if the target location has not yet already been used.
-     * 
-     * The <tt>targetFileName</tt> is the relative path according to the root of the generated web application.
+     * Copy the specified file if the target location has not yet already been used. The <tt>targetFileName</tt> is the
+     * relative path according to the root of the generated web application.
      *
      * @param sourceId the source id
      * @param context the context to use
@@ -151,7 +146,8 @@ public abstract class AbstractWarPackagingTask
      * @throws IOException if an error occurred while copying
      */
     // CHECKSTYLE_OFF: LineLength
-    protected void copyFile( String sourceId, final WarPackagingContext context, final File file, String targetFilename )
+    protected void copyFile( String sourceId, final WarPackagingContext context, final File file,
+                             String targetFilename )
         throws IOException
     // CHECKSTYLE_ON: LineLength
     {
@@ -160,65 +156,61 @@ public abstract class AbstractWarPackagingTask
         if ( file.isFile() )
         {
             context.getWebappStructure().registerFile( sourceId, targetFilename,
-           new WebappStructure.RegistrationCallback()
-           {
-               public void registered( String ownerId, String targetFilename )
-                   throws IOException
-               {
-                   copyFile( context, file, targetFile, targetFilename,
-                             false );
-               }
-    
-               public void alreadyRegistered( String ownerId,
-                                              String targetFilename )
-                   throws IOException
-               {
-                   copyFile( context, file, targetFile, targetFilename,
-                             true );
-               }
-    
-               public void refused( String ownerId, String targetFilename,
-                                    String actualOwnerId )
-                   throws IOException
-               {
-                   context.getLog().debug( " - "
-                                               + targetFilename
-                                               + " wasn't copied because it has "
-                                               + "already been packaged for overlay ["
-                                               + actualOwnerId + "]." );
-               }
-    
-               public void superseded( String ownerId,
-                                       String targetFilename,
-                                       String deprecatedOwnerId )
-                   throws IOException
-               {
-                   context.getLog().info( "File ["
-                                              + targetFilename
-                                              + "] belonged to overlay ["
-                                              + deprecatedOwnerId
-                                              + "] so it will be overwritten." );
-                   copyFile( context, file, targetFile, targetFilename,
-                             false );
-               }
-    
-               public void supersededUnknownOwner( String ownerId,
-                                                   String targetFilename,
-                                                   String unknownOwnerId )
-                   throws IOException
-               {
-                   // CHECKSTYLE_OFF: LineLength
-                   context.getLog().warn( "File ["
-                                              + targetFilename
-                                              + "] belonged to overlay ["
-                                              + unknownOwnerId
-                                              + "] which does not exist anymore in the current project. It is recommended to invoke "
-                                              + "clean if the dependencies of the project changed." );
-                   // CHECKSTYLE_ON: LineLength
-                   copyFile( context, file, targetFile, targetFilename,
-                             false );
-               }
-           } );
+                                                       new WebappStructure.RegistrationCallback()
+                                                       {
+                                                           public void registered( String ownerId,
+                                                                                   String targetFilename )
+                                                               throws IOException
+                                                           {
+                                                               copyFile( context, file, targetFile, targetFilename,
+                                                                         false );
+                                                           }
+
+                                                           public void alreadyRegistered( String ownerId,
+                                                                                          String targetFilename )
+                                                               throws IOException
+                                                           {
+                                                               copyFile( context, file, targetFile, targetFilename,
+                                                                         true );
+                                                           }
+
+                                                           public void refused( String ownerId, String targetFilename,
+                                                                                String actualOwnerId )
+                                                               throws IOException
+                                                           {
+                                                               context.getLog().debug( " - " + targetFilename
+                                                                   + " wasn't copied because it has "
+                                                                   + "already been packaged for overlay ["
+                                                                   + actualOwnerId + "]." );
+                                                           }
+
+                                                           public void superseded( String ownerId,
+                                                                                   String targetFilename,
+                                                                                   String deprecatedOwnerId )
+                                                               throws IOException
+                                                           {
+                                                               context.getLog().info( "File [" + targetFilename
+                                                                   + "] belonged to overlay [" + deprecatedOwnerId
+                                                                   + "] so it will be overwritten." );
+                                                               copyFile( context, file, targetFile, targetFilename,
+                                                                         false );
+                                                           }
+
+                                                           public void supersededUnknownOwner( String ownerId,
+                                                                                               String targetFilename,
+                                                                                               String unknownOwnerId )
+                                                               throws IOException
+                                                           {
+                                                               // CHECKSTYLE_OFF: LineLength
+                                                               context.getLog().warn( "File [" + targetFilename
+                                                                   + "] belonged to overlay [" + unknownOwnerId
+                                                                   + "] which does not exist anymore in the current project. It is recommended to invoke "
+                                                                   + "clean if the dependencies of the project changed." );
+                                                               // CHECKSTYLE_ON: LineLength
+                                                               copyFile( context, file, targetFile, targetFilename,
+                                                                         false );
+                                                           }
+                                                       } );
         }
         else if ( !targetFile.exists() && !targetFile.mkdirs() )
         {
@@ -228,9 +220,8 @@ public abstract class AbstractWarPackagingTask
 
     /**
      * Copy the specified file if the target location has not yet already been used and filter its content with the
-     * configured filter properties.
-     * 
-     * The <tt>targetFileName</tt> is the relative path according to the root of the generated web application.
+     * configured filter properties. The <tt>targetFileName</tt> is the relative path according to the root of the
+     * generated web application.
      *
      * @param sourceId the source id
      * @param context the context to use
@@ -272,14 +263,15 @@ public abstract class AbstractWarPackagingTask
             }
             // CHECKSTYLE_OFF: LineLength
             // Add the file to the protected list
-            context.getLog().debug( " + " + targetFilename + " has been copied (filtered encoding='" + encoding + "')." );
+            context.getLog().debug( " + " + targetFilename + " has been copied (filtered encoding='" + encoding
+                + "')." );
             // CHECKSTYLE_ON: LineLength
             return true;
         }
         else
         {
             context.getLog().debug( " - " + targetFilename
-                                        + " wasn't copied because it has already been packaged (filtered)." );
+                + " wasn't copied because it has already been packaged (filtered)." );
             return false;
         }
     }
@@ -314,7 +306,7 @@ public abstract class AbstractWarPackagingTask
         catch ( NoSuchArchiverException e )
         {
             context.getLog().warn( "Skip unpacking dependency file [" + file.getAbsolutePath()
-                                       + " with unknown extension [" + archiveExt + "]" );
+                + " with unknown extension [" + archiveExt + "]" );
         }
     }
 
@@ -419,7 +411,8 @@ public abstract class AbstractWarPackagingTask
      * @return the files to copy
      */
     // CHECKSTYLE_OFF: LineLength
-    protected PathSet getFilesToIncludes( File baseDir, String[] includes, String[] excludes, boolean includeDirectories )
+    protected PathSet getFilesToIncludes( File baseDir, String[] includes, String[] excludes,
+                                          boolean includeDirectories )
     // CHECKSTYLE_ON: LineLength
     {
         final DirectoryScanner scanner = new DirectoryScanner();
@@ -453,9 +446,8 @@ public abstract class AbstractWarPackagingTask
     }
 
     /**
-     * Returns the final name of the specified artifact.
-     * 
-     * If the <tt>outputFileNameMapping</tt> is set, it is used, otherwise the standard naming scheme is used.
+     * Returns the final name of the specified artifact. If the <tt>outputFileNameMapping</tt> is set, it is used,
+     * otherwise the standard naming scheme is used.
      *
      * @param context the packaging context
      * @param artifact the artifact

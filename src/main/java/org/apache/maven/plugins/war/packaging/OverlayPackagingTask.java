@@ -62,7 +62,7 @@ public class OverlayPackagingTask
         throws MojoExecutionException
     {
         context.getLog().debug( "OverlayPackagingTask performPackaging overlay.getTargetPath() "
-                                    + overlay.getTargetPath() );
+            + overlay.getTargetPath() );
         if ( overlay.shouldSkip() )
         {
             context.getLog().info( "Skipping overlay [" + overlay + "]" );
@@ -104,9 +104,7 @@ public class OverlayPackagingTask
     }
 
     /**
-     * Unpacks the specified overlay.
-     * 
-     * Makes sure to skip the unpack process if the overlay has already been unpacked.
+     * Unpacks the specified overlay. Makes sure to skip the unpack process if the overlay has already been unpacked.
      *
      * @param context the packaging context
      * @param overlay the overlay

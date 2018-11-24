@@ -56,16 +56,17 @@ public class MavenProjectArtifactsStub
             return new ArrayList<Dependency>();
         }
         final List<Dependency> dependencies = new ArrayList<Dependency>();
-        for (Object o : getArtifacts()) {
+        for ( Object o : getArtifacts() )
+        {
             Artifact a = (Artifact) o;
             Dependency dependency = new Dependency();
-            dependency.setArtifactId(a.getArtifactId());
-            dependency.setGroupId(a.getGroupId());
-            dependency.setVersion(a.getVersion());
-            dependency.setScope(a.getScope());
-            dependency.setType(a.getType());
-            dependency.setClassifier(a.getClassifier());
-            dependencies.add(dependency);
+            dependency.setArtifactId( a.getArtifactId() );
+            dependency.setGroupId( a.getGroupId() );
+            dependency.setVersion( a.getVersion() );
+            dependency.setScope( a.getScope() );
+            dependency.setType( a.getType() );
+            dependency.setClassifier( a.getClassifier() );
+            dependencies.add( dependency );
 
         }
         return dependencies;
@@ -76,10 +77,8 @@ public class MavenProjectArtifactsStub
     {
         List<String> artifacts = new ArrayList<String>();
 
-        artifacts.add(
-            "src/test/resources/unit/manifest/manifest-with-classpath/sample-artifacts/maven-artifact1-1.0-SNAPSHOT.jar" );
-        artifacts.add(
-            "src/test/resources/unit/manifest/manifest-with-classpath/sample-artifacts/maven-artifact2-1.0-SNAPSHOT.jar" );
+        artifacts.add( "src/test/resources/unit/manifest/manifest-with-classpath/sample-artifacts/maven-artifact1-1.0-SNAPSHOT.jar" );
+        artifacts.add( "src/test/resources/unit/manifest/manifest-with-classpath/sample-artifacts/maven-artifact2-1.0-SNAPSHOT.jar" );
 
         return artifacts;
     }

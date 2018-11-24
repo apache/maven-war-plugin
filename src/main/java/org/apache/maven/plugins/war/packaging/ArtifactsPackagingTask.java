@@ -134,18 +134,18 @@ public class ArtifactsPackagingTask
                         {
                             // Nothing to do here, it is an overlay and it's already handled
                             context.getLog().debug( "war artifacts are handled as overlays, ignoring [" + artifact
-                                                        + "]" );
+                                + "]" );
                         }
                         else if ( "zip".equals( type ) )
                         {
                             // Nothing to do here, it is an overlay and it's already handled
                             context.getLog().debug( "zip artifacts are handled as overlays, ignoring [" + artifact
-                                                        + "]" );
+                                + "]" );
                         }
                         else
                         {
                             context.getLog().debug( "Artifact of type [" + type + "] is not supported, ignoring ["
-                                                        + artifact + "]" );
+                                + artifact + "]" );
                         }
                     }
                     catch ( IOException e )

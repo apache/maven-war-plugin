@@ -45,7 +45,7 @@ public class MavenZipProject
     {
         return this.artifacts;
     }
-    
+
     public Set<Artifact> getDependencyArtifacts()
     {
         return this.artifacts;

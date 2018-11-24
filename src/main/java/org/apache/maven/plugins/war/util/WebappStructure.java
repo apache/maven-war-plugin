@@ -34,9 +34,8 @@ import java.util.Set;
 
 /**
  * Represents the structure of a web application composed of multiple overlays. Each overlay is registered within this
- * structure with the set of files it holds.
- * 
- * Note that this structure is persisted to disk at each invocation to store which owner holds which path (file).
+ * structure with the set of files it holds. Note that this structure is persisted to disk at each invocation to store
+ * which owner holds which path (file).
  *
  * @author Stephane Nicoll
  * @version $Id$
@@ -152,7 +151,8 @@ public class WebappStructure
      * <p>
      * Beware that the semantic of the return boolean is different than the one from
      * {@link #registerFile(String, String)}; returns <tt>true</tt> if an owner replacement was made and <tt>false</tt>
-     * if the file was simply registered for the first time.</p>
+     * if the file was simply registered for the first time.
+     * </p>
      *
      * @param id the owner of the path
      * @param path the relative path from the webapp root directory
@@ -437,9 +437,9 @@ public class WebappStructure
             if ( dependency.getGroupId().equals( dep.getGroupId() )
                 && dependency.getArtifactId().equals( dep.getArtifactId() )
                 && dependency.getType().equals( dep.getType() )
-                && ( 
-                        ( dependency.getClassifier() == null && dep.getClassifier() == null ) 
-                     || ( dependency.getClassifier() != null && dependency.getClassifier().equals( dep.getClassifier() ) ) ) )
+                && ( ( dependency.getClassifier() == null && dep.getClassifier() == null )
+                    || ( dependency.getClassifier() != null
+                        && dependency.getClassifier().equals( dep.getClassifier() ) ) ) )
             {
                 return dep;
             }
@@ -494,7 +494,6 @@ public class WebappStructure
 
         /**
          * Called if the <tt>targetFilename</tt> for the specified <tt>ownerId</tt> has been registered successfully.
-         * 
          * This means that the <tt>targetFilename</tt> was unknown and has been registered successfully.
          *
          * @param ownerId the ownerId
@@ -505,9 +504,8 @@ public class WebappStructure
             throws IOException;
 
         /**
-         * Called if the <tt>targetFilename</tt> for the specified <tt>ownerId</tt> has already been registered.
-         * 
-         * This means that the <tt>targetFilename</tt> was known and belongs to the specified owner.
+         * Called if the <tt>targetFilename</tt> for the specified <tt>ownerId</tt> has already been registered. This
+         * means that the <tt>targetFilename</tt> was known and belongs to the specified owner.
          *
          * @param ownerId the ownerId
          * @param targetFilename the relative path according to the root of the webapp
@@ -520,7 +518,7 @@ public class WebappStructure
          * <p>
          * Called if the registration of the <tt>targetFilename</tt> for the specified <tt>ownerId</tt> has been refused
          * since the path already belongs to the <tt>actualOwnerId</tt>.
-         * </p> 
+         * </p>
          * This means that the <tt>targetFilename</tt> was known and does not belong to the specified owner.
          *
          * @param ownerId the ownerId
@@ -533,10 +531,9 @@ public class WebappStructure
 
         /**
          * Called if the <tt>targetFilename</tt> for the specified <tt>ownerId</tt> has been registered successfully by
-         * superseding a <tt>deprecatedOwnerId</tt>, that is the previous owner of the file.
-         * 
-         * This means that the <tt>targetFilename</tt> was known but for another owner. This usually happens after a
-         * project's configuration change. As a result, the file has been registered successfully to the new owner.
+         * superseding a <tt>deprecatedOwnerId</tt>, that is the previous owner of the file. This means that the
+         * <tt>targetFilename</tt> was known but for another owner. This usually happens after a project's configuration
+         * change. As a result, the file has been registered successfully to the new owner.
          *
          * @param ownerId the ownerId
          * @param targetFilename the relative path according to the root of the webapp
@@ -549,7 +546,6 @@ public class WebappStructure
         /**
          * Called if the <tt>targetFilename</tt> for the specified <tt>ownerId</tt> has been registered successfully by
          * superseding a <tt>unknownOwnerId</tt>, that is an owner that does not exist anymore in the current project.
-         * 
          * This means that the <tt>targetFilename</tt> was known but for an owner that does not exist anymore. Hence the
          * file has been registered successfully to the new owner.
          *

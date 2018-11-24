@@ -60,7 +60,7 @@ public class MavenProjectBasicStub
     {
         // create an isolated environment
         // see setupTestEnvironment for details
-        //return new File( testRootDir );
+        // return new File( testRootDir );
         return null;
     }
 
@@ -120,7 +120,7 @@ public class MavenProjectBasicStub
 
         return build;
     }
-    
+
     @Override
     public MavenProject clone()
     {

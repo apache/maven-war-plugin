@@ -29,7 +29,6 @@ import org.apache.maven.plugin.logging.SystemStreamLog;
 
 /**
  * @author Haikal Saadh
- *
  */
 public class CopyUserManifestTask
     extends AbstractWarPackagingTask

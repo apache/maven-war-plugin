@@ -32,10 +32,9 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Handles the classes directory that needs to be packaged in the web application.
- * 
- * Based on the {@link WarPackagingContext#archiveClasses()} flag the resources either copied into to
- * <tt>WEB-INF/classes</tt> directory or archived in a jar within the <tt>WEB-INF/lib</tt> directory.
+ * Handles the classes directory that needs to be packaged in the web application. Based on the
+ * {@link WarPackagingContext#archiveClasses()} flag the resources either copied into to <tt>WEB-INF/classes</tt>
+ * directory or archived in a jar within the <tt>WEB-INF/lib</tt> directory.
  *
  * @author Stephane Nicoll
  * @version $Id$
@@ -122,7 +121,7 @@ public class ClassesPackagingTask
         else
         {
             context.getLog().warn( "Could not generate archive classes file [" + targetFilename
-                                       + "] has already been copied." );
+                + "] has already been copied." );
         }
     }
 }

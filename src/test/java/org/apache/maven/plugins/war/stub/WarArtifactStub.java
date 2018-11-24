@@ -63,7 +63,6 @@ public class WarArtifactStub
         artifactId = _artifactId;
     }
 
-
     public String getGroupId()
     {
         if ( groupId == null )

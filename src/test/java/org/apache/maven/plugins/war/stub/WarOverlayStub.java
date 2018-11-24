@@ -28,7 +28,6 @@ public class WarOverlayStub
     extends AbstractArtifactStub
 {
 
-
     private final String artifactId;
 
     private File file;

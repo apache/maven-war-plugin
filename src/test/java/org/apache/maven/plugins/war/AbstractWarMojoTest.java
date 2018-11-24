@@ -65,7 +65,7 @@ public abstract class AbstractWarMojoTest
      */
     protected void configureMojo( AbstractWarMojo mojo, List<String> filters, File classesDir, File webAppSource,
                                   File webAppDir, MavenProjectBasicStub project )
-                                      throws Exception
+        throws Exception
     {
         setVariableValueToObject( mojo, "filters", filters );
         setVariableValueToObject( mojo, "useCache", Boolean.FALSE );
@@ -201,8 +201,7 @@ public abstract class AbstractWarMojoTest
     }
 
     /**
-     * Generates test war.
-     * Generates war with such a structure:
+     * Generates test war. Generates war with such a structure:
      * <ul>
      * <li>jsp
      * <ul>

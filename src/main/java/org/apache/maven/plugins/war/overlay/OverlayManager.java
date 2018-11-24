@@ -46,9 +46,8 @@ public class OverlayManager
     private final List<Artifact> artifactsOverlays;
 
     /**
-     * Creates a manager with the specified overlays.
-     * 
-     * Note that the list is potentially updated by the manager so a new list is created based on the overlays.
+     * Creates a manager with the specified overlays. Note that the list is potentially updated by the manager so a new
+     * list is created based on the overlays.
      *
      * @param overlays the overlays
      * @param project the maven project
@@ -169,10 +168,9 @@ public class OverlayManager
     }
 
     /**
-     * Returns the Artifact associated to the specified overlay.
-     * 
-     * If the overlay defines the current project, <tt>null</tt> is returned. If no artifact could not be found for the
-     * overlay a InvalidOverlayConfigurationException is thrown.
+     * Returns the Artifact associated to the specified overlay. If the overlay defines the current project,
+     * <tt>null</tt> is returned. If no artifact could not be found for the overlay a
+     * InvalidOverlayConfigurationException is thrown.
      *
      * @param overlay an overlay
      * @return the artifact associated to the overlay
@@ -209,7 +207,8 @@ public class OverlayManager
             }
         }
         // CHECKSTYLE_OFF: LineLength
-        throw new InvalidOverlayConfigurationException( "overlay [" + overlay + "] is not a dependency of the project." );
+        throw new InvalidOverlayConfigurationException( "overlay [" + overlay
+            + "] is not a dependency of the project." );
         // CHECKSTYLE_ON: LineLength
 
     }
@@ -226,9 +225,9 @@ public class OverlayManager
         return ( StringUtils.equals( overlay.getGroupId(), artifact.getGroupId() )
             && StringUtils.equals( overlay.getArtifactId(), artifact.getArtifactId() )
             && StringUtils.equals( overlay.getType(), artifact.getType() )
-        // MWAR-241 Make sure to treat null and "" as equal when comparing the classifier
-        && StringUtils.equals( StringUtils.defaultString( overlay.getClassifier() ),
-                               StringUtils.defaultString( artifact.getClassifier() ) ) );
+            // MWAR-241 Make sure to treat null and "" as equal when comparing the classifier
+            && StringUtils.equals( StringUtils.defaultString( overlay.getClassifier() ),
+                                   StringUtils.defaultString( artifact.getClassifier() ) ) );
     }
 
     /**

@@ -243,17 +243,15 @@ public abstract class AbstractWarMojo
     private String warSourceExcludes;
 
     /**
-     * The comma separated list of tokens to include when doing a WAR overlay. Default is 
+     * The comma separated list of tokens to include when doing a WAR overlay. Default is
      * {@link org.apache.maven.plugins.war.Overlay#DEFAULT_INCLUDES}
-     *
      */
     @Parameter
     private String dependentWarIncludes = StringUtils.join( Overlay.DEFAULT_INCLUDES, "," );
 
     /**
-     * The comma separated list of tokens to exclude when doing a WAR overlay. Default is 
+     * The comma separated list of tokens to exclude when doing a WAR overlay. Default is
      * {@link org.apache.maven.plugins.war.Overlay#DEFAULT_EXCLUDES}
-     *
      */
     @Parameter
     private String dependentWarExcludes = StringUtils.join( Overlay.DEFAULT_EXCLUDES, "," );
@@ -448,8 +446,8 @@ public abstract class AbstractWarMojo
     }
 
     /**
-     * Builds the webapp for the specified project with the new packaging task thingy.
-     * Classes, libraries and tld files are copied to the <tt>webappDirectory</tt> during this phase.
+     * Builds the webapp for the specified project with the new packaging task thingy. Classes, libraries and tld files
+     * are copied to the <tt>webappDirectory</tt> during this phase.
      *
      * @param mavenProject the maven project
      * @param webapplicationDirectory the target directory
@@ -465,7 +463,8 @@ public abstract class AbstractWarMojo
         if ( useCache && cacheFile.exists() )
         {
             // CHECKSTYLE_OFF: LineLength
-            cache = new WebappStructure( mavenProject.getDependencies(), webappStructureSerialier.fromXml( cacheFile ) );
+            cache =
+                new WebappStructure( mavenProject.getDependencies(), webappStructureSerialier.fromXml( cacheFile ) );
             // CHECKSTYLE_ON: LineLength
         }
         else
@@ -475,11 +474,11 @@ public abstract class AbstractWarMojo
 
         // CHECKSTYLE_OFF: LineLength
         final long startTime = System.currentTimeMillis();
-        getLog().info( "Assembling webapp [" + mavenProject.getArtifactId() + "] in [" + webapplicationDirectory + "]" );
+        getLog().info( "Assembling webapp [" + mavenProject.getArtifactId() + "] in [" + webapplicationDirectory
+            + "]" );
 
-        final OverlayManager overlayManager =
-            new OverlayManager( overlays, mavenProject, getDependentWarIncludes(), getDependentWarExcludes(),
-                                currentProjectOverlay );
+        final OverlayManager overlayManager = new OverlayManager( overlays, mavenProject, getDependentWarIncludes(),
+                                                                  getDependentWarExcludes(), currentProjectOverlay );
         final List<WarPackagingTask> packagingTasks = getPackagingTasks( overlayManager );
         // CHECKSTYLE_ON: LineLength
         List<FileUtils.FilterWrapper> defaultFilterWrappers;
@@ -497,7 +496,7 @@ public abstract class AbstractWarMojo
             {
                 mavenResourcesExecution.setNonFilteredFileExtensions( nonFilteredFileExtensions );
             }
-            
+
             if ( filters == null )
             {
                 filters = getProject().getBuild().getFilters();
@@ -537,8 +536,8 @@ public abstract class AbstractWarMojo
     }
 
     /**
-     * Returns a <tt>List</tt> of the {@link org.apache.maven.plugins.war.packaging.WarPackagingTask}
-     * instances to invoke to perform the packaging.
+     * Returns a <tt>List</tt> of the {@link org.apache.maven.plugins.war.packaging.WarPackagingTask} instances to
+     * invoke to perform the packaging.
      *
      * @param overlayManager the overlay manager
      * @return the list of packaging tasks
@@ -627,11 +626,9 @@ public abstract class AbstractWarMojo
          * @param useJvmChmod use Jvm chmod or not.
          */
         DefaultWarPackagingContext( File webappDirectory, final WebappStructure webappStructure,
-                                           final OverlayManager overlayManager,
-                                           List<FileUtils.FilterWrapper> filterWrappers,
-                                           List<String> nonFilteredFileExtensions,
-                                           boolean filteringDeploymentDescriptors, ArtifactFactory artifactFactory,
-                                           String resourceEncoding, boolean useJvmChmod )
+                                    final OverlayManager overlayManager, List<FileUtils.FilterWrapper> filterWrappers,
+                                    List<String> nonFilteredFileExtensions, boolean filteringDeploymentDescriptors,
+                                    ArtifactFactory artifactFactory, String resourceEncoding, boolean useJvmChmod )
         {
             this.webappDirectory = webappDirectory;
             this.webappStructure = webappStructure;

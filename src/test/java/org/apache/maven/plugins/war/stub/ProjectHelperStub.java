@@ -60,7 +60,7 @@ public class ProjectHelperStub
     }
 
     public void attachArtifact( MavenProject project, String _artifactType, String _artifactClassifier,
-                               File _artifactFile )
+                                File _artifactFile )
     {
         artifactType = _artifactType;
         artifactClassifier = _artifactClassifier;

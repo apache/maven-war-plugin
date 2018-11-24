@@ -34,7 +34,6 @@ public class WebappStructureTest
     extends TestCase
 {
 
-
     public void testDependencyAnalysisNoChange()
     {
         final List<Dependency> dependencies = new ArrayList<Dependency>();
@@ -92,7 +91,6 @@ public class WebappStructureTest
         } );
 
     }
-
 
     public void testDependencyAnalysisWithNewDependency()
     {
@@ -241,9 +239,8 @@ public class WebappStructureTest
     {
         final String path = "WEB-INF/web.xml";
         final WebappStructure structure = new WebappStructure( new ArrayList<Dependency>() );
-        assertFalse("New file should return false",
-                    structure.registerFileForced( "overlay1", path ));
-        assertEquals( "overlay1", structure.getOwner( path ) );         
+        assertFalse( "New file should return false", structure.registerFileForced( "overlay1", path ) );
+        assertEquals( "overlay1", structure.getOwner( path ) );
     }
 
     public void testRegisterSamePathTwiceForced()
@@ -252,11 +249,10 @@ public class WebappStructureTest
         final WebappStructure structure = new WebappStructure( new ArrayList<Dependency>() );
         structure.registerFile( "overlay1", path );
         assertEquals( "overlay1", structure.getOwner( path ) );
-        assertTrue("owner replacement should have returned true",
-                   structure.registerFileForced( "currentBuild", path ));
-        assertEquals("currentBuild", structure.getOwner( path ));
+        assertTrue( "owner replacement should have returned true",
+                    structure.registerFileForced( "currentBuild", path ) );
+        assertEquals( "currentBuild", structure.getOwner( path ) );
     }
-
 
     protected Dependency createDependency( String groupId, String artifactId, String version, String type, String scope,
                                            String classifier )

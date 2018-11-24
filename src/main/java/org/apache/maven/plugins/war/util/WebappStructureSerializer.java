@@ -60,8 +60,7 @@ public class WebappStructureSerializer
             {
                 Mapper mapper = getMapper();
                 ReflectionProvider reflectionProvider = getReflectionProvider();
-                registerConverter(
-                    new ReflectionConverter( mapper, reflectionProvider ), PRIORITY_VERY_LOW );
+                registerConverter( new ReflectionConverter( mapper, reflectionProvider ), PRIORITY_VERY_LOW );
                 registerConverter( new StringConverter(), PRIORITY_NORMAL );
                 registerConverter( new IntConverter(), PRIORITY_NORMAL );
                 registerConverter( new CollectionConverter( mapper ), PRIORITY_NORMAL );
@@ -124,7 +123,8 @@ public class WebappStructureSerializer
         {
             if ( !targetFile.getParentFile().exists() && !targetFile.getParentFile().mkdirs() )
             {
-                throw new IOException( "Could not create parent [" + targetFile.getParentFile().getAbsolutePath() + "]" );
+                throw new IOException( "Could not create parent [" + targetFile.getParentFile().getAbsolutePath()
+                    + "]" );
             }
 
             if ( !targetFile.exists() && !targetFile.createNewFile() )

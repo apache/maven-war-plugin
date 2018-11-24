@@ -19,7 +19,6 @@ package org.apache.maven.plugins.war.stub;
  * under the License.
  */
 
-
 import org.apache.maven.artifact.handler.ArtifactHandler;
 
 import java.io.File;

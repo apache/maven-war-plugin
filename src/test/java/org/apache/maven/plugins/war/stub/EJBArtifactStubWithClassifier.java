@@ -28,6 +28,7 @@ public class EJBArtifactStubWithClassifier
     extends AbstractArtifactStub
 {
     protected String groupId;
+
     protected String classifier;
 
     public EJBArtifactStubWithClassifier( String _basedir )

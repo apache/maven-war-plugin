@@ -50,17 +50,17 @@ public class WarUtilsTest
         fourthDependency.setGroupId( "4" );
         fourthDependency.setArtifactId( "a" );
 
-        assertFalse( "dependencies 1:a and 2:b should not be equal", WarUtils.dependencyEquals( firstDependency,
-                                                                                                secondDependency ) );
-        assertFalse( "dependencies 1:a and 1:c should not be equal", WarUtils.dependencyEquals( firstDependency,
-                                                                                                thirdDependency ) );
-        assertFalse( "dependencies 1:a and 4:a should not be equal", WarUtils.dependencyEquals( firstDependency,
-                                                                                                fourthDependency ) );
-        assertFalse( "dependencies 2:b and 1:c should not be equal", WarUtils.dependencyEquals( secondDependency,
-                                                                                                thirdDependency ) );
-        assertFalse( "dependencies 2:b and 4:a should not be equal", WarUtils.dependencyEquals( secondDependency,
-                                                                                                fourthDependency ) );
-        assertFalse( "dependencies 1:c and 4:a should not be equal", WarUtils.dependencyEquals( thirdDependency,
-                                                                                                fourthDependency ) );
+        assertFalse( "dependencies 1:a and 2:b should not be equal",
+                     WarUtils.dependencyEquals( firstDependency, secondDependency ) );
+        assertFalse( "dependencies 1:a and 1:c should not be equal",
+                     WarUtils.dependencyEquals( firstDependency, thirdDependency ) );
+        assertFalse( "dependencies 1:a and 4:a should not be equal",
+                     WarUtils.dependencyEquals( firstDependency, fourthDependency ) );
+        assertFalse( "dependencies 2:b and 1:c should not be equal",
+                     WarUtils.dependencyEquals( secondDependency, thirdDependency ) );
+        assertFalse( "dependencies 2:b and 4:a should not be equal",
+                     WarUtils.dependencyEquals( secondDependency, fourthDependency ) );
+        assertFalse( "dependencies 1:c and 4:a should not be equal",
+                     WarUtils.dependencyEquals( thirdDependency, fourthDependency ) );
     }
 }

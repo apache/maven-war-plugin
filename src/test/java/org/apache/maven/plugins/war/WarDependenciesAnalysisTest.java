@@ -151,7 +151,8 @@ public class WarDependenciesAnalysisTest
             assertedFiles2.addAll( assertWebXml( webAppDirectory ) );
             if ( secondCustomContent != null )
             {
-                assertedFiles2.addAll( assertCustomContent( webAppDirectory, secondCustomContent, "library not found" ) );
+                assertedFiles2.addAll( assertCustomContent( webAppDirectory, secondCustomContent,
+                                                            "library not found" ) );
 
             }
             assertWebAppContent( webAppDirectory, assertedFiles2, filter );

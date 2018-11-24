@@ -138,8 +138,9 @@ public class WarOverlaysTest
             mojo.execute();
             assertedFiles.addAll( assertDefaultContent( webAppDirectory ) );
             assertedFiles.addAll( assertWebXml( webAppDirectory ) );
-            assertedFiles.addAll( assertCustomContent( webAppDirectory, new String[] { "index.jsp", "login.jsp",
-                "admin.jsp" }, "overlay file not found" ) );
+            assertedFiles.addAll( assertCustomContent( webAppDirectory,
+                                                       new String[] { "index.jsp", "login.jsp", "admin.jsp" },
+                                                       "overlay file not found" ) );
 
             // index and login come from overlay1
             assertOverlayedFile( webAppDirectory, "overlay-one", "index.jsp" );
@@ -160,9 +161,8 @@ public class WarOverlaysTest
     }
 
     /**
-     * Merge a dependent WAR when a file in the war source directory overrides one found in the WAR.
-     * 
-     * It also tests completeness of the resulting war as well as the proper order of dependencies.
+     * Merge a dependent WAR when a file in the war source directory overrides one found in the WAR. It also tests
+     * completeness of the resulting war as well as the proper order of dependencies.
      *
      * @throws Exception if any error occurs
      */
@@ -177,17 +177,15 @@ public class WarOverlaysTest
         final ArtifactStub overlay2 = buildWarOverlayStub( "overlay-full-2" );
         final ArtifactStub overlay3 = buildWarOverlayStub( "overlay-full-3" );
 
-        final File webAppDirectory =
-            setUpMojo( testId, new ArtifactStub[] { overlay1, overlay2, overlay3 }, new String[] {
-                "org/sample/company/test.jsp", "jsp/b.jsp" } );
+        final File webAppDirectory = setUpMojo( testId, new ArtifactStub[] { overlay1, overlay2, overlay3 },
+                                                new String[] { "org/sample/company/test.jsp", "jsp/b.jsp" } );
 
         assertScenariOne( testId, webAppDirectory );
     }
 
     /**
-     * Tests that specifying the overlay explicitely has the same behavior as the default (i.e. order, etc).
-     * 
-     * The default project is not specified in this case so it is processed first by default
+     * Tests that specifying the overlay explicitely has the same behavior as the default (i.e. order, etc). The default
+     * project is not specified in this case so it is processed first by default
      *
      * @throws Exception if an error occurs
      */
@@ -202,9 +200,8 @@ public class WarOverlaysTest
         final ArtifactStub overlay2 = buildWarOverlayStub( "overlay-full-2" );
         final ArtifactStub overlay3 = buildWarOverlayStub( "overlay-full-3" );
 
-        final File webAppDirectory =
-            setUpMojo( testId, new ArtifactStub[] { overlay1, overlay2, overlay3 }, new String[] {
-                "org/sample/company/test.jsp", "jsp/b.jsp" } );
+        final File webAppDirectory = setUpMojo( testId, new ArtifactStub[] { overlay1, overlay2, overlay3 },
+                                                new String[] { "org/sample/company/test.jsp", "jsp/b.jsp" } );
 
         // Add the tags
         final List<Overlay> overlays = new ArrayList<Overlay>();
@@ -218,9 +215,8 @@ public class WarOverlaysTest
     }
 
     /**
-     * Tests that specifying the overlay explicitely has the same behavior as the default (i.e. order, etc).
-     * 
-     * The default project is explicitely specified so this should match the default.
+     * Tests that specifying the overlay explicitely has the same behavior as the default (i.e. order, etc). The default
+     * project is explicitely specified so this should match the default.
      *
      * @throws Exception if an error occurs
      */
@@ -235,9 +231,8 @@ public class WarOverlaysTest
         final ArtifactStub overlay2 = buildWarOverlayStub( "overlay-full-2" );
         final ArtifactStub overlay3 = buildWarOverlayStub( "overlay-full-3" );
 
-        final File webAppDirectory =
-            setUpMojo( testId, new ArtifactStub[] { overlay1, overlay2, overlay3 }, new String[] {
-                "org/sample/company/test.jsp", "jsp/b.jsp" } );
+        final File webAppDirectory = setUpMojo( testId, new ArtifactStub[] { overlay1, overlay2, overlay3 },
+                                                new String[] { "org/sample/company/test.jsp", "jsp/b.jsp" } );
 
         // Add the tags
         final List<Overlay> overlays = new ArrayList<Overlay>();
@@ -314,9 +309,8 @@ public class WarOverlaysTest
         final ArtifactStub overlay2 = buildWarOverlayStub( "overlay-full-2" );
         final ArtifactStub overlay3 = buildWarOverlayStub( "overlay-full-3" );
 
-        final File webAppDirectory =
-            setUpMojo( testId, new ArtifactStub[] { overlay1, overlay2, overlay3 }, new String[] {
-                "org/sample/company/test.jsp", "jsp/b.jsp" } );
+        final File webAppDirectory = setUpMojo( testId, new ArtifactStub[] { overlay1, overlay2, overlay3 },
+                                                new String[] { "org/sample/company/test.jsp", "jsp/b.jsp" } );
 
         Overlay over1 = new DefaultOverlay( overlay3 );
         over1.setExcludes( "**/a.*,**/c.*,**/*.xml" );
@@ -383,9 +377,8 @@ public class WarOverlaysTest
         final ArtifactStub overlay2 = buildWarOverlayStub( "overlay-full-2" );
         final ArtifactStub overlay3 = buildWarOverlayStub( "overlay-full-3" );
 
-        final File webAppDirectory =
-            setUpMojo( testId, new ArtifactStub[] { overlay1, overlay2, overlay3 }, new String[] {
-                "org/sample/company/test.jsp", "jsp/b.jsp" } );
+        final File webAppDirectory = setUpMojo( testId, new ArtifactStub[] { overlay1, overlay2, overlay3 },
+                                                new String[] { "org/sample/company/test.jsp", "jsp/b.jsp" } );
 
         Overlay over1 = new DefaultOverlay( overlay3 );
         over1.setExcludes( "**/a.*,**/c.*,**/*.xml,jsp/b.jsp" );
@@ -478,8 +471,9 @@ public class WarOverlaysTest
 
             assertedFiles.addAll( assertDefaultContent( webAppDirectory ) );
             assertedFiles.addAll( assertWebXml( webAppDirectory ) );
-            assertedFiles.addAll( assertCustomContent( webAppDirectory, new String[] { "index.jsp", "login.jsp",
-                "admin.jsp" }, "overlay file not found" ) );
+            assertedFiles.addAll( assertCustomContent( webAppDirectory,
+                                                       new String[] { "index.jsp", "login.jsp", "admin.jsp" },
+                                                       "overlay file not found" ) );
 
             // index and login come from overlay2 now
             assertOverlayedFile( webAppDirectory, "overlay-two", "index.jsp" );
@@ -533,8 +527,9 @@ public class WarOverlaysTest
 
             assertedFiles.addAll( assertDefaultContent( webAppDirectory ) );
             assertedFiles.addAll( assertWebXml( webAppDirectory ) );
-            assertedFiles.addAll( assertCustomContent( webAppDirectory, new String[] { "index.jsp", "login.jsp",
-                "admin.jsp" }, "overlay file not found" ) );
+            assertedFiles.addAll( assertCustomContent( webAppDirectory,
+                                                       new String[] { "index.jsp", "login.jsp", "admin.jsp" },
+                                                       "overlay file not found" ) );
 
             // index and login come from overlay2 now
             assertOverlayedFile( webAppDirectory, "overlay-two", "index.jsp" );
@@ -554,10 +549,8 @@ public class WarOverlaysTest
     // Helpers
 
     /**
-     * Asserts that the content of an overlayed file is correct.
-     * 
-     * Note that the <tt>filePath</tt> is relative to both the webapp directory and the overlayed directory, defined by
-     * the <tt>overlayId</tt>.
+     * Asserts that the content of an overlayed file is correct. Note that the <tt>filePath</tt> is relative to both the
+     * webapp directory and the overlayed directory, defined by the <tt>overlayId</tt>.
      *
      * @param webAppDirectory the webapp directory
      * @param overlayId the id of the overlay
@@ -575,10 +568,8 @@ public class WarOverlaysTest
     }
 
     /**
-     * Asserts that the content of an overlayed file is correct.
-     * 
-     * Note that the <tt>filePath</tt> is relative to both the webapp directory and the overlayed directory, defined by
-     * the <tt>overlayId</tt>.
+     * Asserts that the content of an overlayed file is correct. Note that the <tt>filePath</tt> is relative to both the
+     * webapp directory and the overlayed directory, defined by the <tt>overlayId</tt>.
      *
      * @param testId te id of the test
      * @param webAppDirectory the webapp directory

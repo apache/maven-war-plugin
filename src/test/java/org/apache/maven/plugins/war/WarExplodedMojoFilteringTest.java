@@ -125,8 +125,10 @@ public class WarExplodedMojoFilteringTest
         assertEquals( "error in filtering using project properties", "project_key_1=i_think_so", reader.readLine() );
         assertEquals( "error in filtering using project properties", "project_key_2=i_think_so", reader.readLine() );
 
-        assertEquals( "error in filtering using project properties", "project_name_1=Test Project ", reader.readLine() );
-        assertEquals( "error in filtering using project properties", "project_name_2=Test Project ", reader.readLine() );
+        assertEquals( "error in filtering using project properties", "project_name_1=Test Project ",
+                      reader.readLine() );
+        assertEquals( "error in filtering using project properties", "project_name_2=Test Project ",
+                      reader.readLine() );
 
         assertEquals( "error in filtering using System properties", "system_property_1=system-property-value",
                       reader.readLine() );
@@ -153,8 +155,10 @@ public class WarExplodedMojoFilteringTest
         assertEquals( "error in filtering using project properties", "project_key_1=i_think_so", reader.readLine() );
         assertEquals( "error in filtering using project properties", "project_key_2=i_think_so", reader.readLine() );
 
-        assertEquals( "error in filtering using project properties", "project_name_1=Test Project ", reader.readLine() );
-        assertEquals( "error in filtering using project properties", "project_name_2=Test Project ", reader.readLine() );
+        assertEquals( "error in filtering using project properties", "project_name_1=Test Project ",
+                      reader.readLine() );
+        assertEquals( "error in filtering using project properties", "project_name_2=Test Project ",
+                      reader.readLine() );
 
         assertEquals( "error in filtering using System properties", "system_property_1=new-system-property-value",
                       reader.readLine() );
@@ -189,8 +193,10 @@ public class WarExplodedMojoFilteringTest
         assertEquals( "error in filtering using project properties", "project_key_1=i_think_so", reader.readLine() );
         assertEquals( "error in filtering using project properties", "project_key_2=i_think_so", reader.readLine() );
 
-        assertEquals( "error in filtering using project properties", "project_name_1=Test Project ", reader.readLine() );
-        assertEquals( "error in filtering using project properties", "project_name_2=Test Project ", reader.readLine() );
+        assertEquals( "error in filtering using project properties", "project_name_1=Test Project ",
+                      reader.readLine() );
+        assertEquals( "error in filtering using project properties", "project_name_2=Test Project ",
+                      reader.readLine() );
 
         assertEquals( "error in filtering using System properties", "system_property_1=new-system-property-value",
                       reader.readLine() );
