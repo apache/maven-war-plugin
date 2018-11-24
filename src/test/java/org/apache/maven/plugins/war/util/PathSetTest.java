@@ -34,7 +34,7 @@ public class PathSetTest
     extends TestCase
 {
 
-    /* --------------- Normalization tests --------------*/
+    /* --------------- Normalization tests -------------- */
 
     /**
      * Test method for 'org.apache.maven.plugin.war.PathSet.normalizeFilePathStatic(String)'
@@ -55,6 +55,7 @@ public class PathSetTest
 
         assertEquals( "Normalized path error", "abc/def/xyz/", PathSet.normalizeFilePathStatic( "abc/def\\xyz\\" ) );
         assertEquals( "Normalized path error", "abc/def/xyz/", PathSet.normalizeFilePathStatic( "/abc/def/xyz/" ) );
+        assertEquals( "Normalized path error", "abc/def/xyz/", PathSet.normalizeFilePathStatic( "/abc//def/xyz/" ) );
         assertEquals( "Normalized path error", "abc/def/xyz/", PathSet.normalizeFilePathStatic( "////abc/def/xyz/" ) );
         assertEquals( "Normalized path error", "abc/def/xyz/", PathSet.normalizeFilePathStatic( "\\abc/def/xyz/" ) );
         assertEquals( "Normalized path error", "abc/def/xyz/",
@@ -77,21 +78,23 @@ public class PathSetTest
         assertEquals( "Trimed path error", "\\\\\\\\abc/def/xyz",
                       PathSet.trimTrailingSlashes( "\\\\\\\\abc/def/xyz" ) );
     }
-    
+
     /**
      * Test method for 'org.apache.maven.plugin.war.PathSet.testTrimAjdacentSlashes(String)'
      */
-    public void testTrimAjdacentSlashes() 
+    public void testTrimAjdacentSlashes()
     {
-    	  assertEquals( "Trimed adjacent slashes error", "", PathSet.trimAjdacentSlashes( "" ) );
-    	  assertEquals( "Trimed adjacent slashes error", "/a/b/", PathSet.trimAjdacentSlashes("////a//b/") );
-    	  assertEquals( "Trimed adjacent slashes error", "/a/b/c", PathSet.trimAjdacentSlashes("////a//b//c") );
-    	  assertEquals( "Trimed adjacent slashes error", "/a/b/c/d/", PathSet.trimAjdacentSlashes("////a//b//c/d/") );
-    	  assertEquals( "Trimed adjacent slashes error", "/\\/a/b/c/d/", PathSet.trimAjdacentSlashes("//\\//a//b//c/d/" ) );
-    	  assertEquals( "Trimed adjacent slashes error", "/\\/a/b/\\/c/d/", PathSet.trimAjdacentSlashes("//\\//a//b/\\/c/d/") );    	  
+        assertEquals( "Trimed adjacent slashes error", "", PathSet.trimAjdacentSlashes( "" ) );
+        assertEquals( "Trimed adjacent slashes error", "/a/b/", PathSet.trimAjdacentSlashes( "////a//b/" ) );
+        assertEquals( "Trimed adjacent slashes error", "/a/b/c", PathSet.trimAjdacentSlashes( "////a//b//c" ) );
+        assertEquals( "Trimed adjacent slashes error", "/a/b/c/d/", PathSet.trimAjdacentSlashes( "////a//b//c/d/" ) );
+        assertEquals( "Trimed adjacent slashes error", "/\\/a/b/c/d/",
+                      PathSet.trimAjdacentSlashes( "//\\//a//b//c/d/" ) );
+        assertEquals( "Trimed adjacent slashes error", "/\\/a/b/\\/c/d/",
+                      PathSet.trimAjdacentSlashes( "//\\//a//b/\\/c/d/" ) );
     }
 
-    /* -------------- Operations tests ------------------*/
+    /* -------------- Operations tests ------------------ */
 
     /**
      * Test method for:
@@ -128,29 +131,31 @@ public class PathSetTest
         assertEquals( "Unexpected PathSet size", ps.size(), 2 );
 
         int i = 0;
-        for (String p1 : ps) {
+        for ( String p1 : ps )
+        {
             i++;
             String pathstr = p1;
-            assertTrue(ps.contains(pathstr));
-            assertTrue(ps.contains("/" + pathstr));
-            assertTrue(ps.contains("/" + StringUtils.replace(pathstr, '/', '\\')));
-            assertFalse(ps.contains("/" + StringUtils.replace(pathstr, '/', '\\') + "/a"));
-            assertFalse(ps.contains("/a/" + StringUtils.replace(pathstr, '/', '\\')));
+            assertTrue( ps.contains( pathstr ) );
+            assertTrue( ps.contains( "/" + pathstr ) );
+            assertTrue( ps.contains( "/" + StringUtils.replace( pathstr, '/', '\\' ) ) );
+            assertFalse( ps.contains( "/" + StringUtils.replace( pathstr, '/', '\\' ) + "/a" ) );
+            assertFalse( ps.contains( "/a/" + StringUtils.replace( pathstr, '/', '\\' ) ) );
         }
         assertEquals( "Wrong count of iterations", 2, i );
 
         ps.addPrefix( "/ab/c/" );
         i = 0;
-        for (String p : ps) {
+        for ( String p : ps )
+        {
             i++;
             String pathstr = p;
-            assertTrue(pathstr.startsWith("ab/c/"));
-            assertFalse(pathstr.startsWith("ab/c//"));
-            assertTrue(ps.contains(pathstr));
-            assertTrue(ps.contains("/" + pathstr));
-            assertTrue(ps.contains("/" + StringUtils.replace(pathstr, '/', '\\')));
-            assertFalse(ps.contains("/" + StringUtils.replace(pathstr, '/', '\\') + "/a"));
-            assertFalse(ps.contains("/ab/" + StringUtils.replace(pathstr, '/', '\\')));
+            assertTrue( pathstr.startsWith( "ab/c/" ) );
+            assertFalse( pathstr.startsWith( "ab/c//" ) );
+            assertTrue( ps.contains( pathstr ) );
+            assertTrue( ps.contains( "/" + pathstr ) );
+            assertTrue( ps.contains( "/" + StringUtils.replace( pathstr, '/', '\\' ) ) );
+            assertFalse( ps.contains( "/" + StringUtils.replace( pathstr, '/', '\\' ) + "/a" ) );
+            assertFalse( ps.contains( "/ab/" + StringUtils.replace( pathstr, '/', '\\' ) ) );
         }
         assertEquals( "Wrong count of iterations", 2, i );
     }
@@ -173,7 +178,7 @@ public class PathSetTest
         s1set.add( "a\\b/c" );
         s1set.add( "//1//2\3a" );
 
-        String[] s2ar = new String[]{"/a/b", "a2/b2/c2", "a2\\b2/c2", "//21//22\23a"};
+        String[] s2ar = new String[] { "/a/b", "a2/b2/c2", "a2\\b2/c2", "//21//22\23a" };
 
         PathSet ps1 = new PathSet( s1set );
         assertEquals( "Unexpected PathSet size", 3, ps1.size() );
@@ -187,18 +192,20 @@ public class PathSetTest
         ps2.addAll( s1set );
         assertEquals( "Unexpected PathSet size", 5, ps2.size() );
 
-        for (String str : ps1) {
-            assertTrue(str, ps2.contains(str));
-            assertTrue(ps2.contains("/" + str));
-            assertTrue(ps1.contains(str));
-            assertTrue(ps1.contains("/" + str));
+        for ( String str : ps1 )
+        {
+            assertTrue( str, ps2.contains( str ) );
+            assertTrue( ps2.contains( "/" + str ) );
+            assertTrue( ps1.contains( str ) );
+            assertTrue( ps1.contains( "/" + str ) );
         }
 
-        for (String str : ps2) {
-            assertTrue(ps1.contains(str));
-            assertTrue(ps1.contains("/" + str));
-            assertTrue(ps2.contains(str));
-            assertTrue(ps2.contains("/" + str));
+        for ( String str : ps2 )
+        {
+            assertTrue( ps1.contains( str ) );
+            assertTrue( ps1.contains( "/" + str ) );
+            assertTrue( ps2.contains( str ) );
+            assertTrue( ps2.contains( "/" + str ) );
         }
 
         ps1.addAll( s2ar, "/pref/" );
@@ -207,18 +214,20 @@ public class PathSetTest
         ps2.addAll( s2ar, "/pref/" );
         assertEquals( "Unexpected PathSet size", 8, ps2.size() );
 
-        for (String str : ps1) {
-            assertTrue(str, ps2.contains(str));
-            assertTrue(ps2.contains("/" + str));
-            assertTrue(ps1.contains(str));
-            assertTrue(ps1.contains("/" + str));
+        for ( String str : ps1 )
+        {
+            assertTrue( str, ps2.contains( str ) );
+            assertTrue( ps2.contains( "/" + str ) );
+            assertTrue( ps1.contains( str ) );
+            assertTrue( ps1.contains( "/" + str ) );
         }
 
-        for (String str : ps2) {
-            assertTrue(ps1.contains(str));
-            assertTrue(ps1.contains("/" + str));
-            assertTrue(ps2.contains(str));
-            assertTrue(ps2.contains("/" + str));
+        for ( String str : ps2 )
+        {
+            assertTrue( ps1.contains( str ) );
+            assertTrue( ps1.contains( "/" + str ) );
+            assertTrue( ps2.contains( str ) );
+            assertTrue( ps2.contains( "/" + str ) );
         }
 
     }
@@ -233,7 +242,7 @@ public class PathSetTest
     {
         PathSet ps = new PathSet();
 
-        /* Preparing directory structure*/
+        /* Preparing directory structure */
         File testDir = new File( "target/testAddAllFilesInDirectory" );
         testDir.mkdirs();
 
@@ -253,16 +262,16 @@ public class PathSetTest
         ps.addAllFilesInDirectory( new File( "target/testAddAllFilesInDirectory" ), "123/" );
         assertEquals( "Unexpected PathSet size", 4, ps.size() );
 
-        /*No changes after adding duplicates*/
+        /* No changes after adding duplicates */
         ps.addAllFilesInDirectory( new File( "target/testAddAllFilesInDirectory" ), "123/" );
         assertEquals( "Unexpected PathSet size", 4, ps.size() );
 
-        /*Cleanup*/
+        /* Cleanup */
 
         f1.delete();
         f2.delete();
 
-        /*No changes after adding a subset of files*/
+        /* No changes after adding a subset of files */
         ps.addAllFilesInDirectory( new File( "target/testAddAllFilesInDirectory" ), "123/" );
         assertEquals( "Unexpected PathSet size", 4, ps.size() );
 
