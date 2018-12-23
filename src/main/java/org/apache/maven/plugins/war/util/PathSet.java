@@ -20,7 +20,6 @@ package org.apache.maven.plugins.war.util;
  */
 
 import org.codehaus.plexus.util.DirectoryScanner;
-import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 import java.util.Collection;
@@ -42,25 +41,31 @@ import java.util.Set;
 public class PathSet
     implements Iterable<String>
 {
-
+    private static final String SEPARATOR = "/";
+    private static final char SEPARATOR_CHAR = SEPARATOR.charAt( 0 );
     /**
      * Set of normalized paths
      */
-    private Set<String> pathsSet = new LinkedHashSet<String>();
+    private Set<String> pathsSet = new LinkedHashSet<>();
 
-    /**
-     * The method normalizes the path.
-     * <ul>
-     * <li>changes directory separator to unix's separator(/)</li>
-     * <li>deletes all trailing slashes</li>
-     * </ul>
-     *
-     * @param path to normalization
-     * @return normalized path
-     */
-    protected String normalizeFilePath( String path )
+    static String normalizeSubPath( String path )
     {
-        return normalizeFilePathStatic( path );
+        if ( path.isEmpty() )
+        {
+            return path;
+        }
+        String cleanPath = path.replaceAll( "[\\\\]+", SEPARATOR )
+                .replaceAll( "[/]+" , SEPARATOR );
+        cleanPath = cleanPath.charAt( 0 ) == SEPARATOR_CHAR ? cleanPath.substring( 1 ) : cleanPath;
+        if ( cleanPath.isEmpty() )
+        {
+            return cleanPath;
+        }
+        if ( cleanPath.charAt( cleanPath.length() - 1 ) == SEPARATOR_CHAR )
+        {
+            return cleanPath.substring( 0, cleanPath.length() - 1 );
+        }
+        return cleanPath;
     }
 
     /*-------------------- Business interface ------------------------------*/
@@ -100,7 +105,7 @@ public class PathSet
      */
     public void add( String path )
     {
-        pathsSet.add( normalizeFilePath( path ) );
+        pathsSet.add( normalizeSubPath( path ) );
     }
 
     /**
@@ -113,7 +118,7 @@ public class PathSet
     {
         for ( String val : paths )
         {
-            add( prefix + val );
+            add( prefix + SEPARATOR +  val );
         }
     }
 
@@ -127,7 +132,7 @@ public class PathSet
     {
         for ( String val : paths )
         {
-            add( prefix + val );
+            add( prefix + SEPARATOR + val );
         }
     }
 
@@ -141,7 +146,7 @@ public class PathSet
     {
         for ( String path : paths )
         {
-            add( prefix + path );
+            add( prefix + SEPARATOR + path );
         }
     }
 
@@ -183,7 +188,7 @@ public class PathSet
      */
     public boolean contains( String path )
     {
-        return pathsSet.contains( normalizeFilePath( path ) );
+        return pathsSet.contains( normalizeSubPath( path ) );
     }
 
     /**
@@ -194,9 +199,7 @@ public class PathSet
      */
     boolean remove( String path )
     {
-        final String normalizedPath = normalizeFilePath( path );
-        return pathsSet.remove( normalizedPath );
-
+        return pathsSet.remove( normalizeSubPath( path ) );
     }
 
     /**
@@ -226,10 +229,10 @@ public class PathSet
      */
     public void addPrefix( String prefix )
     {
-        final Set<String> newSet = new HashSet<String>();
+        final Set<String> newSet = new HashSet<>();
         for ( String path : pathsSet )
         {
-            newSet.add( normalizeFilePath( prefix + path ) );
+            newSet.add( normalizeSubPath( prefix + path ) );
         }
         pathsSet = newSet;
     }
@@ -256,39 +259,6 @@ public class PathSet
         scanner.setBasedir( directory );
         scanner.scan();
         addAll( scanner.getIncludedFiles(), prefix );
-    }
-
-    /*-------------------- Universal static mathods ------------------------*/
-    /**
-     * The method normalizes the path.
-     * 
-     * <ul>
-     * <li>changes directory separator to unix's separator(/)</li>
-     * <li>deletes all trailing slashes</li>
-     * </ul>
-     *
-     * @param path to normalization
-     * @return normalized path
-     */
-    public static String normalizeFilePathStatic( String path )
-    {
-        return trimTrailingSlashes( StringUtils.replace( path, '\\', '/' ) );
-    }
-
-    /**
-     * The method deletes all trailing slashes from the given string
-     *
-     * @param str a string
-     * @return trimed string
-     */
-    public static String trimTrailingSlashes( String str )
-    {
-        int i;
-        for ( i = 0; i < str.length() && str.charAt( i ) == '/'; i++ )
-        {
-            // just calculate i
-        }
-        return str.substring( i );
     }
 
 }

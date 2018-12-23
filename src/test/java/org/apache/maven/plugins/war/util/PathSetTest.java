@@ -26,6 +26,7 @@ import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -37,45 +38,31 @@ public class PathSetTest
     /* --------------- Normalization tests --------------*/
 
     /**
-     * Test method for 'org.apache.maven.plugin.war.PathSet.normalizeFilePathStatic(String)'
+     * Test method for 'org.apache.maven.plugin.war.PathSet.normalizeSubPath(String)'
      */
-    public void testNormalizeFilePathStatic()
+    public void testNormalizeSubPath()
     {
-        assertEquals( "Normalized path error", "", PathSet.normalizeFilePathStatic( "" ) );
-        assertEquals( "Normalized path error", "", PathSet.normalizeFilePathStatic( "/" ) );
-        assertEquals( "Normalized path error", "", PathSet.normalizeFilePathStatic( "////" ) );
-        assertEquals( "Normalized path error", "", PathSet.normalizeFilePathStatic( "\\" ) );
-        assertEquals( "Normalized path error", "", PathSet.normalizeFilePathStatic( "\\\\\\\\" ) );
+        assertEquals( "Normalized path error", "", PathSet.normalizeSubPath( "" ) );
+        assertEquals( "Normalized path error", "", PathSet.normalizeSubPath( "/" ) );
+        assertEquals( "Normalized path error", "", PathSet.normalizeSubPath( "////" ) );
+        assertEquals( "Normalized path error", "", PathSet.normalizeSubPath( "\\" ) );
+        assertEquals( "Normalized path error", "", PathSet.normalizeSubPath( "\\\\\\\\" ) );
 
-        assertEquals( "Normalized path error", "abc", PathSet.normalizeFilePathStatic( "abc" ) );
-        assertEquals( "Normalized path error", "abc", PathSet.normalizeFilePathStatic( "/abc" ) );
-        assertEquals( "Normalized path error", "abc", PathSet.normalizeFilePathStatic( "////abc" ) );
-        assertEquals( "Normalized path error", "abc", PathSet.normalizeFilePathStatic( "\\abc" ) );
-        assertEquals( "Normalized path error", "abc", PathSet.normalizeFilePathStatic( "\\\\\\\\abc" ) );
+        assertEquals( "Normalized path error", "abc", PathSet.normalizeSubPath( "abc" ) );
+        assertEquals( "Normalized path error", "abc", PathSet.normalizeSubPath( "/abc" ) );
+        assertEquals( "Normalized path error", "abc", PathSet.normalizeSubPath( "////abc" ) );
+        assertEquals( "Normalized path error", "abc", PathSet.normalizeSubPath( "\\abc" ) );
+        assertEquals( "Normalized path error", "abc", PathSet.normalizeSubPath( "\\\\\\\\abc" ) );
 
-        assertEquals( "Normalized path error", "abc/def/xyz/", PathSet.normalizeFilePathStatic( "abc/def\\xyz\\" ) );
-        assertEquals( "Normalized path error", "abc/def/xyz/", PathSet.normalizeFilePathStatic( "/abc/def/xyz/" ) );
-        assertEquals( "Normalized path error", "abc/def/xyz/", PathSet.normalizeFilePathStatic( "////abc/def/xyz/" ) );
-        assertEquals( "Normalized path error", "abc/def/xyz/", PathSet.normalizeFilePathStatic( "\\abc/def/xyz/" ) );
-        assertEquals( "Normalized path error", "abc/def/xyz/",
-                      PathSet.normalizeFilePathStatic( "\\\\\\\\abc/def/xyz/" ) );
-    }
-
-    /**
-     * Test method for 'org.apache.maven.plugin.war.PathSet.trimTrailingSlashes(String)'
-     */
-    public void testTrimTrailingSlashes()
-    {
-        assertEquals( "Trimed path error", "", PathSet.trimTrailingSlashes( "" ) );
-        assertEquals( "Trimed path error", "", PathSet.trimTrailingSlashes( "/" ) );
-        assertEquals( "Trimed path error", "", PathSet.trimTrailingSlashes( "//" ) );
-        assertEquals( "Trimed path error", "\\", PathSet.trimTrailingSlashes( "\\" ) );
-        assertEquals( "Trimed path error", "abc/def\\xyz\\", PathSet.trimTrailingSlashes( "abc/def\\xyz\\" ) );
-        assertEquals( "Trimed path error", "abc/def/xyz/", PathSet.trimTrailingSlashes( "/abc/def/xyz/" ) );
-        assertEquals( "Trimed path error", "abc/def/xyz/", PathSet.trimTrailingSlashes( "////abc/def/xyz/" ) );
-        assertEquals( "Trimed path error", "\\abc/def/xyz\\", PathSet.trimTrailingSlashes( "\\abc/def/xyz\\" ) );
-        assertEquals( "Trimed path error", "\\\\\\\\abc/def/xyz",
-                      PathSet.trimTrailingSlashes( "\\\\\\\\abc/def/xyz" ) );
+        assertEquals( "Normalized path error", "abc/def/xyz", PathSet.normalizeSubPath( "abc/def\\xyz\\" ) );
+        assertEquals( "Normalized path error", "abc/def/xyz", PathSet.normalizeSubPath( "/abc/def/xyz/" ) );
+        assertEquals( "Normalized path error", "abc/def/xyz", PathSet.normalizeSubPath( "////abc/def/xyz/" ) );
+        assertEquals( "Normalized path error", "abc/def/xyz", PathSet.normalizeSubPath( "\\abc/def/xyz/" ) );
+        assertEquals( "Normalized path error", "abc/def/xyz",
+                PathSet.normalizeSubPath( "\\\\\\\\abc/def/xyz/" ) );
+        // MWAR-371
+        assertEquals( "Normalized path error", "abc/def/ghi",
+                PathSet.normalizeSubPath( "///abc/////def////ghi//" ) );
     }
 
     /* -------------- Operations tests ------------------*/
@@ -115,9 +102,8 @@ public class PathSetTest
         assertEquals( "Unexpected PathSet size", ps.size(), 2 );
 
         int i = 0;
-        for (String p1 : ps) {
+        for (String pathstr : ps) {
             i++;
-            String pathstr = p1;
             assertTrue(ps.contains(pathstr));
             assertTrue(ps.contains("/" + pathstr));
             assertTrue(ps.contains("/" + StringUtils.replace(pathstr, '/', '\\')));
@@ -128,9 +114,8 @@ public class PathSetTest
 
         ps.addPrefix( "/ab/c/" );
         i = 0;
-        for (String p : ps) {
+        for (String pathstr : ps) {
             i++;
-            String pathstr = p;
             assertTrue(pathstr.startsWith("ab/c/"));
             assertFalse(pathstr.startsWith("ab/c//"));
             assertTrue(ps.contains(pathstr));
@@ -208,6 +193,9 @@ public class PathSetTest
             assertTrue(ps2.contains("/" + str));
         }
 
+        PathSet ps3 = new PathSet();
+        ps3.addAll(new String[]{ "a/b/c" }, "d");
+        assertTrue( "Unexpected PathSet path", ps3.contains( "d/a/b/c" ) );
     }
 
     /**
