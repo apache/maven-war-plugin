@@ -23,6 +23,7 @@ import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -46,21 +47,16 @@ public class PathSet
     /**
      * Set of normalized paths
      */
-    private Set<String> pathsSet = new LinkedHashSet<String>();
+    private Set<String> pathsSet = new LinkedHashSet<>();
 
-    /**
-     * The method normalizes the path.
-     * <ul>
-     * <li>changes directory separator to unix's separator(/)</li>
-     * <li>deletes all trailing slashes</li>
-     * </ul>
-     *
-     * @param path to normalization
-     * @return normalized path
-     */
-    protected String normalizeFilePath( String path )
+    static String normalizeSubPath( String path )
     {
-        return normalizeFilePathStatic( path );
+        if ( path.isEmpty() )
+        {
+            return path;
+        }
+        final String cleanPath = Paths.get( StringUtils.replace( path, '\\', '/' ) ).toString();
+        return cleanPath.charAt( 0 ) == '/' ? cleanPath.substring( 1 ) : cleanPath;
     }
 
     /*-------------------- Business interface ------------------------------*/
@@ -100,7 +96,7 @@ public class PathSet
      */
     public void add( String path )
     {
-        pathsSet.add( normalizeFilePath( path ) );
+        pathsSet.add( normalizeSubPath( path ) );
     }
 
     /**
@@ -113,7 +109,7 @@ public class PathSet
     {
         for ( String val : paths )
         {
-            add( prefix + val );
+            add( Paths.get( prefix, val ).toString() );
         }
     }
 
@@ -127,7 +123,7 @@ public class PathSet
     {
         for ( String val : paths )
         {
-            add( prefix + val );
+            add( Paths.get( prefix, val ).toString() );
         }
     }
 
@@ -141,7 +137,7 @@ public class PathSet
     {
         for ( String path : paths )
         {
-            add( prefix + path );
+            add( Paths.get( prefix, path ).toString() );
         }
     }
 
@@ -183,7 +179,7 @@ public class PathSet
      */
     public boolean contains( String path )
     {
-        return pathsSet.contains( normalizeFilePath( path ) );
+        return pathsSet.contains( normalizeSubPath( path ) );
     }
 
     /**
@@ -194,9 +190,7 @@ public class PathSet
      */
     boolean remove( String path )
     {
-        final String normalizedPath = normalizeFilePath( path );
-        return pathsSet.remove( normalizedPath );
-
+        return pathsSet.remove( normalizeSubPath( path ) );
     }
 
     /**
@@ -226,10 +220,10 @@ public class PathSet
      */
     public void addPrefix( String prefix )
     {
-        final Set<String> newSet = new HashSet<String>();
+        final Set<String> newSet = new HashSet<>();
         for ( String path : pathsSet )
         {
-            newSet.add( normalizeFilePath( prefix + path ) );
+            newSet.add( Paths.get(  normalizeSubPath( prefix ), path ).toString() );
         }
         pathsSet = newSet;
     }
@@ -256,39 +250,6 @@ public class PathSet
         scanner.setBasedir( directory );
         scanner.scan();
         addAll( scanner.getIncludedFiles(), prefix );
-    }
-
-    /*-------------------- Universal static mathods ------------------------*/
-    /**
-     * The method normalizes the path.
-     * 
-     * <ul>
-     * <li>changes directory separator to unix's separator(/)</li>
-     * <li>deletes all trailing slashes</li>
-     * </ul>
-     *
-     * @param path to normalization
-     * @return normalized path
-     */
-    public static String normalizeFilePathStatic( String path )
-    {
-        return trimTrailingSlashes( StringUtils.replace( path, '\\', '/' ) );
-    }
-
-    /**
-     * The method deletes all trailing slashes from the given string
-     *
-     * @param str a string
-     * @return trimed string
-     */
-    public static String trimTrailingSlashes( String str )
-    {
-        int i;
-        for ( i = 0; i < str.length() && str.charAt( i ) == '/'; i++ )
-        {
-            // just calculate i
-        }
-        return str.substring( i );
     }
 
 }
