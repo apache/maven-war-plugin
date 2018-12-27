@@ -41,6 +41,7 @@ import java.util.Set;
 public class PathSet
     implements Iterable<String>
 {
+    private static final String SEPARATOR = "/";
     /**
      * Set of normalized paths
      */
@@ -52,14 +53,14 @@ public class PathSet
         {
             return path;
         }
-        String cleanPath = path.replaceAll( "[\\\\]+", File.separator )
-                .replaceAll( "[/]+" , File.separator );
-        cleanPath = cleanPath.charAt( 0 ) == File.separatorChar ? cleanPath.substring( 1 ) : cleanPath;
+        String cleanPath = path.replaceAll( "[\\\\]+", SEPARATOR )
+                .replaceAll( "[/]+" , SEPARATOR );
+        cleanPath = cleanPath.charAt( 0 ) == '/' ? cleanPath.substring( 1 ) : cleanPath;
         if ( cleanPath.isEmpty() )
         {
             return cleanPath;
         }
-        if ( cleanPath.charAt( cleanPath.length() - 1 ) == File.separatorChar )
+        if ( cleanPath.charAt( cleanPath.length() - 1 ) == '/' )
         {
             return cleanPath.substring( 0, cleanPath.length() - 1 );
         }
@@ -116,7 +117,7 @@ public class PathSet
     {
         for ( String val : paths )
         {
-            add( prefix + File.separator +  val );
+            add( prefix + SEPARATOR +  val );
         }
     }
 
@@ -130,7 +131,7 @@ public class PathSet
     {
         for ( String val : paths )
         {
-            add( prefix + File.separator + val );
+            add( prefix + SEPARATOR + val );
         }
     }
 
@@ -144,7 +145,7 @@ public class PathSet
     {
         for ( String path : paths )
         {
-            add( prefix + File.separator + path );
+            add( prefix + SEPARATOR + path );
         }
     }
 
