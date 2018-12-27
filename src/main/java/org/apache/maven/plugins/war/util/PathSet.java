@@ -20,7 +20,6 @@ package org.apache.maven.plugins.war.util;
  */
 
 import org.codehaus.plexus.util.DirectoryScanner;
-import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 import java.util.Collection;
@@ -54,20 +53,18 @@ public class PathSet
         {
             return path;
         }
-        final String[] standardizedPath = StringUtils.replace( path, "\\", SEPARATOR )
-                .split( "[/]+" );
-        if ( standardizedPath.length == 0 )
+        String cleanPath = path.replaceAll( "[\\\\]+", SEPARATOR )
+                .replaceAll( "[/]+" , SEPARATOR );
+        cleanPath = cleanPath.charAt( 0 ) == '/' ? cleanPath.substring( 1 ) : cleanPath;
+        if ( cleanPath.isEmpty() )
         {
-            return "";
+            return cleanPath;
         }
-        final StringBuilder pathBuilder = new StringBuilder();
-        for ( int i = standardizedPath[0].isEmpty() ? 1 : 0; i < standardizedPath.length - 1; i++ )
+        if ( cleanPath.charAt( cleanPath.length() - 1 ) == '/' )
         {
-            pathBuilder.append( standardizedPath[ i ] ).append( SEPARATOR );
+            return cleanPath.substring( 0, cleanPath.length() - 1 );
         }
-        pathBuilder.append( standardizedPath[ standardizedPath.length - 1 ] );
-        final String cleanPath = pathBuilder.toString();
-        return cleanPath.charAt( 0 ) == '/' ? cleanPath.substring( 1 ) : cleanPath;
+        return cleanPath;
     }
 
     /*-------------------- Business interface ------------------------------*/
