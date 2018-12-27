@@ -117,7 +117,7 @@ public class PathSet
     {
         for ( String val : paths )
         {
-            add( prefix +  val );
+            add( prefix + SEPARATOR +  val );
         }
     }
 
@@ -131,7 +131,7 @@ public class PathSet
     {
         for ( String val : paths )
         {
-            add( prefix + val );
+            add( prefix + SEPARATOR + val );
         }
     }
 
@@ -145,7 +145,7 @@ public class PathSet
     {
         for ( String path : paths )
         {
-            add( prefix + path );
+            add( prefix + SEPARATOR + path );
         }
     }
 

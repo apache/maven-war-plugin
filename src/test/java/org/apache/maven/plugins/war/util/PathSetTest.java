@@ -193,6 +193,9 @@ public class PathSetTest
             assertTrue(ps2.contains("/" + str));
         }
 
+        PathSet ps3 = new PathSet();
+        ps3.addAll(new String[]{ "a/b/c" }, "d");
+        assertTrue( "Unexpected PathSet path", ps3.contains( "d/a/b/c" ) );
     }
 
     /**
