@@ -42,6 +42,7 @@ public class PathSet
     implements Iterable<String>
 {
     private static final String SEPARATOR = "/";
+    private static final char SEPARATOR_CHAR = SEPARATOR.charAt(0);
     /**
      * Set of normalized paths
      */
@@ -53,14 +54,33 @@ public class PathSet
         {
             return path;
         }
-        String cleanPath = path.replaceAll( "[\\\\]+", SEPARATOR )
-                .replaceAll( "[/]+" , SEPARATOR );
-        cleanPath = cleanPath.charAt( 0 ) == '/' ? cleanPath.substring( 1 ) : cleanPath;
+        /*String cleanPath = path.replaceAll( "[\\\\]+", SEPARATOR )
+                .replaceAll( "[/]+" , SEPARATOR );*/
+
+        String cleanPath = path.replace( File.separatorChar, SEPARATOR_CHAR );
+        /*
+        This results in the following test errors:
+        [ERROR] Failures:
+        [ERROR]   PathSetTest.testAddAllFilesInDirectory:250
+        [ERROR]   PathSetTest.testNormalizeSubPath:47 Normalized path error expected:<[]> but was:<[//]>
+        [ERROR]   PathSetTest.testPathsSetAddAlls:151 Unexpected PathSet size expected:<3> but was:<4>
+        [ERROR]   PathSetTest.testPathsSetBasic:97 Unexpected PathSet size expected:<3> but was:<2>
+         */
+        //String cleanPath = path.replaceAll( "[" + File.separator + "]+", SEPARATOR );
+        /*
+        This results in the following test errors:
+        [ERROR] Failures:
+        [ERROR]   PathSetTest.testAddAllFilesInDirectory:252
+        [ERROR]   PathSetTest.testNormalizeSubPath:48 Normalized path error expected:<[]> but was:<[\]>
+        [ERROR]   PathSetTest.testPathsSetAddAlls:151 Unexpected PathSet size expected:<3> but was:<4>
+        [ERROR]   PathSetTest.testPathsSetBasic:99 Unexpected PathSet size expected:<3> but was:<2>
+         */
+        cleanPath = cleanPath.charAt( 0 ) == SEPARATOR_CHAR ? cleanPath.substring( 1 ) : cleanPath;
         if ( cleanPath.isEmpty() )
         {
             return cleanPath;
         }
-        if ( cleanPath.charAt( cleanPath.length() - 1 ) == '/' )
+        if ( cleanPath.charAt( cleanPath.length() - 1 ) == SEPARATOR_CHAR )
         {
             return cleanPath.substring( 0, cleanPath.length() - 1 );
         }
