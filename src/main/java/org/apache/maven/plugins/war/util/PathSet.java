@@ -23,7 +23,6 @@ import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -43,7 +42,7 @@ import java.util.Set;
 public class PathSet
     implements Iterable<String>
 {
-
+    private static final String SEPARATOR = "/";
     /**
      * Set of normalized paths
      */
@@ -55,7 +54,19 @@ public class PathSet
         {
             return path;
         }
-        final String cleanPath = Paths.get( StringUtils.replace( path, '\\', '/' ) ).toString();
+        final String[] standardizedPath = StringUtils.replace( path, "\\", SEPARATOR )
+                .split( "[/]+" );
+        if ( standardizedPath.length == 0 )
+        {
+            return "";
+        }
+        final StringBuilder pathBuilder = new StringBuilder();
+        for ( int i = standardizedPath[0].isEmpty() ? 1 : 0; i < standardizedPath.length - 1; i++ )
+        {
+            pathBuilder.append( standardizedPath[ i ] ).append( SEPARATOR );
+        }
+        pathBuilder.append( standardizedPath[ standardizedPath.length - 1 ] );
+        final String cleanPath = pathBuilder.toString();
         return cleanPath.charAt( 0 ) == '/' ? cleanPath.substring( 1 ) : cleanPath;
     }
 
@@ -109,7 +120,7 @@ public class PathSet
     {
         for ( String val : paths )
         {
-            add( Paths.get( prefix, val ).toString() );
+            add( prefix +  val );
         }
     }
 
@@ -123,7 +134,7 @@ public class PathSet
     {
         for ( String val : paths )
         {
-            add( Paths.get( prefix, val ).toString() );
+            add( prefix + val );
         }
     }
 
@@ -137,7 +148,7 @@ public class PathSet
     {
         for ( String path : paths )
         {
-            add( Paths.get( prefix, path ).toString() );
+            add( prefix + path );
         }
     }
 
@@ -223,7 +234,7 @@ public class PathSet
         final Set<String> newSet = new HashSet<>();
         for ( String path : pathsSet )
         {
-            newSet.add( Paths.get(  normalizeSubPath( prefix ), path ).toString() );
+            newSet.add( normalizeSubPath( prefix + path ) );
         }
         pathsSet = newSet;
     }
