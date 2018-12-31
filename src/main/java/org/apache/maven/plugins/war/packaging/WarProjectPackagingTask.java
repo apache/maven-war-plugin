@@ -107,7 +107,7 @@ public class WarProjectPackagingTask
         }
         context.getLog().debug( "-- end of dump --" );
 
-        handleDeploymentDescriptors( context, webinfDir, metainfDir );
+        handleDeploymentDescriptors( context, webinfDir, metainfDir, context.isFailOnMissingWebXml() );
 
         handleClassesDirectory( context );
 
@@ -221,17 +221,20 @@ public class WarProjectPackagingTask
      * @param context the packaging context
      * @param webinfDir the web-inf directory
      * @param metainfDir the meta-inf directory
-     * @throws MojoFailureException if the web.xml is specified but does not exist
+     * @param failOnMissingWebXml if build should fail if web.xml is not found
+     * @throws MojoFailureException if the web.xml is specified but does not exist and failOnMissingWebXml is true
      * @throws MojoExecutionException if an error occurred while copying the descriptors
      */
-    protected void handleDeploymentDescriptors( WarPackagingContext context, File webinfDir, File metainfDir )
+    protected void handleDeploymentDescriptors( WarPackagingContext context, File webinfDir, File metainfDir,
+                                                Boolean failOnMissingWebXml )
         throws MojoFailureException, MojoExecutionException
     {
         try
         {
             if ( webXml != null && StringUtils.isNotEmpty( webXml.getName() ) )
             {
-                if ( !webXml.exists() )
+                if ( !webXml.exists()
+                        && ( failOnMissingWebXml == null || Boolean.TRUE.equals( failOnMissingWebXml ) ) )
                 {
                     throw new MojoFailureException( "The specified web.xml file '" + webXml + "' does not exist" );
                 }
@@ -283,7 +286,10 @@ public class WarProjectPackagingTask
         }
         catch ( IOException e )
         {
-            throw new MojoExecutionException( "Failed to copy deployment descriptor", e );
+            if ( failOnMissingWebXml == null || Boolean.TRUE.equals( failOnMissingWebXml ) )
+            {
+                throw new MojoExecutionException( "Failed to copy deployment descriptor", e );
+            }
         }
         catch ( MavenFilteringException e )
         {

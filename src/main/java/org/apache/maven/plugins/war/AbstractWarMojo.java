@@ -70,6 +70,18 @@ public abstract class AbstractWarMojo
     private static final String META_INF = "META-INF";
 
     private static final String WEB_INF = "WEB-INF";
+    /**
+     * Whether or not to fail the build if the <code>web.xml</code> file is missing. Set to <code>false</code> if you
+     * want your WAR built without a <code>web.xml</code> file. This may be useful if you are building an overlay that
+     * has no web.xml file.
+     * <p>
+     * Starting with <b>3.1.0</b>, this property defaults to <code>false</code> if the project depends on the Servlet
+     * 3.0 API or newer.
+     *
+     * @since 2.1-alpha-2
+     */
+    @Parameter
+    protected Boolean failOnMissingWebXml;
 
     /**
      * The Maven project.
@@ -520,7 +532,7 @@ public abstract class AbstractWarMojo
         final WarPackagingContext context =
             new DefaultWarPackagingContext( webapplicationDirectory, cache, overlayManager, defaultFilterWrappers,
                                             getNonFilteredFileExtensions(), filteringDeploymentDescriptors,
-                                            this.artifactFactory, resourceEncoding, useJvmChmod );
+                                            this.artifactFactory, resourceEncoding, useJvmChmod, failOnMissingWebXml );
         for ( WarPackagingTask warPackagingTask : packagingTasks )
         {
             warPackagingTask.performPackaging( context );
@@ -615,6 +627,8 @@ public abstract class AbstractWarMojo
 
         private boolean useJvmChmod = true;
 
+        private final Boolean failOnMissingWebXml;
+
         /**
          * @param webappDirectory The web application directory.
          * @param webappStructure The web app structure.
@@ -625,13 +639,15 @@ public abstract class AbstractWarMojo
          * @param artifactFactory The artifact factory.
          * @param resourceEncoding The resource encoding.
          * @param useJvmChmod use Jvm chmod or not.
+         * @param failOnMissingWebXml Flag to check whether we should ignore missing web.xml or not
          */
         DefaultWarPackagingContext( File webappDirectory, final WebappStructure webappStructure,
                                            final OverlayManager overlayManager,
                                            List<FileUtils.FilterWrapper> filterWrappers,
                                            List<String> nonFilteredFileExtensions,
                                            boolean filteringDeploymentDescriptors, ArtifactFactory artifactFactory,
-                                           String resourceEncoding, boolean useJvmChmod )
+                                           String resourceEncoding, boolean useJvmChmod,
+                                           final Boolean failOnMissingWebXml )
         {
             this.webappDirectory = webappDirectory;
             this.webappStructure = webappStructure;
@@ -649,6 +665,7 @@ public abstract class AbstractWarMojo
                 webappStructure.getStructure( overlayId );
             }
             this.useJvmChmod = useJvmChmod;
+            this.failOnMissingWebXml = failOnMissingWebXml;
         }
 
         /**
@@ -849,6 +866,14 @@ public abstract class AbstractWarMojo
         public boolean isUseJvmChmod()
         {
             return useJvmChmod;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public Boolean isFailOnMissingWebXml()
+        {
+            return failOnMissingWebXml;
         }
     }
 
