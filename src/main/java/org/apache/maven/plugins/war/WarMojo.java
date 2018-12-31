@@ -116,19 +116,6 @@ public class WarMojo
     private boolean primaryArtifact;
 
     /**
-     * Whether or not to fail the build if the <code>web.xml</code> file is missing. Set to <code>false</code> if you
-     * want your WAR built without a <code>web.xml</code> file. This may be useful if you are building an overlay that
-     * has no web.xml file.
-     * <p>
-     * Starting with <b>3.1.0</b>, this property defaults to <code>false</code> if the project depends on the Servlet
-     * 3.0 API or newer.
-     *
-     * @since 2.1-alpha-2
-     */
-    @Parameter
-    private Boolean failOnMissingWebXml;
-
-    /**
      * Whether classes (that is the content of the WEB-INF/classes directory) should be attached to the project as an
      * additional artifact.
      * <p>

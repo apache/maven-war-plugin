@@ -216,6 +216,13 @@ public interface WarPackagingContext
     boolean isUseJvmChmod();
 
     /**
+     * Returns the flag that switch on/off the missing web.xml validation
+     *
+     * @return failOnMissingWebXml
+     */
+    Boolean isFailOnMissingWebXml();
+
+    /**
      * Used to keep track of existing resources and all copied files.
      * All others are outdated and should be removed.
      * This prevent calling <code>clean</code> when resources are removed. 
