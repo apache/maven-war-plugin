@@ -291,8 +291,9 @@ public class WarMojo
             }
         }
 
-        if ( this.classifier != null )
+        if ( this.classifier != null && !primaryArtifact )
         {
+            getLog().debug( "Attaching warfile with classifier " + this.classifier +  " as attachment " + warFile );
             projectHelper.attachArtifact( getProject(), "war", this.classifier, warFile );
         }
         else
@@ -300,10 +301,12 @@ public class WarMojo
             Artifact artifact = getProject().getArtifact();
             if ( primaryArtifact )
             {
+                getLog().debug( "Attaching warfile as primary artifact " + warFile );
                 artifact.setFile( warFile );
             }
             else if ( artifact.getFile() == null || artifact.getFile().isDirectory() )
             {
+                getLog().debug( "Attaching warfile as attachment " + warFile );
                 artifact.setFile( warFile );
             }
         }
