@@ -45,12 +45,6 @@ try
 
     Attributes manifest = jar.getManifest().getMainAttributes();
 
-    if ( !manifest.getValue( new Attributes.Name( "Created-By" ) ).startsWith( "Apache Maven" ) )
-    {
-        System.err.println( "Created-By not equals Apache Maven" );
-        return false;
-    }
-
     if ( !"Maven War Manifest Content Test".equals( manifest.get( Attributes.Name.SPECIFICATION_TITLE ) ) )
     {
         System.err.println( "Incorrect '" + Attributes.Name.SPECIFICATION_TITLE.toString() + "' manifest entry: " +
@@ -83,13 +77,6 @@ try
     {
         System.err.println( "Incorrect '" + Attributes.Name.IMPLEMENTATION_VERSION.toString() + "' manifest entry: " +
             manifest.get( Attributes.Name.IMPLEMENTATION_VERSION ) );
-        return false;
-    }
-
-    if ( !"test".equals( manifest.get( Attributes.Name.IMPLEMENTATION_VENDOR_ID ) ) )
-    {
-        System.err.println( "Incorrect '" + Attributes.Name.IMPLEMENTATION_VENDOR_ID.toString() + "' manifest entry: " +
-            manifest.get( Attributes.Name.IMPLEMENTATION_VENDOR_ID ) );
         return false;
     }
 
