@@ -20,6 +20,7 @@ package org.apache.maven.plugins.war.packaging;
  */
 
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.maven.archiver.MavenArchiveConfiguration;
@@ -37,7 +38,6 @@ import org.codehaus.plexus.archiver.manager.ArchiverManager;
  * The packaging context.
  *
  * @author Stephane Nicoll
- * @version $Id$
  */
 public interface WarPackagingContext
 {
@@ -216,4 +216,14 @@ public interface WarPackagingContext
      * @since 2.4
      */
     boolean isUseJvmChmod();
+
+    /**
+     * Used to keep track of existing resources and all copied files.
+     * All others are outdated and should be removed.
+     * This prevent calling <code>clean</code> when resources are removed. 
+     * 
+     * @return the outdated resources
+     * @since 3.2.4
+     */
+    Collection<String> getOutdatedResources();
 }

@@ -36,11 +36,9 @@ import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
 import org.codehaus.plexus.interpolation.InterpolationException;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
 
 /**
  * @author Stephane Nicoll
- * @version $Id$
  */
 public abstract class AbstractWarPackagingTask
     implements WarPackagingTask
@@ -244,6 +242,7 @@ public abstract class AbstractWarPackagingTask
                                         String targetFilename )
         throws IOException, MojoExecutionException
     {
+        context.getOutdatedResources().remove( targetFilename.replace( '/', File.separatorChar ) );
 
         if ( context.getWebappStructure().registerFile( sourceId, targetFilename ) )
         {
@@ -301,7 +300,6 @@ public abstract class AbstractWarPackagingTask
         {
             UnArchiver unArchiver = context.getArchiverManager().getUnArchiver( archiveExt );
             unArchiver.setSourceFile( file );
-            unArchiver.setUseJvmChmod( context.isUseJvmChmod() );
             unArchiver.setDestDirectory( unpackDirectory );
             unArchiver.setOverwrite( true );
             unArchiver.extract();
@@ -337,6 +335,8 @@ public abstract class AbstractWarPackagingTask
                                 boolean onlyIfModified )
         throws IOException
     {
+        context.getOutdatedResources().remove( targetFilename.replace( '/', File.separatorChar ) );
+
         if ( onlyIfModified && destination.lastModified() >= source.lastModified() )
         {
             context.getLog().debug( " * " + targetFilename + " is up to date." );
@@ -385,14 +385,9 @@ public abstract class AbstractWarPackagingTask
     protected String getEncoding( File webXml )
         throws IOException
     {
-        XmlStreamReader xmlReader = new XmlStreamReader( webXml );
-        try
+        try ( XmlStreamReader xmlReader = new XmlStreamReader( webXml ) )
         {
             return xmlReader.getEncoding();
-        }
-        finally
-        {
-            IOUtil.close( xmlReader );
         }
     }
 

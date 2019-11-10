@@ -42,7 +42,6 @@ import org.codehaus.plexus.util.StringUtils;
  * </ul>
  *
  * @author Stephane Nicoll
- * @version $Id$
  */
 public class WarProjectPackagingTask
     extends AbstractWarPackagingTask
@@ -86,8 +85,8 @@ public class WarProjectPackagingTask
     public void performPackaging( WarPackagingContext context )
         throws MojoExecutionException, MojoFailureException
     {
-
         context.getLog().info( "Processing war project" );
+
         // Prepare the INF directories
         File webinfDir = new File( context.getWebappDirectory(), WEB_INF_PATH );
         webinfDir.mkdirs();
@@ -112,6 +111,14 @@ public class WarProjectPackagingTask
         handleClassesDirectory( context );
 
         handleArtifacts( context );
+
+        if ( !context.getWebappDirectory().mkdirs() )
+        {
+            for ( String resource : context.getOutdatedResources() )
+            {
+                new File( context.getWebappDirectory(), resource ).delete();
+            }
+        }
     }
 
     /**

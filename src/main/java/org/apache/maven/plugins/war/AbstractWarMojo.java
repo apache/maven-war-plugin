@@ -21,8 +21,14 @@ package org.apache.maven.plugins.war;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -61,8 +67,6 @@ import org.codehaus.plexus.archiver.manager.ArchiverManager;
 
 /**
  * Contains common jobs for WAR mojos.
- *
- * @version $Id$
  */
 public abstract class AbstractWarMojo
     extends AbstractMojo
@@ -480,7 +484,6 @@ public abstract class AbstractWarMojo
         final OverlayManager overlayManager =
             new OverlayManager( overlays, mavenProject, getDependentWarIncludes(), getDependentWarExcludes(),
                                 currentProjectOverlay );
-        final List<WarPackagingTask> packagingTasks = getPackagingTasks( overlayManager );
         // CHECKSTYLE_ON: LineLength
         List<FileUtils.FilterWrapper> defaultFilterWrappers;
         try
@@ -516,16 +519,19 @@ public abstract class AbstractWarMojo
             getLog().error( "fail to build filering wrappers " + e.getMessage() );
             throw new MojoExecutionException( e.getMessage(), e );
         }
-
+        
         final WarPackagingContext context =
             new DefaultWarPackagingContext( webapplicationDirectory, cache, overlayManager, defaultFilterWrappers,
                                             getNonFilteredFileExtensions(), filteringDeploymentDescriptors,
                                             this.artifactFactory, resourceEncoding, useJvmChmod );
+
+        final List<WarPackagingTask> packagingTasks = getPackagingTasks( overlayManager );
+
         for ( WarPackagingTask warPackagingTask : packagingTasks )
         {
             warPackagingTask.performPackaging( context );
         }
-
+        
         // Post packaging
         final List<WarPostPackagingTask> postPackagingTasks = getPostPackagingTasks();
         for ( WarPostPackagingTask task : postPackagingTasks )
@@ -547,7 +553,7 @@ public abstract class AbstractWarMojo
     private List<WarPackagingTask> getPackagingTasks( OverlayManager overlayManager )
         throws MojoExecutionException
     {
-        final List<WarPackagingTask> packagingTasks = new ArrayList<WarPackagingTask>();
+        final List<WarPackagingTask> packagingTasks = new ArrayList<>();
 
         packagingTasks.add( new CopyUserManifestTask() );
 
@@ -581,7 +587,7 @@ public abstract class AbstractWarMojo
      */
     private List<WarPostPackagingTask> getPostPackagingTasks()
     {
-        final List<WarPostPackagingTask> postPackagingTasks = new ArrayList<WarPostPackagingTask>();
+        final List<WarPostPackagingTask> postPackagingTasks = new ArrayList<>();
         if ( useCache )
         {
             postPackagingTasks.add( new SaveWebappStructurePostPackagingTask( cacheFile ) );
@@ -596,7 +602,6 @@ public abstract class AbstractWarMojo
     private class DefaultWarPackagingContext
         implements WarPackagingContext
     {
-
         private final ArtifactFactory artifactFactory;
 
         private final String resourceEncoding;
@@ -615,6 +620,8 @@ public abstract class AbstractWarMojo
 
         private boolean useJvmChmod = true;
 
+        private final Collection<String> outdatedResources;
+
         /**
          * @param webappDirectory The web application directory.
          * @param webappStructure The web app structure.
@@ -626,7 +633,7 @@ public abstract class AbstractWarMojo
          * @param resourceEncoding The resource encoding.
          * @param useJvmChmod use Jvm chmod or not.
          */
-        DefaultWarPackagingContext( File webappDirectory, final WebappStructure webappStructure,
+        DefaultWarPackagingContext( final File webappDirectory, final WebappStructure webappStructure,
                                            final OverlayManager overlayManager,
                                            List<FileUtils.FilterWrapper> filterWrappers,
                                            List<String> nonFilteredFileExtensions,
@@ -649,206 +656,193 @@ public abstract class AbstractWarMojo
                 webappStructure.getStructure( overlayId );
             }
             this.useJvmChmod = useJvmChmod;
+            
+            if ( !webappDirectory.exists() )
+            {
+                outdatedResources = Collections.emptyList();    
+            }
+            else if ( getWarSourceDirectory().toPath().equals( webappDirectory.toPath() ) )
+            {
+                getLog().info( "Can't detect outdated resources when running inplace goal" ); 
+                outdatedResources = Collections.emptyList();    
+            }
+            else 
+            {
+                outdatedResources = new ArrayList<>();
+                try
+                {
+                    Files.walkFileTree( webappDirectory.toPath(), new SimpleFileVisitor<Path>() 
+                    {
+                        @Override
+                        public FileVisitResult visitFile( Path file, BasicFileAttributes attrs )
+                            throws IOException
+                        {
+                            outdatedResources.add( webappDirectory.toPath().relativize( file ).toString() );
+                            return super.visitFile( file, attrs );
+                        }
+                    } );
+                }
+                catch ( IOException e )
+                {
+                    getLog().warn( "Can't detect outdated resources", e );
+                }
+            }
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public MavenProject getProject()
         {
             return project;
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public File getWebappDirectory()
         {
             return webappDirectory;
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public File getClassesDirectory()
         {
             return classesDirectory;
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public Log getLog()
         {
             return AbstractWarMojo.this.getLog();
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public String getOutputFileNameMapping()
         {
             return outputFileNameMapping;
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public File getWebappSourceDirectory()
         {
             return warSourceDirectory;
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public String[] getWebappSourceIncludes()
         {
             return getIncludes();
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public String[] getWebappSourceExcludes()
         {
             return getExcludes();
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public boolean isWebappSourceIncludeEmptyDirectories()
         {
             return includeEmptyDirectories;
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public boolean archiveClasses()
         {
             return archiveClasses;
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public File getOverlaysWorkDirectory()
         {
             return workDirectory;
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public ArchiverManager getArchiverManager()
         {
             return archiverManager;
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public MavenArchiveConfiguration getArchive()
         {
             return archive;
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public JarArchiver getJarArchiver()
         {
             return jarArchiver;
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public List<String> getFilters()
         {
             return filters;
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public WebappStructure getWebappStructure()
         {
             return webappStructure;
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public List<String> getOwnerIds()
         {
             return overlayManager.getOverlayIds();
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public MavenFileFilter getMavenFileFilter()
         {
             return mavenFileFilter;
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public List<FileUtils.FilterWrapper> getFilterWrappers()
         {
             return filterWrappers;
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public boolean isNonFilteredExtension( String fileName )
         {
             return !mavenResourcesFiltering.filteredFileExtension( fileName, nonFilteredFileExtensions );
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public boolean isFilteringDeploymentDescriptors()
         {
             return filteringDeploymentDescriptors;
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public ArtifactFactory getArtifactFactory()
         {
             return this.artifactFactory;
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public MavenSession getSession()
         {
             return session;
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public String getResourceEncoding()
         {
             return resourceEncoding;
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public boolean isUseJvmChmod()
         {
             return useJvmChmod;
+        }
+
+        @Override
+        public Collection<String> getOutdatedResources()
+        {
+            return outdatedResources;
         }
     }
 
