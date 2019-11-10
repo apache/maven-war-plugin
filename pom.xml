@@ -121,12 +121,6 @@
     </dependency>
 
     <dependency>
-      <groupId>com.thoughtworks.xstream</groupId>
-      <artifactId>xstream</artifactId>
-      <version>1.4.10</version>
-    </dependency>
-
-    <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
       <version>3.2.0</version>
@@ -187,17 +181,6 @@
                 <rules>
                   <enforceBytecodeVersion combine.children="append">
                     <maxJdkVersion>${maven.compiler.target}</maxJdkVersion>
-                    <ignoreClasses>
-                      <!--
-                        ! MWAR-369:
-                        ! Added the following two ignores cause those classes
-                        ! are JDK 8 classes.
-                      -->
-                      <ignoreClass>com.thoughtworks.xstream.converters.reflection.LambdaConverter</ignoreClass>
-                      <ignoreClass>com.thoughtworks.xstream.mapper.LambdaMapper</ignoreClass>
-                      <ignoreClass>com.thoughtworks.xstream.converters.time.*</ignoreClass>
-                      <ignoreClass>com.thoughtworks.xstream.core.util.ISO8601JavaTimeConverter</ignoreClass>
-                    </ignoreClasses>
                   </enforceBytecodeVersion>
                 </rules>
                 <fail>true</fail>

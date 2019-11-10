@@ -68,7 +68,6 @@ public abstract class AbstractWarMojoTest
                                       throws Exception
     {
         setVariableValueToObject( mojo, "filters", filters );
-        setVariableValueToObject( mojo, "useCache", Boolean.FALSE );
         setVariableValueToObject( mojo, "mavenFileFilter", lookup( MavenFileFilter.class.getName() ) );
         setVariableValueToObject( mojo, "useJvmChmod", Boolean.TRUE );
 

@@ -45,15 +45,11 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.war.overlay.OverlayManager;
 import org.apache.maven.plugins.war.packaging.CopyUserManifestTask;
-import org.apache.maven.plugins.war.packaging.DependenciesAnalysisPackagingTask;
 import org.apache.maven.plugins.war.packaging.OverlayPackagingTask;
-import org.apache.maven.plugins.war.packaging.SaveWebappStructurePostPackagingTask;
 import org.apache.maven.plugins.war.packaging.WarPackagingContext;
 import org.apache.maven.plugins.war.packaging.WarPackagingTask;
-import org.apache.maven.plugins.war.packaging.WarPostPackagingTask;
 import org.apache.maven.plugins.war.packaging.WarProjectPackagingTask;
 import org.apache.maven.plugins.war.util.WebappStructure;
-import org.apache.maven.plugins.war.util.WebappStructureSerializer;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.filtering.MavenFileFilter;
 import org.apache.maven.shared.filtering.MavenFilteringException;
@@ -195,23 +191,6 @@ public abstract class AbstractWarMojo
      */
     @Parameter
     private String outputFileNameMapping;
-
-    /**
-     * The file containing the webapp structure cache.
-     *
-     * @since 2.1-alpha-1
-     */
-    @Parameter( defaultValue = "${project.build.directory}/war/work/webapp-cache.xml", required = true )
-    private File cacheFile;
-
-    /**
-     * Whether the cache should be used to save the status of the webapp across multiple runs. Experimental feature so
-     * disabled by default.
-     *
-     * @since 2.1-alpha-1
-     */
-    @Parameter( defaultValue = "false" )
-    private boolean useCache;
 
     /**
      */
@@ -361,8 +340,6 @@ public abstract class AbstractWarMojo
     @Parameter
     private MavenArchiveConfiguration archive = new MavenArchiveConfiguration();
 
-    private final WebappStructureSerializer webappStructureSerialier = new WebappStructureSerializer();
-
     private final Overlay currentProjectOverlay = Overlay.createInstance();
 
     /**
@@ -465,17 +442,7 @@ public abstract class AbstractWarMojo
         throws MojoExecutionException, MojoFailureException, IOException
     {
 
-        WebappStructure cache;
-        if ( useCache && cacheFile.exists() )
-        {
-            // CHECKSTYLE_OFF: LineLength
-            cache = new WebappStructure( mavenProject.getDependencies(), webappStructureSerialier.fromXml( cacheFile ) );
-            // CHECKSTYLE_ON: LineLength
-        }
-        else
-        {
-            cache = new WebappStructure( mavenProject.getDependencies(), null );
-        }
+        WebappStructure structure = new WebappStructure( mavenProject.getDependencies() );
 
         // CHECKSTYLE_OFF: LineLength
         final long startTime = System.currentTimeMillis();
@@ -521,7 +488,7 @@ public abstract class AbstractWarMojo
         }
         
         final WarPackagingContext context =
-            new DefaultWarPackagingContext( webapplicationDirectory, cache, overlayManager, defaultFilterWrappers,
+            new DefaultWarPackagingContext( webapplicationDirectory, structure, overlayManager, defaultFilterWrappers,
                                             getNonFilteredFileExtensions(), filteringDeploymentDescriptors,
                                             this.artifactFactory, resourceEncoding, useJvmChmod );
 
@@ -532,13 +499,7 @@ public abstract class AbstractWarMojo
             warPackagingTask.performPackaging( context );
         }
         
-        // Post packaging
-        final List<WarPostPackagingTask> postPackagingTasks = getPostPackagingTasks();
-        for ( WarPostPackagingTask task : postPackagingTasks )
-        {
-            task.performPostPackaging( context );
-        }
-        getLog().info( "Webapp assembled in [" + ( System.currentTimeMillis() - startTime ) + " msecs]" );
+        getLog().debug( "Webapp assembled in [" + ( System.currentTimeMillis() - startTime ) + " msecs]" );
 
     }
 
@@ -557,12 +518,6 @@ public abstract class AbstractWarMojo
 
         packagingTasks.add( new CopyUserManifestTask() );
 
-        if ( useCache )
-        {
-            packagingTasks.add( new DependenciesAnalysisPackagingTask() );
-
-        }
-
         final List<Overlay> resolvedOverlays = overlayManager.getOverlays();
         for ( Overlay overlay : resolvedOverlays )
         {
@@ -577,23 +532,6 @@ public abstract class AbstractWarMojo
             }
         }
         return packagingTasks;
-    }
-
-    /**
-     * Returns a <tt>List</tt> of the {@link org.apache.maven.plugins.war.packaging.WarPostPackagingTask} instances to
-     * invoke to perform the post-packaging.
-     *
-     * @return the list of post packaging tasks
-     */
-    private List<WarPostPackagingTask> getPostPackagingTasks()
-    {
-        final List<WarPostPackagingTask> postPackagingTasks = new ArrayList<>();
-        if ( useCache )
-        {
-            postPackagingTasks.add( new SaveWebappStructurePostPackagingTask( cacheFile ) );
-        }
-        // TODO add lib scanning to detect duplicates
-        return postPackagingTasks;
     }
 
     /**
@@ -1063,22 +1001,6 @@ public abstract class AbstractWarMojo
     }
 
     /**
-     * @return {@link #cacheFile}
-     */
-    public File getCacheFile()
-    {
-        return cacheFile;
-    }
-
-    /**
-     * @param cacheFile {@link #cacheFile}
-     */
-    public void setCacheFile( File cacheFile )
-    {
-        this.cacheFile = cacheFile;
-    }
-
-    /**
      * @return {@link #warSourceIncludes}
      */
     public String getWarSourceIncludes()
@@ -1108,22 +1030,6 @@ public abstract class AbstractWarMojo
     public void setWarSourceExcludes( String warSourceExcludes )
     {
         this.warSourceExcludes = warSourceExcludes;
-    }
-
-    /**
-     * @return {@link #useCache}
-     */
-    public boolean isUseCache()
-    {
-        return useCache;
-    }
-
-    /**
-     * @param useCache {@link #useCache}
-     */
-    public void setUseCache( boolean useCache )
-    {
-        this.useCache = useCache;
     }
 
     /**

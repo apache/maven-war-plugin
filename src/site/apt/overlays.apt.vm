@@ -347,24 +347,6 @@ documentedprojectdependency-1.0-SNAPSHOT.war
        </plugin>
     </plugins>
     ...
-+-----------------+
-
-  * <<useCache>> - set to <<<true>>> to enable the webapp structure cache. Default value is: <<<false>>>.
-
-+-----------------+
-    ...
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-war-plugin</artifactId>
-        <version>${project.version}</version>
-        <configuration>
-          <useCache>true</useCache>
-        </configuration>
-       </plugin>
-    </plugins>
-    ...
-+-----------------+
 
 * Zip dependencies with overlays
 

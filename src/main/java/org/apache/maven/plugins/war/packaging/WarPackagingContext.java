@@ -154,9 +154,7 @@ public interface WarPackagingContext
     WebappStructure getWebappStructure();
 
     /**
-     * Returns the list of registered overlays for this session. This list might differ from the one returned by the
-     * cache; in this case, it means that the project's configuration has changed. The plugin will handle those cases
-     * nicely but it would be better in general to invoke the clean goal.
+     * Returns the list of registered overlays for this session.
      *
      * @return the list of registered overlays, including the current project
      */
