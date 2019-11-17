@@ -160,7 +160,7 @@ public abstract class AbstractWarExplodedMojoTest
         assertTrue( "source file not found: " + expectedWebSourceFile.toString(), expectedWebSourceFile.exists() );
         assertTrue( "source file not found: " + expectedWebSource2File.toString(), expectedWebSource2File.exists() );
 
-        final List<File> content = new ArrayList<File>();
+        final List<File> content = new ArrayList<>();
         content.add( expectedWebSourceFile );
         content.add( expectedWebSource2File );
 
@@ -178,7 +178,7 @@ public abstract class AbstractWarExplodedMojoTest
         File expectedWEBXMLFile = new File( webAppDirectory, "WEB-INF/web.xml" );
         assertTrue( "web xml not found: " + expectedWEBXMLFile.toString(), expectedWEBXMLFile.exists() );
 
-        final List<File> content = new ArrayList<File>();
+        final List<File> content = new ArrayList<>();
         content.add( expectedWEBXMLFile );
 
         return content;
@@ -194,7 +194,7 @@ public abstract class AbstractWarExplodedMojoTest
      */
     protected List<File> assertCustomContent( File webAppDirectory, String[] filePaths, String customMessage )
     {
-        final List<File> content = new ArrayList<File>();
+        final List<File> content = new ArrayList<>();
         for ( String filePath : filePaths )
         {
             final File expectedFile = new File( webAppDirectory, filePath );
@@ -220,7 +220,7 @@ public abstract class AbstractWarExplodedMojoTest
      */
     protected void assertWebAppContent( File webAppDirectory, List<File> expectedFiles, FileFilter filter )
     {
-        final List<File> webAppContent = new ArrayList<File>();
+        final List<File> webAppContent = new ArrayList<>();
         if ( filter != null )
         {
             buildFilesList( webAppDirectory, filter, webAppContent );
@@ -245,7 +245,7 @@ public abstract class AbstractWarExplodedMojoTest
      *
      * @param dir the base directory
      * @param filter the filter
-     * @param content the current content, updated recursivly
+     * @param content the current content, updated recursively
      */
     private void buildFilesList( final File dir, FileFilter filter, final List<File> content )
     {
@@ -284,7 +284,7 @@ public abstract class AbstractWarExplodedMojoTest
             }
             else
             {
-                this.rejectedFilePaths = new ArrayList<String>();
+                this.rejectedFilePaths = new ArrayList<>();
             }
             this.webAppDirIndex = webAppDirectory.getAbsolutePath().length() + 1;
         }

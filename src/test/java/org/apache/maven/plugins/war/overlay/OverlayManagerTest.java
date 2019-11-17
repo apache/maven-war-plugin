@@ -24,9 +24,6 @@ import static org.apache.maven.plugins.war.Overlay.DEFAULT_EXCLUDES;
 
 import org.apache.maven.plugin.testing.stubs.ArtifactStub;
 import org.apache.maven.plugins.war.Overlay;
-import org.apache.maven.plugins.war.overlay.DefaultOverlay;
-import org.apache.maven.plugins.war.overlay.InvalidOverlayConfigurationException;
-import org.apache.maven.plugins.war.overlay.OverlayManager;
 import org.apache.maven.plugins.war.stub.MavenProjectArtifactsStub;
 import org.apache.maven.plugins.war.stub.WarArtifactStub;
 import org.codehaus.plexus.PlexusTestCase;
@@ -47,15 +44,15 @@ public class OverlayManagerTest
         throws Exception
     {
         final MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
-        final List<Overlay> overlays = new ArrayList<Overlay>();
+        final List<Overlay> overlays = new ArrayList<>();
         try
         {
-            final Overlay currentProjectOVerlay = Overlay.createInstance();
+            final Overlay currentProjectOverlay = Overlay.createInstance();
             OverlayManager manager = new OverlayManager( overlays, project, DEFAULT_INCLUDES, DEFAULT_EXCLUDES,
-                                                         currentProjectOVerlay );
+                                                         currentProjectOverlay );
             assertNotNull( manager.getOverlays() );
             assertEquals( 1, manager.getOverlays().size() );
-            assertEquals( currentProjectOVerlay, manager.getOverlays().get( 0 ) );
+            assertEquals( currentProjectOverlay, manager.getOverlays().get( 0 ) );
         }
         catch ( InvalidOverlayConfigurationException e )
         {
@@ -72,7 +69,7 @@ public class OverlayManagerTest
         final ArtifactStub first = newWarArtifact( "test", "test-webapp" );
         project.addArtifact( first );
 
-        final List<Overlay> overlays = new ArrayList<Overlay>();
+        final List<Overlay> overlays = new ArrayList<>();
 
         try
         {
@@ -99,7 +96,7 @@ public class OverlayManagerTest
         final ArtifactStub first = newWarArtifact( "test", "test-webapp" );
         project.addArtifact( first );
 
-        final List<Overlay> overlays = new ArrayList<Overlay>();
+        final List<Overlay> overlays = new ArrayList<>();
         overlays.add( new DefaultOverlay( first ) );
 
         try
@@ -119,7 +116,7 @@ public class OverlayManagerTest
         }
     }
 
-    public void testUnknonwnOverlay()
+    public void testUnknownOverlay()
         throws Exception
     {
 
@@ -127,13 +124,13 @@ public class OverlayManagerTest
         final ArtifactStub first = newWarArtifact( "test", "test-webapp" );
         project.addArtifact( first );
 
-        final List<Overlay> overlays = new ArrayList<Overlay>();
+        final List<Overlay> overlays = new ArrayList<>();
         overlays.add( new Overlay( "test", "test-webapp-2" ) );
 
         try
         {
-            final Overlay currentProjectOVerlay = Overlay.createInstance();
-            new OverlayManager( overlays, project, DEFAULT_INCLUDES, DEFAULT_EXCLUDES, currentProjectOVerlay );
+            final Overlay currentProjectOverlay = Overlay.createInstance();
+            new OverlayManager( overlays, project, DEFAULT_INCLUDES, DEFAULT_EXCLUDES, currentProjectOverlay );
             fail( "Should have failed to validate an unknown overlay" );
         }
         catch ( InvalidOverlayConfigurationException e )
@@ -152,7 +149,7 @@ public class OverlayManagerTest
         project.addArtifact( first );
         project.addArtifact( second );
 
-        final List<Overlay> overlays = new ArrayList<Overlay>();
+        final List<Overlay> overlays = new ArrayList<>();
         overlays.add( new DefaultOverlay( first ) );
         final Overlay currentProjectOverlay = Overlay.createInstance();
         overlays.add( currentProjectOverlay );
@@ -186,7 +183,7 @@ public class OverlayManagerTest
         project.addArtifact( first );
         project.addArtifact( second );
 
-        final List<Overlay> overlays = new ArrayList<Overlay>();
+        final List<Overlay> overlays = new ArrayList<>();
         overlays.add( new DefaultOverlay( first ) );
         overlays.add( new DefaultOverlay( second ) );
 

@@ -36,12 +36,12 @@ public class ResourceStub
 
     public List<String> getIncludes()
     {
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
 
     public List<String> getExcludes()
     {
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
 
     public void setDirectory( String _directory )

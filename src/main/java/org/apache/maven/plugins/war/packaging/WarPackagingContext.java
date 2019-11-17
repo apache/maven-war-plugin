@@ -70,9 +70,9 @@ public interface WarPackagingContext
     String[] getWebappSourceIncludes();
 
     /**
-     * Returns {@code true} if empty directories should be includes, othewrwise {@code false}
+     * Returns {@code true} if empty directories should be includes, otherwise {@code false}
      *
-     * @return {@code true} if empty directories should be includes, othewrwise {@code false}
+     * @return {@code true} if empty directories should be includes, otherwise {@code false}
      */
     boolean isWebappSourceIncludeEmptyDirectories();
 

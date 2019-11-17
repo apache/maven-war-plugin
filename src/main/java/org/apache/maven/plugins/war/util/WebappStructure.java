@@ -56,7 +56,7 @@ public class WebappStructure
     public WebappStructure( List<Dependency> dependencies )
     {
         this.dependenciesInfo = createDependenciesInfoList( dependencies );
-        this.registeredFiles = new HashMap<String, PathSet>();
+        this.registeredFiles = new HashMap<>();
     }
 
     /**
@@ -76,7 +76,7 @@ public class WebappStructure
      */
     public List<Dependency> getDependencies()
     {
-        final List<Dependency> result = new ArrayList<Dependency>();
+        final List<Dependency> result = new ArrayList<>();
         if ( dependenciesInfo == null )
         {
             return result;
@@ -294,7 +294,7 @@ public class WebappStructure
         {
             return Collections.emptyList();
         }
-        final List<DependencyInfo> result = new ArrayList<DependencyInfo>();
+        final List<DependencyInfo> result = new ArrayList<>();
         for ( Dependency dependency : dependencies )
         {
             result.add( new DependencyInfo( dependency ) );

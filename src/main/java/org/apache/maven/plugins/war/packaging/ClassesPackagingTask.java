@@ -90,7 +90,7 @@ public class ClassesPackagingTask
 
     /**
      * @param context The warPackingContext.
-     * @throws MojoExecutionException In casae of an error.
+     * @throws MojoExecutionException In case of an error.
      */
     protected void generateJarArchive( WarPackagingContext context )
         throws MojoExecutionException

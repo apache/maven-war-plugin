@@ -36,7 +36,7 @@ public class MavenProjectArtifactsStub
     public MavenProjectArtifactsStub()
         throws Exception
     {
-        artifacts = new TreeSet<Artifact>();
+        artifacts = new TreeSet<>();
     }
 
     public void addArtifact( ArtifactStub stub )
@@ -53,9 +53,9 @@ public class MavenProjectArtifactsStub
     {
         if ( getArtifacts() == null )
         {
-            return new ArrayList<Dependency>();
+            return new ArrayList<>();
         }
-        final List<Dependency> dependencies = new ArrayList<Dependency>();
+        final List<Dependency> dependencies = new ArrayList<>();
         for (Object o : getArtifacts()) {
             Artifact a = (Artifact) o;
             Dependency dependency = new Dependency();
@@ -74,7 +74,7 @@ public class MavenProjectArtifactsStub
 
     public List<String> getRuntimeClasspathElements()
     {
-        List<String> artifacts = new ArrayList<String>();
+        List<String> artifacts = new ArrayList<>();
 
         artifacts.add(
             "src/test/resources/unit/manifest/manifest-with-classpath/sample-artifacts/maven-artifact1-1.0-SNAPSHOT.jar" );

@@ -95,7 +95,7 @@ public class WarProjectPackagingTask
 
         handleWebResources( context );
 
-        handeWebAppSourceDirectory( context );
+        handleWebAppSourceDirectory( context );
 
         // Debug mode: dump the path set for the current build
         PathSet pathSet = context.getWebappStructure().getStructure( "currentBuild" );
@@ -166,7 +166,7 @@ public class WarProjectPackagingTask
      * @param context the packaging context
      * @throws MojoExecutionException if the sources could not be copied
      */
-    protected void handeWebAppSourceDirectory( WarPackagingContext context )
+    protected void handleWebAppSourceDirectory( WarPackagingContext context )
         throws MojoExecutionException
     {
         // CHECKSTYLE_OFF: LineLength
@@ -364,7 +364,7 @@ public class WarProjectPackagingTask
         scanner.setBasedir( resource.getDirectory() );
         if ( resource.getIncludes() != null && !resource.getIncludes().isEmpty() )
         {
-            scanner.setIncludes( (String[]) resource.getIncludes().toArray( new String[resource.getIncludes().size()] ) );
+            scanner.setIncludes( resource.getIncludes().toArray( new String[resource.getIncludes().size()] ) );
         }
         else
         {
@@ -372,7 +372,7 @@ public class WarProjectPackagingTask
         }
         if ( resource.getExcludes() != null && !resource.getExcludes().isEmpty() )
         {
-            scanner.setExcludes( (String[]) resource.getExcludes().toArray( new String[resource.getExcludes().size()] ) );
+            scanner.setExcludes( resource.getExcludes().toArray( new String[resource.getExcludes().size()] ) );
         }
 
         scanner.addDefaultExcludes();

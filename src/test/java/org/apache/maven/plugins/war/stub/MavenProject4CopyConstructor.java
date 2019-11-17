@@ -42,7 +42,7 @@ public class MavenProject4CopyConstructor
 
     public List<Artifact> getAttachedArtifacts()
     {
-        return new LinkedList<Artifact>();
+        return new LinkedList<>();
     }
 
     // to prevent the MavenProject copy constructor from blowing up

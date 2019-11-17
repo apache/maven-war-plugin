@@ -271,7 +271,7 @@ public abstract class AbstractWarMojo
      * @since 2.1-alpha-1
      */
     @Parameter
-    private List<Overlay> overlays = new ArrayList<Overlay>();
+    private List<Overlay> overlays = new ArrayList<>();
 
     /**
      * A list of file extensions that should not be filtered. <b>Will be used when filtering webResources and
@@ -369,7 +369,7 @@ public abstract class AbstractWarMojo
      */
     protected String[] getExcludes()
     {
-        List<String> excludeList = new ArrayList<String>();
+        List<String> excludeList = new ArrayList<>();
         if ( StringUtils.isNotEmpty( warSourceExcludes ) )
         {
             excludeList.addAll( Arrays.asList( StringUtils.split( warSourceExcludes, "," ) ) );
@@ -495,10 +495,10 @@ public abstract class AbstractWarMojo
         }
         catch ( MavenFilteringException e )
         {
-            getLog().error( "fail to build filering wrappers " + e.getMessage() );
+            getLog().error( "fail to build filtering wrappers " + e.getMessage() );
             throw new MojoExecutionException( e.getMessage(), e );
         }
-        
+
         final WarPackagingContext context =
             new DefaultWarPackagingContext( webapplicationDirectory, structure, overlayManager, defaultFilterWrappers,
                                             getNonFilteredFileExtensions(), filteringDeploymentDescriptors,
@@ -510,7 +510,7 @@ public abstract class AbstractWarMojo
         {
             warPackagingTask.performPackaging( context );
         }
-        
+
         getLog().debug( "Webapp assembled in [" + ( System.currentTimeMillis() - startTime ) + " msecs]" );
 
     }
@@ -568,7 +568,7 @@ public abstract class AbstractWarMojo
 
         private boolean filteringDeploymentDescriptors;
 
-        private boolean useJvmChmod = true;
+        private boolean useJvmChmod;
 
         private final Boolean failOnMissingWebXml;
 
@@ -611,22 +611,22 @@ public abstract class AbstractWarMojo
             }
             this.useJvmChmod = useJvmChmod;
             this.failOnMissingWebXml = failOnMissingWebXml;
-            
+
             if ( !webappDirectory.exists() )
             {
-                outdatedResources = Collections.emptyList();    
+                outdatedResources = Collections.emptyList();
             }
             else if ( getWarSourceDirectory().toPath().equals( webappDirectory.toPath() ) )
             {
-                getLog().info( "Can't detect outdated resources when running inplace goal" ); 
-                outdatedResources = Collections.emptyList();    
+                getLog().info( "Can't detect outdated resources when running inplace goal" );
+                outdatedResources = Collections.emptyList();
             }
-            else 
+            else
             {
                 outdatedResources = new ArrayList<>();
                 try
                 {
-                    Files.walkFileTree( webappDirectory.toPath(), new SimpleFileVisitor<Path>() 
+                    Files.walkFileTree( webappDirectory.toPath(), new SimpleFileVisitor<Path>()
                     {
                         @Override
                         public FileVisitResult visitFile( Path file, BasicFileAttributes attrs )

@@ -19,6 +19,8 @@ package org.apache.maven.plugins.war.util;
  * under the License.
  */
 
+import java.util.Objects;
+
 import org.apache.maven.model.Dependency;
 
 /**
@@ -55,7 +57,7 @@ public class DependencyInfo
     }
 
     /**
-     * Returns the target filen ame of the dependency. If no target file name is associated, returns <tt>null</tt>.
+     * Returns the target filename of the dependency. If no target file name is associated, returns <tt>null</tt>.
      *
      * @return the target file name or <tt>null</tt>
      */
@@ -90,12 +92,7 @@ public class DependencyInfo
 
         DependencyInfo that = (DependencyInfo) o;
 
-        if ( dependency != null ? !dependency.equals( that.dependency ) : that.dependency != null )
-        {
-            return false;
-        }
-
-        return true;
+        return Objects.equals( dependency, that.dependency );
     }
 
     /**
