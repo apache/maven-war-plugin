@@ -24,9 +24,6 @@ import static org.apache.maven.plugins.war.Overlay.DEFAULT_EXCLUDES;
 
 import org.apache.maven.plugin.testing.stubs.ArtifactStub;
 import org.apache.maven.plugins.war.Overlay;
-import org.apache.maven.plugins.war.overlay.DefaultOverlay;
-import org.apache.maven.plugins.war.overlay.InvalidOverlayConfigurationException;
-import org.apache.maven.plugins.war.overlay.OverlayManager;
 import org.apache.maven.plugins.war.stub.MavenProjectArtifactsStub;
 import org.apache.maven.plugins.war.stub.WarArtifactStub;
 import org.codehaus.plexus.PlexusTestCase;
@@ -50,12 +47,12 @@ public class OverlayManagerTest
         final List<Overlay> overlays = new ArrayList<>();
         try
         {
-            final Overlay currentProjectOVerlay = Overlay.createInstance();
+            final Overlay currentProjectOverlay = Overlay.createInstance();
             OverlayManager manager = new OverlayManager( overlays, project, DEFAULT_INCLUDES, DEFAULT_EXCLUDES,
-                                                         currentProjectOVerlay );
+                                                         currentProjectOverlay );
             assertNotNull( manager.getOverlays() );
             assertEquals( 1, manager.getOverlays().size() );
-            assertEquals( currentProjectOVerlay, manager.getOverlays().get( 0 ) );
+            assertEquals( currentProjectOverlay, manager.getOverlays().get( 0 ) );
         }
         catch ( InvalidOverlayConfigurationException e )
         {
@@ -119,7 +116,7 @@ public class OverlayManagerTest
         }
     }
 
-    public void testUnknonwnOverlay()
+    public void testUnknownOverlay()
         throws Exception
     {
 
@@ -132,8 +129,8 @@ public class OverlayManagerTest
 
         try
         {
-            final Overlay currentProjectOVerlay = Overlay.createInstance();
-            new OverlayManager( overlays, project, DEFAULT_INCLUDES, DEFAULT_EXCLUDES, currentProjectOVerlay );
+            final Overlay currentProjectOverlay = Overlay.createInstance();
+            new OverlayManager( overlays, project, DEFAULT_INCLUDES, DEFAULT_EXCLUDES, currentProjectOverlay );
             fail( "Should have failed to validate an unknown overlay" );
         }
         catch ( InvalidOverlayConfigurationException e )

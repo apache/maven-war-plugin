@@ -25,7 +25,7 @@ import org.apache.maven.artifact.versioning.VersionRange;
 
 /**
  * stub for copy constructor
- * to preven the copy constructor frow blowing up
+ * to prevent the copy constructor from blowing up
  */
 public class WarArtifact4CCStub
     extends WarArtifactStub

@@ -245,7 +245,7 @@ public abstract class AbstractWarExplodedMojoTest
      *
      * @param dir the base directory
      * @param filter the filter
-     * @param content the current content, updated recursivly
+     * @param content the current content, updated recursively
      */
     private void buildFilesList( final File dir, FileFilter filter, final List<File> content )
     {

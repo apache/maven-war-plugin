@@ -495,7 +495,7 @@ public class WarMojoTest
         throws IOException
     {
         // Sanity check
-        assertEquals( "Could not test, files and filesContent lenght does not match", files.length, filesContent.length );
+        assertEquals( "Could not test, files and filesContent length does not match", files.length, filesContent.length );
 
         assertTrue( "war file not created: " + expectedJarFile.toString(), expectedJarFile.exists() );
         final Map<String, JarEntry> jarContent = new HashMap<>();

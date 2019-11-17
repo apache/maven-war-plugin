@@ -95,7 +95,7 @@ public class WarProjectPackagingTask
 
         handleWebResources( context );
 
-        handeWebAppSourceDirectory( context );
+        handleWebAppSourceDirectory( context );
 
         // Debug mode: dump the path set for the current build
         PathSet pathSet = context.getWebappStructure().getStructure( "currentBuild" );
@@ -166,7 +166,7 @@ public class WarProjectPackagingTask
      * @param context the packaging context
      * @throws MojoExecutionException if the sources could not be copied
      */
-    protected void handeWebAppSourceDirectory( WarPackagingContext context )
+    protected void handleWebAppSourceDirectory( WarPackagingContext context )
         throws MojoExecutionException
     {
         // CHECKSTYLE_OFF: LineLength
