@@ -69,10 +69,8 @@ public abstract class AbstractArtifactStub
     /*
      * TODO: Coppied from org/apache/maven/artifact/DefaultArtifact.java; Consider merging...
      */
-    public int compareTo( Artifact o )
+    public int compareTo( Artifact a )
     {
-        Artifact a = (Artifact) o;
-
         /* -- We need to support groupId=null (it is missing in DefaultArtifact.java) */
         int result;
         if ( a.getGroupId() != null )

@@ -74,19 +74,7 @@ public class ClassesPackager
             archiver.getArchiver().addDirectory( classesDirectory );
             archiver.createArchive( session, project, archiveConfiguration );
         }
-        catch ( ArchiverException e )
-        {
-            throw new MojoExecutionException( "Could not create classes archive", e );
-        }
-        catch ( ManifestException e )
-        {
-            throw new MojoExecutionException( "Could not create classes archive", e );
-        }
-        catch ( IOException e )
-        {
-            throw new MojoExecutionException( "Could not create classes archive", e );
-        }
-        catch ( DependencyResolutionRequiredException e )
+        catch ( ArchiverException | ManifestException | IOException | DependencyResolutionRequiredException e )
         {
             throw new MojoExecutionException( "Could not create classes archive", e );
         }

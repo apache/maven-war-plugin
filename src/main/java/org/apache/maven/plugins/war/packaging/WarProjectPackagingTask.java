@@ -364,7 +364,7 @@ public class WarProjectPackagingTask
         scanner.setBasedir( resource.getDirectory() );
         if ( resource.getIncludes() != null && !resource.getIncludes().isEmpty() )
         {
-            scanner.setIncludes( (String[]) resource.getIncludes().toArray( new String[resource.getIncludes().size()] ) );
+            scanner.setIncludes( resource.getIncludes().toArray( new String[resource.getIncludes().size()] ) );
         }
         else
         {
@@ -372,7 +372,7 @@ public class WarProjectPackagingTask
         }
         if ( resource.getExcludes() != null && !resource.getExcludes().isEmpty() )
         {
-            scanner.setExcludes( (String[]) resource.getExcludes().toArray( new String[resource.getExcludes().size()] ) );
+            scanner.setExcludes( resource.getExcludes().toArray( new String[resource.getExcludes().size()] ) );
         }
 
         scanner.addDefaultExcludes();
