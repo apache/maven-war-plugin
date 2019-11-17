@@ -372,7 +372,7 @@ public class Overlay
 
     private String[] parse( String s )
     {
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<>();
         if ( s == null )
         {
             return result.toArray( new String[result.size()] );

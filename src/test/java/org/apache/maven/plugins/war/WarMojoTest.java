@@ -498,7 +498,7 @@ public class WarMojoTest
         assertEquals( "Could not test, files and filesContent lenght does not match", files.length, filesContent.length );
 
         assertTrue( "war file not created: " + expectedJarFile.toString(), expectedJarFile.exists() );
-        final Map<String, JarEntry> jarContent = new HashMap<String, JarEntry>();
+        final Map<String, JarEntry> jarContent = new HashMap<>();
         final JarFile jarFile = new JarFile( expectedJarFile );
 
         JarEntry entry;

@@ -90,11 +90,11 @@ public class ModelStub
 
     public List<Profile> getProfiles()
     {
-        return new LinkedList<Profile>();
+        return new LinkedList<>();
     }
 
     public List<String> getModules()
     {
-        return new LinkedList<String>();
+        return new LinkedList<>();
     }
 }
