@@ -794,9 +794,7 @@ public abstract class AbstractWarMojo
             return useJvmChmod;
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         public Boolean isFailOnMissingWebXml()
         {
             return failOnMissingWebXml;

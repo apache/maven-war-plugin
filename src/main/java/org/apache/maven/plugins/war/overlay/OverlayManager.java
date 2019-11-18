@@ -35,7 +35,6 @@ import org.codehaus.plexus.util.StringUtils;
  * Manages the overlays.
  *
  * @author Stephane Nicoll
- * @version $Id$
  */
 public class OverlayManager
 {

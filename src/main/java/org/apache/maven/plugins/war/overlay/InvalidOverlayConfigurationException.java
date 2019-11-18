@@ -25,7 +25,6 @@ import org.apache.maven.plugin.MojoExecutionException;
  * Thrown if the overlay configuration is invalid.
  *
  * @author Stephane Nicoll
- * @version $Id$
  */
 public class InvalidOverlayConfigurationException
     extends MojoExecutionException

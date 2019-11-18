@@ -50,7 +50,6 @@ import org.codehaus.plexus.util.StringUtils;
  * Build a WAR file.
  *
  * @author <a href="evenisse@apache.org">Emmanuel Venisse</a>
- * @version $Id$
  */
 // CHECKSTYLE_OFF: LineLength
 @Mojo( name = "war", defaultPhase = LifecyclePhase.PACKAGE, threadSafe = true, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME )
@@ -167,6 +166,7 @@ public class WarMojo
      * @throws MojoExecutionException if an error occurred while building the webapp
      * @throws MojoFailureException if an error.
      */
+    @Override
     public void execute()
         throws MojoExecutionException, MojoFailureException
     {

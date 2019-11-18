@@ -35,7 +35,6 @@ import java.util.Set;
  * converted to unix form (slashes) and they don't start with starting /.
  *
  * @author Piotr Tabor
- * @version $Id$
  */
 
 public class PathSet
@@ -207,6 +206,7 @@ public class PathSet
      *
      * @return iterator of normalized paths (strings)
      */
+    @Override
     public Iterator<String> iterator()
     {
         return pathsSet.iterator();

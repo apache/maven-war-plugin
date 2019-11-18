@@ -33,7 +33,6 @@ import java.util.List;
 
 /**
  * @author Stephane Nicoll
- * @version $Id$
  */
 public class OverlayManagerTest
     extends PlexusTestCase

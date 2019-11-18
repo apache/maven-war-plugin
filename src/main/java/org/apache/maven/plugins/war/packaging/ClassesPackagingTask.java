@@ -38,7 +38,6 @@ import java.io.IOException;
  * <tt>WEB-INF/classes</tt> directory or archived in a jar within the <tt>WEB-INF/lib</tt> directory.
  *
  * @author Stephane Nicoll
- * @version $Id$
  */
 public class ClassesPackagingTask
     extends AbstractWarPackagingTask
@@ -53,9 +52,7 @@ public class ClassesPackagingTask
         this.currentProjectOverlay = currentProjectOverlay;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void performPackaging( WarPackagingContext context )
         throws MojoExecutionException
     {

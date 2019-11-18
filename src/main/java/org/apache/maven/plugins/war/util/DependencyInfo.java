@@ -27,7 +27,6 @@ import org.apache.maven.model.Dependency;
  * Holds a dependency and packaging information.
  *
  * @author Stephane Nicoll
- * @version $Id$
  */
 public class DependencyInfo
 {
@@ -76,9 +75,7 @@ public class DependencyInfo
         this.targetFileName = targetFileName;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public boolean equals( Object o )
     {
         if ( this == o )
@@ -95,9 +92,7 @@ public class DependencyInfo
         return Objects.equals( dependency, that.dependency );
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public int hashCode()
     {
         int result;

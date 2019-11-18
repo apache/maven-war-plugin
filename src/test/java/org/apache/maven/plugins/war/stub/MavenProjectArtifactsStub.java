@@ -56,20 +56,19 @@ public class MavenProjectArtifactsStub
             return new ArrayList<>();
         }
         final List<Dependency> dependencies = new ArrayList<>();
-        for (Object o : getArtifacts()) {
-            Artifact a = (Artifact) o;
+        for ( Artifact a : getArtifacts() )
+        {
             Dependency dependency = new Dependency();
-            dependency.setArtifactId(a.getArtifactId());
-            dependency.setGroupId(a.getGroupId());
-            dependency.setVersion(a.getVersion());
-            dependency.setScope(a.getScope());
-            dependency.setType(a.getType());
-            dependency.setClassifier(a.getClassifier());
-            dependencies.add(dependency);
+            dependency.setArtifactId( a.getArtifactId() );
+            dependency.setGroupId( a.getGroupId() );
+            dependency.setVersion( a.getVersion() );
+            dependency.setScope( a.getScope() );
+            dependency.setType( a.getType() );
+            dependency.setClassifier( a.getClassifier() );
+            dependencies.add( dependency );
 
         }
         return dependencies;
-
     }
 
     public List<String> getRuntimeClasspathElements()

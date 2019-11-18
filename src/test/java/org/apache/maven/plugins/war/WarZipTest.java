@@ -34,7 +34,6 @@ import java.util.LinkedList;
 
 /**
  * @author Olivier Lamy
- * @version $Id$
  * @since 7 Oct 07
  */
 public class WarZipTest

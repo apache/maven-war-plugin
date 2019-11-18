@@ -37,7 +37,6 @@ import java.util.Set;
  * Note that this structure is persisted to disk at each invocation to store which owner holds which path (file).
  *
  * @author Stephane Nicoll
- * @version $Id$
  */
 public class WebappStructure
 {

@@ -27,7 +27,6 @@ import org.apache.maven.artifact.Artifact;
 /**
  * @author Olivier Lamy
  * @since 9 juin 07
- * @version $Id$
  */
 public class MavenZipProject
     extends MavenProject4CopyConstructor

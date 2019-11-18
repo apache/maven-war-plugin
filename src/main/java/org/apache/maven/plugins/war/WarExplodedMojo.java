@@ -28,16 +28,13 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 /**
  * Create an exploded webapp in a specified directory.
  *
- * @version $Id$
  */
 // CHECKSTYLE_OFF: LineLength
 @Mojo( name = "exploded", defaultPhase = LifecyclePhase.PACKAGE, threadSafe = true, requiresDependencyResolution = ResolutionScope.RUNTIME )
 public class WarExplodedMojo
     extends AbstractWarMojo
 {
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void execute()
         throws MojoExecutionException, MojoFailureException
     {

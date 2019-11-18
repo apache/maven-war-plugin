@@ -79,9 +79,7 @@ public class WarProjectPackagingTask
         this.id = currentProjectOverlay.getId();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void performPackaging( WarPackagingContext context )
         throws MojoExecutionException, MojoFailureException
     {

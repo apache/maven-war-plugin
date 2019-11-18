@@ -27,15 +27,12 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 /**
  * Generate the webapp in the WAR source directory.
  *
- * @version $Id$
  */
 @Mojo( name = "inplace", requiresDependencyResolution = ResolutionScope.RUNTIME, threadSafe = true )
 public class WarInPlaceMojo
     extends AbstractWarMojo
 {
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void execute()
         throws MojoExecutionException, MojoFailureException
     {

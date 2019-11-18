@@ -115,6 +115,7 @@ public class WarMojoTest
         setVariableValueToObject( mojo, "warName", warName );
         mojo.setWebXml( new File( xmlSource, "web.xml" ) );
         setVariableValueToObject( mojo, "packagingIncludes", "%regex[(.(?!exile))+]" );
+//        setVariableValueToObject( mojo, "packagingIncludes", "%regex" );
 
         mojo.execute();
 

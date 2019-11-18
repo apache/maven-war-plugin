@@ -32,7 +32,6 @@ import org.codehaus.plexus.util.FileUtils;
 /**
  * @author Olivier Lamy
  * @since 21 juil. 2008
- * @version $Id$
  */
 public class WarExplodedMojoFilteringTest
     extends AbstractWarExplodedMojoTest

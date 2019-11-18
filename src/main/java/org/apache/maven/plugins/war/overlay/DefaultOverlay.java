@@ -26,7 +26,6 @@ import org.apache.maven.plugins.war.Overlay;
  * A default overlay implementation based on an {@link Artifact}.
  *
  * @author Stephane Nicoll
- * @version $Id$
  */
 public class DefaultOverlay
     extends Overlay

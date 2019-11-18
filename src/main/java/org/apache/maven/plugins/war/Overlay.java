@@ -37,7 +37,6 @@ import java.util.List;
  * and no artifactId represents the current project.</p>
  *
  * @author Stephane Nicoll
- * @version $Id$
  */
 public class Overlay
 {
@@ -318,17 +317,13 @@ public class Overlay
         this.type = type;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public String toString()
     {
         return " id " + getId();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public boolean equals( Object o )
     {
         if ( this == o )
@@ -358,9 +353,7 @@ public class Overlay
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public int hashCode()
     {
         int result;

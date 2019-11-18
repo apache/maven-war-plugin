@@ -34,7 +34,6 @@ import org.codehaus.plexus.interpolation.InterpolationException;
  * Handles the artifacts that needs to be packaged in the web application.
  *
  * @author Stephane Nicoll
- * @version $Id$
  */
 public class ArtifactsPackagingTask
     extends AbstractWarPackagingTask
@@ -74,9 +73,7 @@ public class ArtifactsPackagingTask
         this.id = currentProjectOverlay.getId();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void performPackaging( WarPackagingContext context )
         throws MojoExecutionException
     {

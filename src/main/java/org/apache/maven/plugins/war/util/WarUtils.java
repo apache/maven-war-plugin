@@ -19,14 +19,14 @@ package org.apache.maven.plugins.war.util;
  * under the License.
  */
 
+import java.util.Objects;
+
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.util.StringUtils;
 
 /**
  * @author Stephane Nicoll
- * @version $Id$
  */
 public class WarUtils
 {
@@ -38,9 +38,8 @@ public class WarUtils
      */
     public static Artifact getArtifact( MavenProject project, Dependency dependency )
     {
-        for ( Object o : project.getArtifacts() )
+        for ( Artifact artifact : project.getArtifacts() )
         {
-            Artifact artifact = (Artifact) o;
             if ( artifact.getGroupId().equals( dependency.getGroupId() )
                 && artifact.getArtifactId().equals( dependency.getArtifactId() )
                 && artifact.getType().equals( dependency.getType() ) )
@@ -71,31 +70,27 @@ public class WarUtils
             return false;
         }
 
-        if ( !StringUtils.equals( artifact.getGroupId(), dependency.getGroupId() ) )
+        if ( !Objects.equals( artifact.getGroupId(), dependency.getGroupId() ) )
         {
             return false;
         }
-        if ( !StringUtils.equals( artifact.getArtifactId(), dependency.getArtifactId() ) )
+        if ( !Objects.equals( artifact.getArtifactId(), dependency.getArtifactId() ) )
         {
             return false;
         }
-        if ( artifact.getVersion() != null ? !artifact.getVersion().equals( dependency.getVersion() )
-                        : dependency.getVersion() != null )
+        if ( Objects.equals( artifact.getVersion(), dependency.getVersion() ) )
         {
             return false;
         }
-        if ( artifact.getType() != null ? !artifact.getType().equals( dependency.getType() )
-                        : dependency.getType() != null )
+        if ( Objects.equals( artifact.getType(), dependency.getType() ) )
         {
             return false;
         }
-        if ( artifact.getClassifier() != null ? !artifact.getClassifier().equals( dependency.getClassifier() )
-                        : dependency.getClassifier() != null )
+        if ( Objects.equals( artifact.getClassifier(), dependency.getClassifier() ) )
         {
             return false;
         }
-        if ( artifact.getScope() != null ? !artifact.getScope().equals( dependency.getScope() )
-                        : dependency.getScope() != null )
+        if ( Objects.equals( artifact.getScope(), dependency.getScope() ) )
         {
             return false;
         }
@@ -104,61 +99,6 @@ public class WarUtils
             return false;
         }
 
-        return true;
-    }
-
-    /**
-     * @param first {@link Dependency}
-     * @param second {@link Dependency}
-     * @return are the dependencies equal.
-     */
-    public static boolean dependencyEquals( Dependency first, Dependency second )
-    {
-        if ( first == second )
-        {
-            return true;
-        }
-
-        if ( first.isOptional() != second.isOptional() )
-        {
-            return false;
-        }
-        if ( !StringUtils.equals( first.getArtifactId(), second.getArtifactId() ) )
-        {
-            return false;
-        }
-        if ( first.getClassifier() != null ? !first.getClassifier().equals( second.getClassifier() )
-                        : second.getClassifier() != null )
-        {
-            return false;
-        }
-        if ( first.getExclusions() != null ? !first.getExclusions().equals( second.getExclusions() )
-                        : second.getExclusions() != null )
-        {
-            return false;
-        }
-        if ( !StringUtils.equals( first.getGroupId(), second.getGroupId() ) )
-        {
-            return false;
-        }
-        if ( first.getScope() != null ? !first.getScope().equals( second.getScope() ) : second.getScope() != null )
-        {
-            return false;
-        }
-        if ( first.getSystemPath() != null ? !first.getSystemPath().equals( second.getSystemPath() )
-                        : second.getSystemPath() != null )
-        {
-            return false;
-        }
-        if ( first.getType() != null ? !first.getType().equals( second.getType() ) : second.getType() != null )
-        {
-            return false;
-        }
-        if ( first.getVersion() != null ? !first.getVersion().equals( second.getVersion() )
-                        : second.getVersion() != null )
-        {
-            return false;
-        }
         return true;
     }
 

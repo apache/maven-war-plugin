@@ -37,18 +37,9 @@ import java.io.IOException;
  * Packages the content of the classes directory.
  *
  * @author Stephane Nicoll
- * @version $Id$
  */
 public class ClassesPackager
 {
-
-    /**
-     * Creates a new instance.
-     */
-    public ClassesPackager()
-    {
-        super();
-    }
 
     /**
      * Package the classes

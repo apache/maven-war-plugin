@@ -26,7 +26,6 @@ import org.apache.maven.artifact.handler.ArtifactHandler;
 /**
  * @author Olivier Lamy
  * @since 8 juin 07
- * @version $Id$
  */
 public class ZipArtifactStub
     extends AbstractArtifactStub
