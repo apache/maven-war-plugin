@@ -29,8 +29,8 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
  * Create an exploded webapp in a specified directory.
  *
  */
-// CHECKSTYLE_OFF: LineLength
-@Mojo( name = "exploded", defaultPhase = LifecyclePhase.PACKAGE, threadSafe = true, requiresDependencyResolution = ResolutionScope.RUNTIME )
+@Mojo( name = "exploded", defaultPhase = LifecyclePhase.PACKAGE, threadSafe = true,
+                requiresDependencyResolution = ResolutionScope.RUNTIME )
 public class WarExplodedMojo
     extends AbstractWarMojo
 {
@@ -44,4 +44,3 @@ public class WarExplodedMojo
     }
 
 }
-// CHECKSTYLE_ON: LineLength

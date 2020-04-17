@@ -51,9 +51,8 @@ import org.codehaus.plexus.util.StringUtils;
  *
  * @author <a href="evenisse@apache.org">Emmanuel Venisse</a>
  */
-// CHECKSTYLE_OFF: LineLength
-@Mojo( name = "war", defaultPhase = LifecyclePhase.PACKAGE, threadSafe = true, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME )
-// CHECKSTYLE_ON: LineLength
+@Mojo( name = "war", defaultPhase = LifecyclePhase.PACKAGE, threadSafe = true,
+                requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME )
 public class WarMojo
     extends AbstractWarMojo
 {
@@ -156,6 +155,16 @@ public class WarMojo
     @Parameter( property = "maven.war.skip", defaultValue = "false" )
     private boolean skip;
 
+    /**
+     * Timestamp for reproducible output archive entries, either formatted as ISO 8601
+     * <code>yyyy-MM-dd'T'HH:mm:ssXXX</code> or as an int representing seconds since the epoch (like
+     * <a href="https://reproducible-builds.org/docs/source-date-epoch/">SOURCE_DATE_EPOCH</a>).
+     *
+     * @since 3.3.0
+     */
+    @Parameter( defaultValue = "${project.build.outputTimestamp}" )
+    private String outputTimestamp;
+
     // ----------------------------------------------------------------------
     // Implementation
     // ----------------------------------------------------------------------
@@ -216,13 +225,16 @@ public class WarMojo
 
         archiver.setArchiver( warArchiver );
 
+        archiver.setCreatedBy( "Maven WAR Plugin", "org.apache.maven.plugins", "maven-war-plugin" );
+
         archiver.setOutputFile( warFile );
 
-        // CHECKSTYLE_OFF: LineLength
+        // configure for Reproducible Builds based on outputTimestamp value
+        archiver.configureReproducible( outputTimestamp );
+
         getLog().debug( "Excluding " + Arrays.asList( getPackagingExcludes() )
             + " from the generated webapp archive." );
         getLog().debug( "Including " + Arrays.asList( getPackagingIncludes() ) + " in the generated webapp archive." );
-        // CHECKSTYLE_ON: LineLength
 
         warArchiver.addDirectory( getWebappDirectory(), getPackagingIncludes(), getPackagingExcludes() );
 
