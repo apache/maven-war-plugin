@@ -321,6 +321,12 @@ public class WarMojo
             urls[i] = new File( classpathElements.get( i ) ).toURI().toURL();
         }
         ClassLoader loader = new URLClassLoader( urls, Thread.currentThread().getContextClassLoader() );
+
+        return hasWebServletAnnotationClassInClasspath( loader );
+    }
+
+    private static boolean hasWebServletAnnotationClassInClasspath( ClassLoader loader )
+    {
         try
         {
             Class.forName( "javax.servlet.annotation.WebServlet", false, loader );
