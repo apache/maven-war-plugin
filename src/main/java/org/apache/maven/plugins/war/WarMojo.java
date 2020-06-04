@@ -327,9 +327,14 @@ public class WarMojo
 
     private static boolean hasWebServletAnnotationClassInClasspath( ClassLoader loader )
     {
+        return hasClassInClasspath( loader, "javax.servlet.annotation.WebServlet" );
+    }
+
+    private static boolean hasClassInClasspath( ClassLoader loader, String clazz )
+    {
         try
         {
-            Class.forName( "javax.servlet.annotation.WebServlet", false, loader );
+            Class.forName( clazz, false, loader );
             return true;
         }
         catch ( ClassNotFoundException e )
