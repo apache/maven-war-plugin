@@ -341,7 +341,7 @@ public class WarMojo
             Class.forName( clazz, false, loader );
             return true;
         }
-        catch ( ClassNotFoundException e )
+        catch ( UnsupportedClassVersionError | ClassNotFoundException e )
         {
             return false;
         }
