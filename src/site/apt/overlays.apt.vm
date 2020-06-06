@@ -63,6 +63,7 @@ Overlays
  which is declared as a dependency in the project's <<<pom.xml>>>:
 
 +-----------------+
+<project>
   ...
   <dependencies>
     <dependency>
@@ -75,6 +76,7 @@ Overlays
     ...
   </dependencies>
   ...
+</project>
 +-----------------+
 
   The structure for the <<<documentedprojectdependency>>> WAR file looks like this:
@@ -176,6 +178,7 @@ documentedprojectdependency-1.0-SNAPSHOT.war
   <<<documentedprojectdependency>>> <<<war>>> overlay above:
 
 +-----------------+
+<project>
   ...
   <build>
     <plugins>
@@ -198,6 +201,7 @@ documentedprojectdependency-1.0-SNAPSHOT.war
     </plugins>
   </build>
   ...
+</project>
 +-----------------+
 
 
@@ -221,6 +225,7 @@ documentedprojectdependency-1.0-SNAPSHOT.war
 
 
 +-----------------+
+<project>
   ...
   <build>
     <plugins>
@@ -243,6 +248,7 @@ documentedprojectdependency-1.0-SNAPSHOT.war
     </plugins>
   </build>
   ...
+</project>
 +-----------------+
 
   <<Note:>> In the scenario above, any other WAR dependency will be applied after the current build
@@ -254,6 +260,7 @@ documentedprojectdependency-1.0-SNAPSHOT.war
   regular way, define two overlay configurations for <<<my-webapp>>>:
 
 +-----------------+
+<project>
   ...
   <build>
     <plugins>
@@ -288,6 +295,7 @@ documentedprojectdependency-1.0-SNAPSHOT.war
     </plugins>
   </build>
   ...
+</project>
 +-----------------+
 
 
@@ -299,6 +307,7 @@ documentedprojectdependency-1.0-SNAPSHOT.war
     has no specific <<<includes>>> element will inherit this setting by default.
 
 +-----------------+
+<project>
     ...
     <plugins>
       <plugin>
@@ -311,12 +320,14 @@ documentedprojectdependency-1.0-SNAPSHOT.war
        </plugin>
     </plugins>
     ...
+</project>
 +-----------------+
 
    * <<dependentWarExcludes>> - sets the default excludes to apply to all overlays. Any overlay that
     has no specific <<<excludes>>> element will inherit this setting by default.
 
 +-----------------+
+<project>
     ...
     <plugins>
       <plugin>
@@ -329,11 +340,13 @@ documentedprojectdependency-1.0-SNAPSHOT.war
        </plugin>
     </plugins>
     ...
+</project>
 +-----------------+
 
    * <<workDirectory>> - sets the directory where overlays will be temporarily extracted.
 
 +-----------------+
+<project>
     ...
     <plugins>
       <plugin>
@@ -347,6 +360,8 @@ documentedprojectdependency-1.0-SNAPSHOT.war
        </plugin>
     </plugins>
     ...
+</project>
++-----------------+
 
 * Zip dependencies with overlays
 
@@ -354,6 +369,7 @@ documentedprojectdependency-1.0-SNAPSHOT.war
   instance to inject the content of a zip overlay in the <<<scripts>>> directory of the webapp, do as follows:
 
 +-----------------+
+<project>
     ...
     <plugins>
       <plugin>
@@ -373,4 +389,5 @@ documentedprojectdependency-1.0-SNAPSHOT.war
       </plugin>
     </plugins>
     ...
+</project>
 +-----------------+

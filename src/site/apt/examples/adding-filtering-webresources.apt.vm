@@ -91,7 +91,7 @@ Adding and Filtering External Web Resources
 
  would end up in the WAR as:
 
-+----------+
+----------
 documentedproject-1.0-SNAPSHOT.war
  |-- META-INF
  |   |-- MANIFEST.MF
@@ -115,7 +115,7 @@ documentedproject-1.0-SNAPSHOT.war
  |-- index.jsp
  `-- jsp
      `-- websource.jsp
-+----------+
+----------
 
  <<<external-resource2.jpg>>> and <<<image2>>> are copied to the root of the WAR, preserving the
  directory structure.

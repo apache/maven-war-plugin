@@ -66,9 +66,9 @@ Rapid Testing Using the Jetty Plugin
 
  Then start Jetty:
 
-+-----------------+
+-----------------
   mvn jetty:run
-+-----------------+
+-----------------
 
  The command will block with Jetty listening on port 8080.
 
