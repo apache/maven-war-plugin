@@ -301,13 +301,16 @@ public class WarMojo
     }
 
     /**
-     * Determines if the current Maven project being built uses the Servlet 3.0 API (JSR 315). If it does then the
-     * <code>web.xml</code> file can be omitted.
+     * Determines if the current Maven project being built uses the Servlet 3.0 API (JSR 315)
+     * or Jakarta Servlet API.
+     * If it does then the <code>web.xml</code> file can be omitted.
      * <p>
-     * This is done by checking if the interface <code>javax.servlet.annotation.WebServlet</code> is in the compile-time
+     * This is done by checking if the interface <code>javax.servlet.annotation.WebServlet</code>
+     * or <code>jakarta.servlet.annotation.WebServlet</code> is in the compile-time
      * dependencies (which includes provided dependencies) of the Maven project.
      *
-     * @return <code>true</code> if the project being built depends on Servlet 3.0 API, <code>false</code> otherwise.
+     * @return <code>true</code> if the project being built depends on Servlet 3.0 API or Jakarta Servlet API,
+     *         <code>false</code> otherwise.
      * @throws DependencyResolutionRequiredException if the compile elements can't be resolved.
      * @throws MalformedURLException if the path to a dependency file can't be transformed to a URL.
      */
@@ -321,9 +324,21 @@ public class WarMojo
             urls[i] = new File( classpathElements.get( i ) ).toURI().toURL();
         }
         ClassLoader loader = new URLClassLoader( urls, Thread.currentThread().getContextClassLoader() );
+
+        return hasWebServletAnnotationClassInClasspath( loader );
+    }
+
+    private static boolean hasWebServletAnnotationClassInClasspath( ClassLoader loader )
+    {
+        return hasClassInClasspath( loader, "javax.servlet.annotation.WebServlet" )
+                || hasClassInClasspath( loader, "jakarta.servlet.annotation.WebServlet" );
+    }
+
+    private static boolean hasClassInClasspath( ClassLoader loader, String clazz )
+    {
         try
         {
-            Class.forName( "javax.servlet.annotation.WebServlet", false, loader );
+            Class.forName( clazz, false, loader );
             return true;
         }
         catch ( ClassNotFoundException e )
