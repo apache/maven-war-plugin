@@ -23,13 +23,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
 import org.apache.maven.plugins.war.Overlay;
 import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Manages the overlays.
@@ -222,12 +222,12 @@ public class OverlayManager
      */
     private boolean compareOverlayWithArtifact( Overlay overlay, Artifact artifact )
     {
-        return ( StringUtils.equals( overlay.getGroupId(), artifact.getGroupId() )
-            && StringUtils.equals( overlay.getArtifactId(), artifact.getArtifactId() )
-            && StringUtils.equals( overlay.getType(), artifact.getType() )
+        return ( Objects.equals( overlay.getGroupId(), artifact.getGroupId() )
+            && Objects.equals( overlay.getArtifactId(), artifact.getArtifactId() )
+            && Objects.equals( overlay.getType(), artifact.getType() )
         // MWAR-241 Make sure to treat null and "" as equal when comparing the classifier
-        && StringUtils.equals( StringUtils.defaultString( overlay.getClassifier() ),
-                               StringUtils.defaultString( artifact.getClassifier() ) ) );
+        && Objects.equals( Objects.toString( overlay.getClassifier() ),
+                           Objects.toString( artifact.getClassifier() ) ) );
     }
 
     /**

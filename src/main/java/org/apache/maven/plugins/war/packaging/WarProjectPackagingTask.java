@@ -21,6 +21,7 @@ package org.apache.maven.plugins.war.packaging;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -332,8 +333,8 @@ public class WarProjectPackagingTask
                 // MWAR-129 if targetPath is only a dot <targetPath>.</targetPath> or ./
                 // and the Resource is in a part of the warSourceDirectory the file from sources will override this
                 // that's we don't have to add the targetPath yep not nice but works
-                if ( !StringUtils.equals( ".", resource.getTargetPath() )
-                    && !StringUtils.equals( "./", resource.getTargetPath() ) )
+                if ( !Objects.equals( ".", resource.getTargetPath() )
+                    && !Objects.equals( "./", resource.getTargetPath() ) )
                 {
                     targetFileName = resource.getTargetPath() + File.separator + targetFileName;
                 }
