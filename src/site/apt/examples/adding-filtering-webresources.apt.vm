@@ -64,7 +64,7 @@ Adding and Filtering External Web Resources
 
  Using our sample project in the {{{../usage.html}usage section}} with an added external resource, like this:
 
-+----------+
+----------
  .
  |-- pom.xml
  |-- resource2
@@ -87,7 +87,7 @@ Adding and Filtering External Web Resources
              |-- index.jsp
              `-- jsp
                  `-- websource.jsp
-+----------+
+----------
 
  would end up in the WAR as:
 
@@ -228,7 +228,7 @@ documentedproject-1.0-SNAPSHOT.war
   Using our example above, we can also configure filters for our resources.
   We will add a hypothetical <<<configurations>>> directory to our project:
 
-+----------+
+----------
  .
  |-- configurations
  |   |-- config.cfg
@@ -255,7 +255,7 @@ documentedproject-1.0-SNAPSHOT.war
              |-- index.jsp
              `-- jsp
                  `-- websource.jsp
-+----------+
+----------
 
   To prevent corrupting your binary files when filtering is enabled, you can configure a list of file extensions that
   will not be filtered.
@@ -307,7 +307,7 @@ interpolated_property=some_config_value
 
  The resulting WAR would be:
 
-+----------+
+----------
 documentedproject-1.0-SNAPSHOT.war
  |-- META-INF
  |   |-- MANIFEST.MF
@@ -332,7 +332,7 @@ documentedproject-1.0-SNAPSHOT.war
  |-- index.jsp
  `-- jsp
      `-- websource.jsp
-+----------+
+----------
 
  and the content of <<<config.cfg>>> would be:
 
@@ -379,7 +379,7 @@ documentedproject-1.0-SNAPSHOT.war
 
  Using the sample project the resulting WAR would look like this:
 
-+----------+
+----------
 documentedproject-1.0-SNAPSHOT.war
  |-- META-INF
  |   |-- MANIFEST.MF
@@ -404,4 +404,4 @@ documentedproject-1.0-SNAPSHOT.war
  |-- index.jsp
  `-- jsp
      `-- websource.jsp
-+----------+
+----------

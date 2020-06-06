@@ -80,7 +80,7 @@ ${project.name}
   Of course, patches are welcome, too. Contributors can check out the project from 
   our {{{./scm.html}source repository}} and will find supplementary 
   information in the
-  {{{http://maven.apache.org/guides/development/guide-helping.html}guide to helping with Maven}}.
+  {{{/guides/development/guide-helping.html}guide to helping with Maven}}.
 
 * Examples
 
@@ -103,6 +103,6 @@ ${project.name}
 
 * Related links
 
-  * {{{http://maven.apache.org/guides/mini/guide-archive-configuration.html}Exclusion of Maven Descriptors}}
+  * {{{/guides/mini/guide-archive-configuration.html}Exclusion of Maven Descriptors}}
 
   []

@@ -91,7 +91,7 @@ Creating Skinny WARs
 
  Your EAR will contain something like this:
 
-+-----------------+
+-----------------
  .
  |-- META-INF
  |   `-- application.xml
@@ -99,7 +99,7 @@ Creating Skinny WARs
  |   `-- shared-jar-1.0.0.jar
  |-- war1-1.0.0.war
  `-- war2-1.0.0.war
-+-----------------+
+-----------------
 
 
 * Alternatives

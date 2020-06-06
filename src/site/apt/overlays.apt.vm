@@ -38,7 +38,7 @@ Overlays
 
   To demonstrate, given this structure for the project <<<documentedproject>>>:
 
-+-----------------+
+-----------------
  |-- pom.xml
  `-- src
      `-- main
@@ -57,7 +57,7 @@ Overlays
              |-- index.jsp
              `-- jsp
                  `-- websource.jsp
-+-----------------+
+-----------------
 
  The project depends on another WAR artifact, <<<documentedprojectdependency-1.0-SNAPSHOT.war>>>,
  which is declared as a dependency in the project's <<<pom.xml>>>:
@@ -79,7 +79,7 @@ Overlays
 
   The structure for the <<<documentedprojectdependency>>> WAR file looks like this:
 
-+-----------------+
+-----------------
 documentedprojectdependency-1.0-SNAPSHOT.war
  |-- META-INF
  |   |-- MANIFEST.MF
@@ -98,11 +98,11 @@ documentedprojectdependency-1.0-SNAPSHOT.war
  |   |       `-- sampleimage-dependency.jpg
  |   `-- web.xml
  `-- index-dependency.jsp
-+-----------------+
+-----------------
 
  The resulting WAR would end up like this:
 
-+-----------------+
+-----------------
  |-- META-INF
  |   |-- MANIFEST.MF
  |   `-- maven
@@ -125,7 +125,7 @@ documentedprojectdependency-1.0-SNAPSHOT.war
  |-- index.jsp
  `-- jsp
      `-- websource.jsp
-+-----------------+
+-----------------
 
   The <<<web.xml>>> file above comes from <<<documentedproject>>>.
 

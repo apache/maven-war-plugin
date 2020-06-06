@@ -70,7 +70,7 @@ Usage
 
  The project's structure looks like this:
 
-+----------+
+----------
  |-- pom.xml
  `-- src
      `-- main
@@ -88,23 +88,23 @@ Usage
              |-- index.jsp
              `-- jsp
                  `-- websource.jsp
-+----------+
+----------
 
  Invoking
 
-+----------+
+----------
 mvn package
-+----------+
+----------
 
  or
 
-+----------+
+----------
 mvn compile war:war
-+----------+
+----------
 
  will generate the WAR file <<<target/documentedproject-1.0-SNAPSHOT.war>>>. Here are the contents of that WAR file:
 
-+----------+
+----------
 documentedproject-1.0-SNAPSHOT.war
   |-- META-INF
   |   |-- MANIFEST.MF
@@ -125,7 +125,7 @@ documentedproject-1.0-SNAPSHOT.war
   |-- index.jsp
   `-- jsp
       `-- websource.jsp
-+----------+
+----------
 
 *Invocation of <<<war:exploded>>> goal
 
@@ -133,14 +133,14 @@ documentedproject-1.0-SNAPSHOT.war
  form.
  Use the same project as above and invoke:
 
-+----------+
+----------
 mvn compile war:exploded
-+----------+
+----------
 
  This will generate an exploded version of the WAR in <<<target/documentedproject-1.0-SNAPSHOT>>>.
  The contents of that directory looks like this:
 
-+----------+
+----------
  documentedproject-1.0-SNAPSHOT
  |-- META-INF
  |-- WEB-INF
@@ -155,7 +155,7 @@ mvn compile war:exploded
  |-- index.jsp
  `-- jsp
      `-- websource.jsp
-+----------+
+----------
 
  The default directory for the exploded WAR is <<<target/\<finalName\>>>>. The <<<finalName>>> is usually in the form
  of <<<\<artifactId\>-\<version\>>>>.
@@ -186,13 +186,13 @@ mvn compile war:exploded
  in the webapp source, which defaults to <<<src/main/webapp>>>.
  Use our sample project above, and invoke:
 
-+----------+
+----------
 mvn compile war:inplace
-+----------+
+----------
 
  This will result in:
 
-+----------+
+----------
  |-- pom.xml
  |-- src
  |   `-- main
@@ -226,4 +226,4 @@ mvn compile war:inplace
          |           `-- SampleAction.class
          `-- images
              `-- sampleimage.jpg
-+----------+
+----------
