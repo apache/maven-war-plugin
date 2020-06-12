@@ -114,7 +114,9 @@ public class WarProjectPackagingTask
         {
             for ( String resource : context.getOutdatedResources() )
             {
-                new File( context.getWebappDirectory(), resource ).delete();
+                File outdated = new File( context.getWebappDirectory(), resource );
+                context.getLog().debug( "deleting outdated resource " + outdated );
+                outdated.delete();
             }
         }
     }
