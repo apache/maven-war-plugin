@@ -155,16 +155,6 @@ public class WarMojo
     @Parameter( property = "maven.war.skip", defaultValue = "false" )
     private boolean skip;
 
-    /**
-     * Timestamp for reproducible output archive entries, either formatted as ISO 8601
-     * <code>yyyy-MM-dd'T'HH:mm:ssXXX</code> or as an int representing seconds since the epoch (like
-     * <a href="https://reproducible-builds.org/docs/source-date-epoch/">SOURCE_DATE_EPOCH</a>).
-     *
-     * @since 3.3.0
-     */
-    @Parameter( defaultValue = "${project.build.outputTimestamp}" )
-    private String outputTimestamp;
-
     // ----------------------------------------------------------------------
     // Implementation
     // ----------------------------------------------------------------------
@@ -276,7 +266,7 @@ public class WarMojo
                 {
                     getLog().info( "Packaging classes" );
                     packager.packageClasses( classesDirectory, getTargetClassesFile(), getJarArchiver(), getSession(),
-                                             getProject(), getArchive() );
+                                             getProject(), getArchive(), outputTimestamp );
                     projectHelper.attachArtifact( getProject(), "jar", getClassesClassifier(), getTargetClassesFile() );
                 }
             }

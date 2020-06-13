@@ -352,6 +352,16 @@ public abstract class AbstractWarMojo
     @Parameter
     private MavenArchiveConfiguration archive = new MavenArchiveConfiguration();
 
+    /**
+     * Timestamp for reproducible output archive entries, either formatted as ISO 8601
+     * <code>yyyy-MM-dd'T'HH:mm:ssXXX</code> or as an int representing seconds since the epoch (like
+     * <a href="https://reproducible-builds.org/docs/source-date-epoch/">SOURCE_DATE_EPOCH</a>).
+     *
+     * @since 3.3.0
+     */
+    @Parameter( defaultValue = "${project.build.outputTimestamp}" )
+    protected String outputTimestamp;
+
     private final Overlay currentProjectOverlay = Overlay.createInstance();
 
     /**
@@ -502,7 +512,8 @@ public abstract class AbstractWarMojo
         final WarPackagingContext context =
             new DefaultWarPackagingContext( webapplicationDirectory, structure, overlayManager, defaultFilterWrappers,
                                             getNonFilteredFileExtensions(), filteringDeploymentDescriptors,
-                                            this.artifactFactory, resourceEncoding, useJvmChmod, failOnMissingWebXml );
+                                            this.artifactFactory, resourceEncoding, useJvmChmod, failOnMissingWebXml,
+                                            outputTimestamp );
 
         final List<WarPackagingTask> packagingTasks = getPackagingTasks( overlayManager );
 
@@ -574,6 +585,8 @@ public abstract class AbstractWarMojo
 
         private final Collection<String> outdatedResources;
 
+        private final String outputTimestamp;
+
         /**
          * @param webappDirectory The web application directory.
          * @param webappStructure The web app structure.
@@ -585,6 +598,7 @@ public abstract class AbstractWarMojo
          * @param resourceEncoding The resource encoding.
          * @param useJvmChmod use Jvm chmod or not.
          * @param failOnMissingWebXml Flag to check whether we should ignore missing web.xml or not
+         * @param outputTimestamp the output timestamp for reproducible archive creation
          */
         DefaultWarPackagingContext( final File webappDirectory, final WebappStructure webappStructure,
                                            final OverlayManager overlayManager,
@@ -592,7 +606,7 @@ public abstract class AbstractWarMojo
                                            List<String> nonFilteredFileExtensions,
                                            boolean filteringDeploymentDescriptors, ArtifactFactory artifactFactory,
                                            String resourceEncoding, boolean useJvmChmod,
-                                           final Boolean failOnMissingWebXml )
+                                           final Boolean failOnMissingWebXml, String outputTimestamp )
         {
             this.webappDirectory = webappDirectory;
             this.webappStructure = webappStructure;
@@ -642,6 +656,7 @@ public abstract class AbstractWarMojo
                     getLog().warn( "Can't detect outdated resources", e );
                 }
             }
+            this.outputTimestamp = outputTimestamp;
         }
 
         @Override
@@ -814,6 +829,12 @@ public abstract class AbstractWarMojo
                 getLog().info( "deleting outdated resource " + resource );
                 new File( getWebappDirectory(), resource ).delete();
             }
+        }
+
+        @Override
+        public String getOutputTimestamp()
+        {
+            return outputTimestamp;
         }
     }
 

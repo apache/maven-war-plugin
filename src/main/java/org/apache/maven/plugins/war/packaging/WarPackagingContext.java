@@ -242,4 +242,12 @@ public interface WarPackagingContext
      * @see #addResource
      */
     void deleteOutdatedResources();
+
+    /**
+     * Output timestamp for reproducible archive creation.
+     * 
+     * @return the output timestamp (may be null)
+     * @since 3.3.0
+     */
+    String getOutputTimestamp();
 }

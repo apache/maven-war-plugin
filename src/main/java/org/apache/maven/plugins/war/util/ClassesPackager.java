@@ -50,10 +50,12 @@ public class ClassesPackager
      * @param session the current session
      * @param project the related project
      * @param archiveConfiguration the archive configuration to use
+     * @param outputTimestamp the output timestamp for reproducibility
      * @throws MojoExecutionException if an error occurred while creating the archive
      */
     public void packageClasses( File classesDirectory, File targetFile, JarArchiver jarArchiver, MavenSession session,
-                                MavenProject project, MavenArchiveConfiguration archiveConfiguration )
+                                MavenProject project, MavenArchiveConfiguration archiveConfiguration,
+                                String outputTimestamp )
         throws MojoExecutionException
     {
 
@@ -62,6 +64,8 @@ public class ClassesPackager
             final MavenArchiver archiver = new MavenArchiver();
             archiver.setArchiver( jarArchiver );
             archiver.setOutputFile( targetFile );
+            archiver.setCreatedBy( "Maven WAR Plugin", "org.apache.maven.plugins", "maven-war-plugin" );
+            archiver.configureReproducible( outputTimestamp );
             archiver.getArchiver().addDirectory( classesDirectory );
             archiver.createArchive( session, project, archiveConfiguration );
         }

@@ -116,7 +116,8 @@ public class ClassesPackagingTask
             final File jarFile = new File( libDirectory, archiveName );
             final ClassesPackager packager = new ClassesPackager();
             packager.packageClasses( context.getClassesDirectory(), jarFile, context.getJarArchiver(),
-                                     context.getSession(), project, context.getArchive() );
+                                     context.getSession(), project, context.getArchive(),
+                                     context.getOutputTimestamp() );
         }
         else
         {
