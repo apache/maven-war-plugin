@@ -97,8 +97,8 @@ public abstract class AbstractWarMojo
 
     /**
      * Whether a JAR file will be created for the classes in the webapp. Using this optional configuration parameter
-     * will make the compiled classes to be archived into a JAR file and the classes directory will then be excluded
-     * from the webapp.
+     * will make the compiled classes to be archived into a JAR file in <code>/WEB-INF/lib/</code> and the classes
+     * directory will then be excluded from the webapp <code>/WEB-INF/classes/</code>.
      *
      * @since 2.0.1
      */

@@ -34,7 +34,7 @@ import java.io.IOException;
 /**
  * Handles the classes directory that needs to be packaged in the web application.
  * 
- * Based on the {@link WarPackagingContext#archiveClasses()} flag the resources either copied into to
+ * Based on the {@link WarPackagingContext#archiveClasses()} flag, the resources are either copied into to
  * <tt>WEB-INF/classes</tt> directory or archived in a jar within the <tt>WEB-INF/lib</tt> directory.
  *
  * @author Stephane Nicoll
@@ -110,6 +110,8 @@ public class ClassesPackagingTask
 
         if ( context.getWebappStructure().registerFile( currentProjectOverlay.getId(), targetFilename ) )
         {
+            context.getOutdatedResources().remove( targetFilename.replace( '/', File.separatorChar ) );
+
             final File libDirectory = new File( context.getWebappDirectory(), LIB_PATH );
             final File jarFile = new File( libDirectory, archiveName );
             final ClassesPackager packager = new ClassesPackager();

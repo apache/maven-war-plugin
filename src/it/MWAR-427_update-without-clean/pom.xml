@@ -37,6 +37,9 @@ under the License.
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <version>@project.version@</version>
+        <configuration>
+          <archiveClasses>true</archiveClasses>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.gmaven</groupId>
