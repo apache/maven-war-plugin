@@ -801,9 +801,19 @@ public abstract class AbstractWarMojo
         }
 
         @Override
-        public Collection<String> getOutdatedResources()
+        public void addResource( String resource )
         {
-            return outdatedResources;
+            outdatedResources.remove( resource.replace( '/', File.separatorChar ) );            
+        }
+
+        @Override
+        public void deleteOutdatedResources()
+        {
+            for ( String resource : outdatedResources )
+            {
+                getLog().info( "deleting outdated resource " + resource );
+                new File( getWebappDirectory(), resource ).delete();
+            }
         }
     }
 

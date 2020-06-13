@@ -20,7 +20,6 @@ package org.apache.maven.plugins.war.packaging;
  */
 
 import java.io.File;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.maven.archiver.MavenArchiveConfiguration;
@@ -223,12 +222,24 @@ public interface WarPackagingContext
     Boolean isFailOnMissingWebXml();
 
     /**
+     * Add a live resource to the war.
      * Used to keep track of existing resources and all copied files.
-     * All others are outdated and should be removed.
-     * This prevent calling <code>clean</code> when resources are removed. 
+     * All others are outdated and will be removed.
+     * This prevent calling <code>mvn clean</code> when resources are removed. 
      * 
-     * @return the outdated resources
-     * @since 3.2.4
+     * @param resource the resource that is to me marked as not outdated
+     * @since 3.3.0
+     * @see #deleteOutdatedResources()
      */
-    Collection<String> getOutdatedResources();
+    void addResource( String resource );
+
+    /**
+     * Delete outdated resources, ie resources that are found in the war but that were not added by the current
+     * packaging process, then are supposed to be content from a previous run.
+     * This prevent calling <code>mvn clean</code> when resources are removed.
+     * 
+     * @since 3.3.0
+     * @see #addResource
+     */
+    void deleteOutdatedResources();
 }

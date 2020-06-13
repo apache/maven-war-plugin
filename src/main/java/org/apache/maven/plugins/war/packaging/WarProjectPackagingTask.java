@@ -112,11 +112,7 @@ public class WarProjectPackagingTask
 
         if ( !context.getWebappDirectory().mkdirs() )
         {
-            for ( String resource : context.getOutdatedResources() )
-            {
-                context.getLog().info( "deleting outdated resource " + resource );
-                new File( context.getWebappDirectory(), resource ).delete();
-            }
+            context.deleteOutdatedResources();
         }
     }
 

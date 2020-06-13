@@ -110,7 +110,7 @@ public class ClassesPackagingTask
 
         if ( context.getWebappStructure().registerFile( currentProjectOverlay.getId(), targetFilename ) )
         {
-            context.getOutdatedResources().remove( targetFilename.replace( '/', File.separatorChar ) );
+            context.addResource( targetFilename );
 
             final File libDirectory = new File( context.getWebappDirectory(), LIB_PATH );
             final File jarFile = new File( libDirectory, archiveName );

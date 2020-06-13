@@ -242,7 +242,7 @@ public abstract class AbstractWarPackagingTask
                                         String targetFilename )
         throws IOException, MojoExecutionException
     {
-        context.getOutdatedResources().remove( targetFilename.replace( '/', File.separatorChar ) );
+        context.addResource( targetFilename );
 
         if ( context.getWebappStructure().registerFile( sourceId, targetFilename ) )
         {
@@ -335,7 +335,7 @@ public abstract class AbstractWarPackagingTask
                                 boolean onlyIfModified )
         throws IOException
     {
-        context.getOutdatedResources().remove( targetFilename.replace( '/', File.separatorChar ) );
+        context.addResource( targetFilename );
 
         if ( onlyIfModified && destination.lastModified() >= source.lastModified() )
         {
