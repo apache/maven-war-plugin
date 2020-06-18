@@ -500,37 +500,36 @@ public class WarMojoTest
 
         assertTrue( "war file not created: " + expectedJarFile.toString(), expectedJarFile.exists() );
         final Map<String, JarEntry> jarContent = new HashMap<>();
-        final JarFile jarFile = new JarFile( expectedJarFile );
-
-        JarEntry entry;
-        Enumeration<JarEntry> enumeration = jarFile.entries();
-        while ( enumeration.hasMoreElements() )
-        {
-            entry = enumeration.nextElement();
-            Object previousValue = jarContent.put( entry.getName(), entry );
-            assertNull( "Duplicate Entry in Jar File: " + entry.getName(), previousValue );
-        }
-
-        for ( int i = 0; i < files.length; i++ )
-        {
-            String file = files[i];
-
-            assertTrue( "File[" + file + "] not found in archive", jarContent.containsKey( file ) );
-            if ( filesContent[i] != null )
+        try ( JarFile jarFile = new JarFile( expectedJarFile ) ) {
+            Enumeration<JarEntry> enumeration = jarFile.entries();
+            while ( enumeration.hasMoreElements() )
             {
-                assertEquals( "Content of file[" + file + "] does not match", filesContent[i],
-                              IOUtil.toString( jarFile.getInputStream( jarContent.get( file ) ) ) );
+                JarEntry entry = enumeration.nextElement();
+                Object previousValue = jarContent.put( entry.getName(), entry );
+                assertNull( "Duplicate Entry in Jar File: " + entry.getName(), previousValue );
             }
-        }
-        if ( mustNotBeInJar != null )
-        {
-            for ( String file : mustNotBeInJar )
+    
+            for ( int i = 0; i < files.length; i++ )
             {
-                assertFalse( "File[" + file + "]  found in archive", jarContent.containsKey( file ) );
-
+                String file = files[i];
+    
+                assertTrue( "File[" + file + "] not found in archive", jarContent.containsKey( file ) );
+                if ( filesContent[i] != null )
+                {
+                    assertEquals( "Content of file[" + file + "] does not match", filesContent[i],
+                                  IOUtil.toString( jarFile.getInputStream( jarContent.get( file ) ) ) );
+                }
             }
+            if ( mustNotBeInJar != null )
+            {
+                for ( String file : mustNotBeInJar )
+                {
+                    assertFalse( "File[" + file + "]  found in archive", jarContent.containsKey( file ) );
+    
+                }
+            }
+            return jarContent;
         }
-        return jarContent;
     }
 
 }
