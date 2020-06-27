@@ -21,6 +21,7 @@ package org.apache.maven.plugins.war;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.maven.execution.DefaultMavenExecutionRequest;
@@ -28,7 +29,6 @@ import org.apache.maven.execution.MavenExecutionRequest;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.apache.maven.plugin.testing.stubs.ArtifactStub;
-import org.apache.maven.plugins.war.AbstractWarMojo;
 import org.apache.maven.plugins.war.stub.MavenProjectBasicStub;
 import org.apache.maven.plugins.war.stub.WarOverlayStub;
 import org.apache.maven.shared.filtering.MavenFileFilter;
@@ -71,12 +71,13 @@ public abstract class AbstractWarMojoTest
         setVariableValueToObject( mojo, "mavenFileFilter", lookup( MavenFileFilter.class.getName() ) );
         setVariableValueToObject( mojo, "useJvmChmod", Boolean.TRUE );
 
-        MavenExecutionRequest request = new DefaultMavenExecutionRequest();
-        request.setSystemProperties( System.getProperties() );
+        MavenExecutionRequest request =
+            new DefaultMavenExecutionRequest().setSystemProperties( System.getProperties() ).setStartTime( new Date() );
 
         MavenSession mavenSession =
             new MavenSession( (PlexusContainer) null, (RepositorySystemSession) null, request, null );
         setVariableValueToObject( mojo, "session", mavenSession );
+        setVariableValueToObject( mojo, "outdatedCheckPath", "WEB-INF/lib/" );
         mojo.setClassesDirectory( classesDir );
         mojo.setWarSourceDirectory( webAppSource );
         mojo.setWebappDirectory( webAppDir );

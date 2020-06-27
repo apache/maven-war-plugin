@@ -362,6 +362,14 @@ public abstract class AbstractWarMojo
     @Parameter( defaultValue = "${project.build.outputTimestamp}" )
     protected String outputTimestamp;
 
+    /**
+     * Path prefix for resources that will be checked against outdated content.
+     *
+     * @since 3.3.1
+     */
+    @Parameter( defaultValue = "WEB-INF/lib/" )
+    private String outdatedCheckPath;
+
     private final Overlay currentProjectOverlay = Overlay.createInstance();
 
     /**
@@ -640,13 +648,25 @@ public abstract class AbstractWarMojo
                 outdatedResources = new ArrayList<>();
                 try
                 {
+                    if ( '\\' == File.separatorChar )
+                    {
+                        outdatedCheckPath = outdatedCheckPath.replace( '/', '\\' );
+                    }
                     Files.walkFileTree( webappDirectory.toPath(), new SimpleFileVisitor<Path>()
                     {
                         @Override
                         public FileVisitResult visitFile( Path file, BasicFileAttributes attrs )
                             throws IOException
                         {
-                            outdatedResources.add( webappDirectory.toPath().relativize( file ).toString() );
+                            if ( file.toFile().lastModified() < session.getStartTime().getTime() )
+                            {
+                                // resource older than session build start
+                                String path = webappDirectory.toPath().relativize( file ).toString();
+                                if ( path.startsWith( outdatedCheckPath ) )
+                                {
+                                    outdatedResources.add( path );
+                                }
+                            }
                             return super.visitFile( file, attrs );
                         }
                     } );
