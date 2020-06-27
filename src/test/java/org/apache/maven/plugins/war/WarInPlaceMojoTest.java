@@ -19,7 +19,6 @@ package org.apache.maven.plugins.war;
  * under the License.
  */
 
-import org.apache.maven.plugins.war.WarInPlaceMojo;
 import org.apache.maven.plugins.war.stub.MavenProjectBasicStub;
 import org.apache.maven.plugins.war.stub.ResourceStub;
 

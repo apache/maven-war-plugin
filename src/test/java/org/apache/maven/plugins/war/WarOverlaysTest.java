@@ -20,7 +20,6 @@ package org.apache.maven.plugins.war;
  */
 
 import org.apache.maven.plugin.testing.stubs.ArtifactStub;
-import org.apache.maven.plugins.war.Overlay;
 import org.apache.maven.plugins.war.overlay.DefaultOverlay;
 import org.codehaus.plexus.util.FileUtils;
 

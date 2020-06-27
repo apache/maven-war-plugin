@@ -21,8 +21,6 @@ package org.apache.maven.plugins.war;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
-import org.apache.maven.plugins.war.Overlay;
-import org.apache.maven.plugins.war.WarMojo;
 import org.apache.maven.plugins.war.overlay.DefaultOverlay;
 import org.apache.maven.plugins.war.stub.MavenZipProject;
 import org.apache.maven.plugins.war.stub.WarArtifactStub;

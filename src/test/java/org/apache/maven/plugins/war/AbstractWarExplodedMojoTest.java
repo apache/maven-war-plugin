@@ -20,7 +20,6 @@ package org.apache.maven.plugins.war;
  */
 
 import org.apache.maven.plugin.testing.stubs.ArtifactStub;
-import org.apache.maven.plugins.war.WarExplodedMojo;
 import org.apache.maven.plugins.war.stub.MavenProjectArtifactsStub;
 import org.codehaus.plexus.util.FileUtils;
 
