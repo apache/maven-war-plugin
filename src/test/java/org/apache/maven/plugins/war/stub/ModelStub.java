@@ -33,9 +33,7 @@ import org.apache.maven.model.Profile;
 public class ModelStub
     extends Model
 {
-    /**
-     * 
-     */
+
     private static final long serialVersionUID = 7802402157311376304L;
 
     public ModelStub()
@@ -81,11 +79,6 @@ public class ModelStub
     public Properties getProperties()
     {
         return new Properties();
-    }
-
-    public List getPackages()
-    {
-        return new LinkedList();
     }
 
     public List<Profile> getProfiles()
