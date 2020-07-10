@@ -314,10 +314,12 @@ public class WarMojo
             urls[i] = new File( classpathElements.get( i ) ).toURI().toURL();
         }
         URLClassLoader loader = new URLClassLoader( urls, Thread.currentThread().getContextClassLoader() );
-        try {
+        try
+        {
             return hasWebServletAnnotationClassInClasspath( loader );
         }
-        finally {
+        finally
+        {
             try
             {
                 loader.close();
