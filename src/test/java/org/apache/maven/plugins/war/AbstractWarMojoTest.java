@@ -33,7 +33,6 @@ import org.apache.maven.plugins.war.stub.MavenProjectBasicStub;
 import org.apache.maven.plugins.war.stub.WarOverlayStub;
 import org.apache.maven.shared.filtering.MavenFileFilter;
 import org.codehaus.plexus.PlexusContainer;
-import org.codehaus.plexus.archiver.Archiver;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.util.FileUtils;
@@ -305,16 +304,11 @@ public abstract class AbstractWarMojoTest
     {
         try
         {
-            // WarArchiver archiver = new WarArchiver();
-
-            Archiver archiver = new JarArchiver();
+            JarArchiver archiver = new JarArchiver();
 
             archiver.setDestFile( destinationFile );
             archiver.addDirectory( directory );
-
-            // archiver.setWebxml( new File(directory, "WEB-INF/web.xml"));
-
-            // create archive
+            
             archiver.createArchive();
 
         }
