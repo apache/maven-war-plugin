@@ -52,7 +52,7 @@
   </issueManagement>
   <ciManagement>
     <system>Jenkins</system>
-    <url>https://builds.apache.org/job/maven-box/job/maven-war-plugin/</url>
+    <url>https://ci-builds.apache.org/job/Maven/job/maven-box/job/maven-war-plugin/</url>
   </ciManagement>
   <distributionManagement>
     <site>
