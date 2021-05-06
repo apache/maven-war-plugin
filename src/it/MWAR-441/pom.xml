@@ -39,6 +39,7 @@ under the License.
         <version>@project.version@</version>
         <configuration>
           <archiveClasses>true</archiveClasses>
+          <outdatedCheckPath>/</outdatedCheckPath>
         </configuration>
       </plugin>
       <plugin>
