@@ -365,6 +365,9 @@ public abstract class AbstractWarMojo
     /**
      * Path prefix for resources that will be checked against outdated content.
      *
+     * Starting with <b>3.3.2</b>, if a value of "/" is specified the entire
+     * webappDirectory will be checked, i.e. the "/" signifies "root".
+     *
      * @since 3.3.1
      */
     @Parameter( defaultValue = "WEB-INF/lib/" )
@@ -650,7 +653,10 @@ public abstract class AbstractWarMojo
                 {
                     if ( '\\' == File.separatorChar )
                     {
-                        outdatedCheckPath = outdatedCheckPath.replace( '/', '\\' );
+                        if ( ! checkAllPathsForOutdated() )
+                        {
+                            outdatedCheckPath = outdatedCheckPath.replace( '/', '\\' );
+                        }
                     }
                     Files.walkFileTree( webappDirectory.toPath(), new SimpleFileVisitor<Path>()
                     {
@@ -660,9 +666,8 @@ public abstract class AbstractWarMojo
                         {
                             if ( file.toFile().lastModified() < session.getStartTime().getTime() )
                             {
-                                // resource older than session build start
                                 String path = webappDirectory.toPath().relativize( file ).toString();
-                                if ( path.startsWith( outdatedCheckPath ) )
+                                if ( checkAllPathsForOutdated() || path.startsWith( outdatedCheckPath ) )
                                 {
                                     outdatedResources.add( path );
                                 }
@@ -677,6 +682,11 @@ public abstract class AbstractWarMojo
                 }
             }
             this.outputTimestamp = outputTimestamp;
+        }
+
+        protected boolean checkAllPathsForOutdated() 
+        {
+            return outdatedCheckPath.equals( "/" );
         }
 
         @Override
