@@ -646,6 +646,12 @@ public abstract class AbstractWarMojo
                 getLog().info( "Can't detect outdated resources when running inplace goal" );
                 outdatedResources = Collections.emptyList();
             }
+            else if ( session.getStartTime() == null )
+            {
+                // MWAR-439: this should never happen, but has happened in some integration context...
+                getLog().warn( "Can't detect outdated resources because unexpected session.getStartTime() == null" );
+                outdatedResources = Collections.emptyList();
+            }
             else
             {
                 outdatedResources = new ArrayList<>();
