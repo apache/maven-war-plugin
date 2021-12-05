@@ -49,6 +49,7 @@ import org.apache.maven.plugins.war.packaging.OverlayPackagingTask;
 import org.apache.maven.plugins.war.packaging.WarPackagingContext;
 import org.apache.maven.plugins.war.packaging.WarPackagingTask;
 import org.apache.maven.plugins.war.packaging.WarProjectPackagingTask;
+import org.apache.maven.plugins.war.util.WarResourceCopy;
 import org.apache.maven.plugins.war.util.WebappStructure;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.filtering.MavenFileFilter;
@@ -373,6 +374,15 @@ public abstract class AbstractWarMojo
     @Parameter( defaultValue = "WEB-INF/lib/" )
     private String outdatedCheckPath;
 
+    /**
+     * You can skip the exploded war creation when building the war archive.
+     * War archive are created based on the source paths.
+     *
+     * @since 3.3.3
+     */
+    @Parameter( defaultValue = "false", name = "maven.war.exploded.skip" )
+    private boolean skipExplodedWarCreation;
+
     private final Overlay currentProjectOverlay = Overlay.createInstance();
 
     /**
@@ -422,6 +432,16 @@ public abstract class AbstractWarMojo
     }
 
     /**
+     * For mojos want to enable skipExplodedWarCreation, override this method
+     *
+     * @return
+     */
+    protected boolean supportSkipExplodedWarCreation()
+    {
+        return false;
+    }
+
+    /**
      * Returns a string array of the excludes to be used when adding dependent WAR as an overlay onto this WAR.
      *
      * @return an array of tokens to exclude
@@ -446,14 +466,15 @@ public abstract class AbstractWarMojo
      * @throws MojoExecutionException In case of failure.
      * @throws MojoFailureException In case of failure.
      */
-    public void buildExplodedWebapp( File webapplicationDirectory )
+    public WarPackagingContext buildExplodedWebapp( File webapplicationDirectory )
         throws MojoExecutionException, MojoFailureException
     {
+        skipExplodedWarCreation = supportSkipExplodedWarCreation() ? skipExplodedWarCreation : false;
         webapplicationDirectory.mkdirs();
 
         try
         {
-            buildWebapp( project, webapplicationDirectory );
+           return buildWebapp( project, webapplicationDirectory );
         }
         catch ( IOException e )
         {
@@ -471,7 +492,7 @@ public abstract class AbstractWarMojo
      * @throws MojoFailureException if an unexpected error occurred while packaging the webapp
      * @throws IOException if an error occurred while copying the files
      */
-    public void buildWebapp( MavenProject mavenProject, File webapplicationDirectory )
+    public WarPackagingContext buildWebapp( MavenProject mavenProject, File webapplicationDirectory )
         throws MojoExecutionException, MojoFailureException, IOException
     {
 
@@ -524,7 +545,7 @@ public abstract class AbstractWarMojo
             new DefaultWarPackagingContext( webapplicationDirectory, structure, overlayManager, defaultFilterWrappers,
                                             getNonFilteredFileExtensions(), filteringDeploymentDescriptors,
                                             this.artifactFactory, resourceEncoding, useJvmChmod, failOnMissingWebXml,
-                                            outputTimestamp );
+                                            skipExplodedWarCreation, outputTimestamp );
 
         final List<WarPackagingTask> packagingTasks = getPackagingTasks( overlayManager );
 
@@ -534,7 +555,7 @@ public abstract class AbstractWarMojo
         }
 
         getLog().debug( "Webapp assembled in [" + ( System.currentTimeMillis() - startTime ) + " msecs]" );
-
+        return context;
     }
 
     /**
@@ -586,6 +607,10 @@ public abstract class AbstractWarMojo
 
         private final List<FileUtils.FilterWrapper> filterWrappers;
 
+        private final boolean skipExplodedWarCreation;
+
+        private final WarResourceCopy warResourceCopy;
+
         private List<String> nonFilteredFileExtensions;
 
         private boolean filteringDeploymentDescriptors;
@@ -609,21 +634,25 @@ public abstract class AbstractWarMojo
          * @param resourceEncoding The resource encoding.
          * @param useJvmChmod use Jvm chmod or not.
          * @param failOnMissingWebXml Flag to check whether we should ignore missing web.xml or not
+         * @param skipExplodedWarCreation
          * @param outputTimestamp the output timestamp for reproducible archive creation
          */
         DefaultWarPackagingContext( final File webappDirectory, final WebappStructure webappStructure,
-                                           final OverlayManager overlayManager,
-                                           List<FileUtils.FilterWrapper> filterWrappers,
-                                           List<String> nonFilteredFileExtensions,
-                                           boolean filteringDeploymentDescriptors, ArtifactFactory artifactFactory,
-                                           String resourceEncoding, boolean useJvmChmod,
-                                           final Boolean failOnMissingWebXml, String outputTimestamp )
+                                    final OverlayManager overlayManager,
+                                    List<FileUtils.FilterWrapper> filterWrappers,
+                                    List<String> nonFilteredFileExtensions,
+                                    boolean filteringDeploymentDescriptors, ArtifactFactory artifactFactory,
+                                    String resourceEncoding, boolean useJvmChmod,
+                                    final Boolean failOnMissingWebXml, boolean skipExplodedWarCreation,
+                                    String outputTimestamp )
         {
             this.webappDirectory = webappDirectory;
             this.webappStructure = webappStructure;
             this.overlayManager = overlayManager;
             this.filterWrappers = filterWrappers;
             this.artifactFactory = artifactFactory;
+            this.skipExplodedWarCreation = skipExplodedWarCreation;
+            this.warResourceCopy = new WarResourceCopy( skipExplodedWarCreation );
             this.filteringDeploymentDescriptors = filteringDeploymentDescriptors;
             this.nonFilteredFileExtensions =
                 nonFilteredFileExtensions == null ? Collections.<String>emptyList() : nonFilteredFileExtensions;
@@ -741,6 +770,17 @@ public abstract class AbstractWarMojo
         public String[] getWebappSourceExcludes()
         {
             return getExcludes();
+        }
+
+        public boolean skipExplodedWarCreation()
+        {
+            return skipExplodedWarCreation;
+        }
+
+        @Override
+        public WarResourceCopy getWarResourceCopy()
+        {
+            return warResourceCopy;
         }
 
         @Override

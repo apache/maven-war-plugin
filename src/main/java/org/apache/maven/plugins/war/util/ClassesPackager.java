@@ -32,6 +32,7 @@ import org.codehaus.plexus.archiver.jar.ManifestException;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Packages the content of the classes directory.
@@ -40,6 +41,32 @@ import java.io.IOException;
  */
 public class ClassesPackager
 {
+
+
+    public void packageClasses( Map<String, File> allClassFiles, File targetFile, JarArchiver jarArchiver,
+                                MavenSession session,
+                                MavenProject project, MavenArchiveConfiguration archiveConfiguration,
+                                String outputTimestamp )
+            throws MojoExecutionException
+    {
+        try
+        {
+            final MavenArchiver archiver = new MavenArchiver();
+            archiver.setArchiver( jarArchiver );
+            archiver.setOutputFile( targetFile );
+            archiver.setCreatedBy( "Maven WAR Plugin", "org.apache.maven.plugins", "maven-war-plugin" );
+            archiver.configureReproducible( outputTimestamp );
+            for ( Map.Entry<String, File> entry : allClassFiles.entrySet() )
+            {
+                archiver.getArchiver().addFile( entry.getValue(), entry.getKey() );
+            }
+            archiver.createArchive( session, project, archiveConfiguration );
+        }
+        catch ( ArchiverException | ManifestException | IOException | DependencyResolutionRequiredException e )
+        {
+            throw new MojoExecutionException( "Could not create classes archive", e );
+        }
+    }
 
     /**
      * Package the classes

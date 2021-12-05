@@ -19,14 +19,6 @@ package org.apache.maven.plugins.war;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.maven.archiver.MavenArchiver;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
@@ -37,14 +29,30 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.plugins.war.packaging.AbstractWarPackagingTask;
+import org.apache.maven.plugins.war.packaging.WarPackagingContext;
 import org.apache.maven.plugins.war.util.ClassesPackager;
+import org.apache.maven.plugins.war.util.SourceTargetMappingResourceFilter;
 import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.archiver.Archiver;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.ManifestException;
 import org.codehaus.plexus.archiver.war.WarArchiver;
+import org.codehaus.plexus.components.io.resources.PlexusIoResource;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.StringUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Build a WAR file.
@@ -155,9 +163,17 @@ public class WarMojo
     @Parameter( property = "maven.war.skip", defaultValue = "false" )
     private boolean skip;
 
+
     // ----------------------------------------------------------------------
     // Implementation
     // ----------------------------------------------------------------------
+
+
+    @Override
+    protected boolean supportSkipExplodedWarCreation()
+    {
+        return true;
+    }
 
     /**
      * Executes the WarMojo on the current project.
@@ -209,7 +225,7 @@ public class WarMojo
     {
         getLog().info( "Packaging webapp" );
 
-        buildExplodedWebapp( getWebappDirectory() );
+        WarPackagingContext context = buildExplodedWebapp( getWebappDirectory() );
 
         MavenArchiver archiver = new MavenArchiver();
 
@@ -226,16 +242,48 @@ public class WarMojo
             + " from the generated webapp archive." );
         getLog().debug( "Including " + Arrays.asList( getPackagingIncludes() ) + " in the generated webapp archive." );
 
-        warArchiver.addDirectory( getWebappDirectory(), getPackagingIncludes(), getPackagingExcludes() );
-
         final File webXmlFile = new File( getWebappDirectory(), "WEB-INF/web.xml" );
         if ( webXmlFile.exists() )
         {
             warArchiver.setWebxml( webXmlFile );
         }
 
-        warArchiver.setRecompressAddedZips( isRecompressZippedFiles() );
+        if ( context.skipExplodedWarCreation() )
+        {
+            Map<String, File> map = context.getWarResourceCopy().getSourceTargetMappings();
+            if ( map.containsKey( "WEB-INF/web.xml" ) )
+            {
+                warArchiver.setWebxml( map.get( "WEB-INF/web.xml" ) );
+                map.remove( "WEB-INF/web.xml" );
+            }
 
+            SourceTargetMappingResourceFilter filter = new SourceTargetMappingResourceFilter( warArchiver );
+            Map<String, PlexusIoResource> plexusIoResourceMap =
+                    filter.filteredResources( getPackagingIncludes(), getPackagingExcludes(), "", map );
+            Iterator<Map.Entry<String, PlexusIoResource>> it = plexusIoResourceMap.entrySet().iterator();
+            while ( it.hasNext() )
+            {
+                Map.Entry<String, PlexusIoResource> rez = it.next();
+                warArchiver.addResource( rez.getValue(), rez.getKey(), -1 );
+            }
+
+            //copy from exploded war
+            //case 1: user uses some other plugins to copy files to exploded war
+            //case 2: copy all filtered files, filtered resources are not tracked and still synced to exploded war
+            //case 3: web.xml using variables that would be filtered by filteringDeploymentDescriptors
+            Set<String> targetPaths = context.getWarResourceCopy().getSourceTargetMappings().keySet();
+            Set<String> newExcludes = new HashSet<>( targetPaths );
+            newExcludes.addAll( Arrays.asList( getPackagingExcludes() ) );
+            warArchiver
+                    .addDirectory( getWebappDirectory(), getPackagingIncludes(), newExcludes.toArray( new String[0] ) );
+        }
+        else
+        {
+            warArchiver.addDirectory( getWebappDirectory(), getPackagingIncludes(), getPackagingExcludes() );
+        }
+
+
+        warArchiver.setRecompressAddedZips( isRecompressZippedFiles() );
         warArchiver.setIncludeEmptyDirs( isIncludeEmptyDirectories() );
 
         if ( Boolean.FALSE.equals( failOnMissingWebXml )
@@ -265,8 +313,19 @@ public class WarMojo
                 if ( classesDirectory.exists() )
                 {
                     getLog().info( "Packaging classes" );
-                    packager.packageClasses( classesDirectory, getTargetClassesFile(), getJarArchiver(), getSession(),
-                                             getProject(), getArchive(), outputTimestamp );
+                    if ( context.skipExplodedWarCreation() )
+                    {
+                        Map<String, File> classes = context.getWarResourceCopy()
+                                .getFilesWithPrefix( AbstractWarPackagingTask.CLASSES_PATH, true );
+                        packager.packageClasses( classes, getTargetClassesFile(), getJarArchiver(), getSession(),
+                                getProject(), getArchive(), outputTimestamp );
+                    }
+                    else
+                    {
+                        packager.packageClasses( classesDirectory, getTargetClassesFile(), getJarArchiver(),
+                                getSession(),
+                                getProject(), getArchive(), outputTimestamp );
+                    }
                     projectHelper.attachArtifact( getProject(), "jar", getClassesClassifier(), getTargetClassesFile() );
                 }
             }
@@ -289,6 +348,8 @@ public class WarMojo
             }
         }
     }
+
+
 
     /**
      * Determines if the current Maven project being built uses the Servlet 3.0 API (JSR 315)

@@ -19,9 +19,6 @@ package org.apache.maven.plugins.war.packaging;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-
 import org.apache.commons.io.input.XmlStreamReader;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -36,6 +33,9 @@ import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
 import org.codehaus.plexus.interpolation.InterpolationException;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * @author Stephane Nicoll
@@ -104,6 +104,7 @@ public abstract class AbstractWarPackagingTask
             {
                 destinationFileName = targetPrefix + fileToCopyName;
             }
+
 
             if ( filtered && !context.isNonFilteredExtension( sourceFile.getName() ) )
             {
@@ -283,6 +284,7 @@ public abstract class AbstractWarPackagingTask
         }
     }
 
+
     /**
      * Unpacks the specified file to the specified directory.
      *
@@ -336,6 +338,7 @@ public abstract class AbstractWarPackagingTask
         throws IOException
     {
         context.addResource( targetFilename );
+        context.getWarResourceCopy().addFileCopy( targetFilename, source );
 
         if ( onlyIfModified && destination.lastModified() >= source.lastModified() )
         {
@@ -366,21 +369,20 @@ public abstract class AbstractWarPackagingTask
             }
             else
             {
-                FileUtils.copyFile( source.getCanonicalFile(), destination );
-                // preserve timestamp
-                destination.setLastModified( source.lastModified() );
+                context.getWarResourceCopy().copy( source, destination );
                 context.getLog().debug( " + " + targetFilename + " has been copied." );
             }
             return true;
         }
     }
 
+
     /**
      * Get the encoding from an XML-file.
      *
      * @param webXml the XML-file
      * @return The encoding of the XML-file, or UTF-8 if it's not specified in the file
-     * @throws java.io.IOException if an error occurred while reading the file
+     * @throws IOException if an error occurred while reading the file
      */
     protected String getEncoding( File webXml )
         throws IOException

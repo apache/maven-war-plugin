@@ -19,10 +19,6 @@ package org.apache.maven.plugins.war.packaging;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Objects;
-
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -31,6 +27,10 @@ import org.apache.maven.plugins.war.util.PathSet;
 import org.apache.maven.shared.filtering.MavenFilteringException;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.StringUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Handles the project own resources, that is: 
@@ -88,8 +88,8 @@ public class WarProjectPackagingTask
 
         // Prepare the INF directories
         File webinfDir = new File( context.getWebappDirectory(), WEB_INF_PATH );
-        webinfDir.mkdirs();
         File metainfDir = new File( context.getWebappDirectory(), META_INF_PATH );
+        webinfDir.mkdirs();
         metainfDir.mkdirs();
 
         handleWebResources( context );
@@ -172,7 +172,15 @@ public class WarProjectPackagingTask
         }
         else if ( !context.getWebappSourceDirectory().getAbsolutePath().equals( context.getWebappDirectory().getPath() ) )
         {
-            context.getLog().info( "Copying webapp resources [" + context.getWebappSourceDirectory() + "]" );
+            if ( context.skipExplodedWarCreation() )
+            {
+                context.getLog().info( "Collecting webapp resources [" + context.getWebappSourceDirectory() + "]" );
+            }
+            else
+            {
+                context.getLog().info( "Copying webapp resources [" + context.getWebappSourceDirectory() + "]" );
+            }
+
             final PathSet sources =
                 getFilesToIncludes( context.getWebappSourceDirectory(), context.getWebappSourceIncludes(),
                                     context.getWebappSourceExcludes(), context.isWebappSourceIncludeEmptyDirectories() );
@@ -248,7 +256,7 @@ public class WarProjectPackagingTask
                 if ( context.isFilteringDeploymentDescriptors() )
                 {
                     context.getMavenFileFilter().copyFile( webXml, new File( webinfDir, "web.xml" ), true,
-                                                           context.getFilterWrappers(), getEncoding( webXml ) );
+                            context.getFilterWrappers(), getEncoding( webXml ) );
                 }
                 else
                 {
@@ -264,7 +272,7 @@ public class WarProjectPackagingTask
                 {
                     context.getWebappStructure().registerFile( id, WEB_INF_PATH + "/web.xml" );
                     context.getMavenFileFilter().copyFile( defaultWebXml, new File( webinfDir, "web.xml" ), true,
-                                                           context.getFilterWrappers(), getEncoding( defaultWebXml ) );
+                            context.getFilterWrappers(), getEncoding( defaultWebXml ) );
                 }
             }
 
@@ -277,8 +285,8 @@ public class WarProjectPackagingTask
                 if ( context.isFilteringDeploymentDescriptors() )
                 {
                     context.getMavenFileFilter().copyFile( containerConfigXML, new File( metainfDir, xmlFileName ),
-                                                           true, context.getFilterWrappers(),
-                                                           getEncoding( containerConfigXML ) );
+                            true, context.getFilterWrappers(),
+                            getEncoding( containerConfigXML ) );
                 }
                 else
                 {
@@ -318,8 +326,16 @@ public class WarProjectPackagingTask
                                        + "] does not exist!" );
         }
 
-        context.getLog().info( "Copying webapp webResources [" + resource.getDirectory() + "] to ["
-                                   + context.getWebappDirectory().getAbsolutePath() + "]" );
+        if ( context.skipExplodedWarCreation() )
+        {
+            context.getLog().info( "Collecting webapp webResources [" + resource.getDirectory() + "]" );
+        }
+        else
+        {
+            context.getLog().info( "Copying webapp webResources [" + resource.getDirectory() + "] to ["
+                    + context.getWebappDirectory().getAbsolutePath() + "]" );
+        }
+
         String[] fileNames = getFilesToCopy( resource );
         for ( String fileName : fileNames )
         {
