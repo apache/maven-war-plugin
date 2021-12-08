@@ -65,7 +65,7 @@ public abstract class AbstractWarExplodedMojoTest
     /**
      * Configures the exploded mojo for the specified test.
      * 
-     * If the <tt>sourceFiles</tt> parameter is <tt>null</tt>, sample JSPs are created by default.
+     * If the {@code sourceFiles} parameter is {@code null}, sample JSPs are created by default.
      *
      * @param testId the id of the test
      * @param artifactStubs the dependencies (may be null)

@@ -88,7 +88,7 @@ public class WebappStructure
     }
 
     /**
-     * Specify if the specified <tt>path</tt> is registered or not.
+     * Specify if the specified {@code path} is registered or not.
      *
      * @param path the relative path from the webapp root directory
      * @return true if the path is registered, false otherwise
@@ -100,8 +100,8 @@ public class WebappStructure
     }
 
     /**
-     * Registers the specified path for the specified owner. Returns <tt>true</tt> if the path is not already
-     * registered, <tt>false</tt> otherwise.
+     * Registers the specified path for the specified owner. Returns {@code true} if the path is not already
+     * registered, {@code false} otherwise.
      *
      * @param id the owner of the path
      * @param path the relative path from the webapp root directory
@@ -125,7 +125,7 @@ public class WebappStructure
      * simple registration is performed. If the file already exists, the owner changes to the specified one.
      * <p>
      * Beware that the semantic of the return boolean is different than the one from
-     * {@link #registerFile(String, String)}; returns <tt>true</tt> if an owner replacement was made and <tt>false</tt>
+     * {@link #registerFile(String, String)}; returns {@code true} if an owner replacement was made and {@code false}
      * if the file was simply registered for the first time.</p>
      *
      * @param id the owner of the path
@@ -150,7 +150,7 @@ public class WebappStructure
     }
 
     /**
-     * Registers the specified path for the specified owner. Invokes the <tt>callback</tt> with the result of the
+     * Registers the specified path for the specified owner. Invokes the {@code callback} with the result of the
      * registration.
      *
      * @param id the owner of the path
@@ -192,10 +192,10 @@ public class WebappStructure
     }
 
     /**
-     * Returns the owner of the specified <tt>path</tt>. If the file is not registered, returns <tt>null</tt>
+     * Returns the owner of the specified {@code path}. If the file is not registered, returns {@code null}
      *
      * @param path the relative path from the webapp root directory
-     * @return the owner or <tt>null</tt>.
+     * @return the owner or {@code null}.
      */
     public String getOwner( String path )
     {
@@ -319,9 +319,9 @@ public class WebappStructure
     {
 
         /**
-         * Called if the <tt>targetFilename</tt> for the specified <tt>ownerId</tt> has been registered successfully.
+         * Called if the {@code targetFilename} for the specified {@code ownerId} has been registered successfully.
          * 
-         * This means that the <tt>targetFilename</tt> was unknown and has been registered successfully.
+         * This means that the {@code targetFilename} was unknown and has been registered successfully.
          *
          * @param ownerId the ownerId
          * @param targetFilename the relative path according to the root of the webapp
@@ -331,9 +331,9 @@ public class WebappStructure
             throws IOException;
 
         /**
-         * Called if the <tt>targetFilename</tt> for the specified <tt>ownerId</tt> has already been registered.
+         * Called if the {@code targetFilename} for the specified {@code ownerId} has already been registered.
          * 
-         * This means that the <tt>targetFilename</tt> was known and belongs to the specified owner.
+         * This means that the {@code targetFilename} was known and belongs to the specified owner.
          *
          * @param ownerId the ownerId
          * @param targetFilename the relative path according to the root of the webapp
@@ -344,10 +344,10 @@ public class WebappStructure
 
         /**
          * <p>
-         * Called if the registration of the <tt>targetFilename</tt> for the specified <tt>ownerId</tt> has been refused
-         * since the path already belongs to the <tt>actualOwnerId</tt>.
+         * Called if the registration of the {@code targetFilename} for the specified {@code ownerId} has been refused
+         * since the path already belongs to the {@code actualOwnerId}.
          * </p> 
-         * This means that the <tt>targetFilename</tt> was known and does not belong to the specified owner.
+         * This means that the {@code targetFilename} was known and does not belong to the specified owner.
          *
          * @param ownerId the ownerId
          * @param targetFilename the relative path according to the root of the webapp
@@ -358,10 +358,10 @@ public class WebappStructure
             throws IOException;
 
         /**
-         * Called if the <tt>targetFilename</tt> for the specified <tt>ownerId</tt> has been registered successfully by
-         * superseding a <tt>deprecatedOwnerId</tt>, that is the previous owner of the file.
+         * Called if the {@code targetFilename} for the specified {@code ownerId} has been registered successfully by
+         * superseding a {@code deprecatedOwnerId}, that is the previous owner of the file.
          * 
-         * This means that the <tt>targetFilename</tt> was known but for another owner. This usually happens after a
+         * This means that the {@code targetFilename} was known but for another owner. This usually happens after a
          * project's configuration change. As a result, the file has been registered successfully to the new owner.
          *
          * @param ownerId the ownerId
@@ -373,10 +373,10 @@ public class WebappStructure
             throws IOException;
 
         /**
-         * Called if the <tt>targetFilename</tt> for the specified <tt>ownerId</tt> has been registered successfully by
-         * superseding a <tt>unknownOwnerId</tt>, that is an owner that does not exist anymore in the current project.
+         * Called if the {@code targetFilename} for the specified {@code ownerId} has been registered successfully by
+         * superseding a {@code unknownOwnerId}, that is an owner that does not exist anymore in the current project.
          * 
-         * This means that the <tt>targetFilename</tt> was known but for an owner that does not exist anymore. Hence the
+         * This means that the {@code targetFilename} was known but for an owner that does not exist anymore. Hence the
          * file has been registered successfully to the new owner.
          *
          * @param ownerId the ownerId

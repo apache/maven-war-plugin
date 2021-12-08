@@ -35,7 +35,7 @@ import java.io.IOException;
  * Handles the classes directory that needs to be packaged in the web application.
  * 
  * Based on the {@link WarPackagingContext#archiveClasses()} flag, the resources are either copied into to
- * <tt>WEB-INF/classes</tt> directory or archived in a jar within the <tt>WEB-INF/lib</tt> directory.
+ * {@code WEB-INF/classes} directory or archived in a jar within the {@code WEB-INF/lib} directory.
  *
  * @author Stephane Nicoll
  */

@@ -447,8 +447,8 @@ public class WarOverlaysTest
     /**
      * Asserts that the content of an overlayed file is correct.
      * 
-     * Note that the <tt>filePath</tt> is relative to both the webapp directory and the overlayed directory, defined by
-     * the <tt>overlayId</tt>.
+     * Note that the {@code filePath} is relative to both the webapp directory and the overlayed directory, defined by
+     * the {@code overlayId}.
      *
      * @param webAppDirectory the webapp directory
      * @param overlayId the id of the overlay
@@ -468,8 +468,8 @@ public class WarOverlaysTest
     /**
      * Asserts that the content of an overlayed file is correct.
      * 
-     * Note that the <tt>filePath</tt> is relative to both the webapp directory and the overlayed directory, defined by
-     * the <tt>overlayId</tt>.
+     * Note that the {@code filePath} is relative to both the webapp directory and the overlayed directory, defined by
+     * the {@code overlayId}.
      *
      * @param testId te id of the test
      * @param webAppDirectory the webapp directory

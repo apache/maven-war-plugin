@@ -38,6 +38,11 @@ public class CopyUserManifestTask
     /** Instance logger */
     private Log log;
 
+    /**
+     *  Returns the logger.
+     *
+     * @return logger
+     */
     public Log getLog()
     {
         if ( log == null )
@@ -47,6 +52,11 @@ public class CopyUserManifestTask
         return log;
     }
 
+    /**
+     * The logger.
+     *
+     * @param log the logger to set
+     */
     public void setLog( Log log )
     {
         this.log = log;

@@ -74,13 +74,13 @@ public abstract class AbstractWarPackagingTask
      * Copy uses a first-win strategy: files that have already been copied by previous tasks are ignored. This method
      * makes sure to update the list of protected files which gives the list of files that have already been copied.
      * 
-     * If the structure of the source directory is not the same as the root of the webapp, use the <tt>targetPrefix</tt>
-     * parameter to specify in which particular directory the files should be copied. Use <tt>null</tt> to copy the
+     * If the structure of the source directory is not the same as the root of the webapp, use the {@code targetPrefix}
+     * parameter to specify in which particular directory the files should be copied. Use {@code null} to copy the
      * files with the same structure
      *
      * @param sourceId the source id
      * @param context the context to use
-     * @param sourceBaseDir the base directory from which the <tt>sourceFilesSet</tt> will be copied
+     * @param sourceBaseDir the base directory from which the {@code sourceFilesSet} will be copied
      * @param sourceFilesSet the files to be copied
      * @param targetPrefix the prefix to add to the target file name
      * @param filtered filter or not.
@@ -124,7 +124,7 @@ public abstract class AbstractWarPackagingTask
      *
      * @param sourceId the source id
      * @param context the context to use
-     * @param sourceBaseDir the base directory from which the <tt>sourceFilesSet</tt> will be copied
+     * @param sourceBaseDir the base directory from which the {@code sourceFilesSet} will be copied
      * @param sourceFilesSet the files to be copied
      * @param filtered filter or not.
      * @throws IOException if an error occurred while copying the files
@@ -140,7 +140,7 @@ public abstract class AbstractWarPackagingTask
     /**
      * Copy the specified file if the target location has not yet already been used.
      * 
-     * The <tt>targetFileName</tt> is the relative path according to the root of the generated web application.
+     * The {@code targetFileName} is the relative path according to the root of the generated web application.
      *
      * @param sourceId the source id
      * @param context the context to use
@@ -228,7 +228,7 @@ public abstract class AbstractWarPackagingTask
      * Copy the specified file if the target location has not yet already been used and filter its content with the
      * configured filter properties.
      * 
-     * The <tt>targetFileName</tt> is the relative path according to the root of the generated web application.
+     * The {@code targetFileName} is the relative path according to the root of the generated web application.
      *
      * @param sourceId the source id
      * @param context the context to use
@@ -318,8 +318,8 @@ public abstract class AbstractWarPackagingTask
 
     /**
      * Copy file from source to destination. The directories up to <code>destination</code> will be created if they
-     * don't already exist. if the <code>onlyIfModified</code> flag is <tt>false</tt>, <code>destination</code> will be
-     * overwritten if it already exists. If the flag is <tt>true</tt> destination will be overwritten if it's not up to
+     * don't already exist. if the <code>onlyIfModified</code> flag is {@code false}, <code>destination</code> will be
+     * overwritten if it already exists. If the flag is {@code true} destination will be overwritten if it's not up to
      * date.
      *
      * @param context the packaging context
@@ -392,7 +392,7 @@ public abstract class AbstractWarPackagingTask
     }
 
     /**
-     * Returns the file to copy. If the includes are <tt>null</tt> or empty, the default includes are used.
+     * Returns the file to copy. If the includes are {@code null} or empty, the default includes are used.
      *
      * @param baseDir the base directory to start from
      * @param includes the includes
@@ -405,7 +405,7 @@ public abstract class AbstractWarPackagingTask
     }
 
     /**
-     * Returns the file to copy. If the includes are <tt>null</tt> or empty, the default includes are used.
+     * Returns the file to copy. If the includes are {@code null} or empty, the default includes are used.
      *
      * @param baseDir the base directory to start from
      * @param includes the includes
@@ -450,7 +450,7 @@ public abstract class AbstractWarPackagingTask
     /**
      * Returns the final name of the specified artifact.
      * 
-     * If the <tt>outputFileNameMapping</tt> is set, it is used, otherwise the standard naming scheme is used.
+     * If the {@code outputFileNameMapping} is set, it is used, otherwise the standard naming scheme is used.
      *
      * @param context the packaging context
      * @param artifact the artifact

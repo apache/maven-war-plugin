@@ -170,7 +170,7 @@ public class OverlayManager
     /**
      * Returns the Artifact associated to the specified overlay.
      * 
-     * If the overlay defines the current project, <tt>null</tt> is returned. If no artifact could not be found for the
+     * If the overlay defines the current project, {@code null} is returned. If no artifact could not be found for the
      * overlay a InvalidOverlayConfigurationException is thrown.
      *
      * @param overlay an overlay

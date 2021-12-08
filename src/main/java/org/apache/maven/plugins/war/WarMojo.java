@@ -193,7 +193,7 @@ public class WarMojo
     }
 
     /**
-     * Generates the webapp according to the <tt>mode</tt> attribute.
+     * Generates the webapp according to the {@code mode} attribute.
      *
      * @param warFile the target WAR file
      * @throws IOException if an error occurred while copying files
@@ -580,6 +580,10 @@ public class WarMojo
         this.failOnMissingWebXml = failOnMissingWebXml;
     }
 
+    /**
+     * Skip the mojo run
+     * @return {@link #skip}
+     */
     public boolean isSkip()
     {
         return skip;

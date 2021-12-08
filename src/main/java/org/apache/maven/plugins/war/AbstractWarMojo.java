@@ -256,7 +256,7 @@ public abstract class AbstractWarMojo
     /**
      * The overlays to apply. Each &lt;overlay&gt; element may contain:
      * <ul>
-     * <li>id (defaults to <tt>currentBuild</tt>)</li>
+     * <li>id (defaults to {@code currentBuild})</li>
      * <li>groupId (if this and artifactId are null, then the current project is treated as its own overlay)</li>
      * <li>artifactId (see above)</li>
      * <li>classifier</li>
@@ -463,7 +463,7 @@ public abstract class AbstractWarMojo
 
     /**
      * Builds the webapp for the specified project with the new packaging task thingy.
-     * Classes, libraries and tld files are copied to the <tt>webappDirectory</tt> during this phase.
+     * Classes, libraries and tld files are copied to the {@code webappDirectory} during this phase.
      *
      * @param mavenProject the maven project
      * @param webapplicationDirectory the target directory
@@ -538,7 +538,7 @@ public abstract class AbstractWarMojo
     }
 
     /**
-     * Returns a <tt>List</tt> of the {@link org.apache.maven.plugins.war.packaging.WarPackagingTask}
+     * Returns a {@code List} of the {@link org.apache.maven.plugins.war.packaging.WarPackagingTask}
      * instances to invoke to perform the packaging.
      *
      * @param overlayManager the overlay manager

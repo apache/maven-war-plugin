@@ -90,7 +90,7 @@ public interface WarPackagingContext
     File getClassesDirectory();
 
     /**
-     * Specify whether the classes resources should be archived in the <tt>WEB-INF/lib</tt> of the generated web app.
+     * Specify whether the classes resources should be archived in the {@code WEB-INF/lib} of the generated web app.
      *
      * @return true if the classes should be archived, false otherwise
      */
@@ -132,9 +132,9 @@ public interface WarPackagingContext
     JarArchiver getJarArchiver();
 
     /**
-     * Returns the output file name mapping to use, if any. Returns <tt>null</tt> if no file name mapping is set.
+     * Returns the output file name mapping to use, if any. Returns {@code null} if no file name mapping is set.
      *
-     * @return the output file name mapping or <tt>null</tt>
+     * @return the output file name mapping or {@code null}
      */
     String getOutputFileNameMapping();
 
@@ -174,10 +174,10 @@ public interface WarPackagingContext
     List<FilterWrapper> getFilterWrappers();
 
     /**
-     * Specify if the given <tt>fileName</tt> belongs to the list of extensions that must not be filtered
+     * Specify if the given {@code fileName} belongs to the list of extensions that must not be filtered
      *
      * @param fileName the name of file
-     * @return <tt>true</tt> if it should not be filtered, <tt>false</tt> otherwise
+     * @return {@code true} if it should not be filtered, {@code false} otherwise
      * @since 2.1-alpha-2
      */
     boolean isNonFilteredExtension( String fileName );

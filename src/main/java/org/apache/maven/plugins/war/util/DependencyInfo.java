@@ -56,9 +56,9 @@ public class DependencyInfo
     }
 
     /**
-     * Returns the target filename of the dependency. If no target file name is associated, returns <tt>null</tt>.
+     * Returns the target filename of the dependency. If no target file name is associated, returns {@code null}.
      *
-     * @return the target file name or <tt>null</tt>
+     * @return the target file name or {@code null}
      */
     public String getTargetFileName()
     {
