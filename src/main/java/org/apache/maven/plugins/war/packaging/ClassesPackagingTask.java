@@ -107,13 +107,14 @@ public class ClassesPackagingTask
                 + ":" + artifact.getArtifactId() + ":" + artifact.getVersion() + "]", e );
         }
         final String targetFilename = LIB_PATH + archiveName;
+        final File libDirectory = new File( context.getWebappDirectory(), LIB_PATH );
+        final File jarFile = new File( libDirectory, archiveName );
 
         if ( context.getWebappStructure().registerFile( currentProjectOverlay.getId(), targetFilename ) )
         {
             context.addResource( targetFilename );
+            context.getWarResourceCopy().addFileCopy( targetFilename, jarFile );
 
-            final File libDirectory = new File( context.getWebappDirectory(), LIB_PATH );
-            final File jarFile = new File( libDirectory, archiveName );
             final ClassesPackager packager = new ClassesPackager();
             packager.packageClasses( context.getClassesDirectory(), jarFile, context.getJarArchiver(),
                                      context.getSession(), project, context.getArchive(),

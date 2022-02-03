@@ -19,19 +19,20 @@ package org.apache.maven.plugins.war.packaging;
  * under the License.
  */
 
-import java.io.File;
-import java.util.List;
-
 import org.apache.maven.archiver.MavenArchiveConfiguration;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.plugins.war.util.WarResourceCopy;
 import org.apache.maven.plugins.war.util.WebappStructure;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.filtering.MavenFileFilter;
 import org.apache.maven.shared.utils.io.FileUtils.FilterWrapper;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
+
+import java.io.File;
+import java.util.List;
 
 /**
  * The packaging context.
@@ -95,6 +96,17 @@ public interface WarPackagingContext
      * @return true if the classes should be archived, false otherwise
      */
     boolean archiveClasses();
+
+    /**
+     * Skip explded war creation, build web archive on source paths.
+     */
+    boolean skipExplodedWarCreation();
+
+    /**
+     * File Copier
+     * @return
+     */
+    WarResourceCopy getWarResourceCopy();
 
     /**
      * Returns the logger to use to output logging event.
