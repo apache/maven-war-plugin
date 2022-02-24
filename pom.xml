@@ -25,7 +25,7 @@
   <parent>
     <artifactId>maven-plugins</artifactId>
     <groupId>org.apache.maven.plugins</groupId>
-    <version>34</version>
+    <version>35-SNAPSHOT</version>
     <relativePath />
   </parent>
 
@@ -62,8 +62,8 @@
   </distributionManagement>
 
   <properties>
-    <mavenArchiverVersion>3.5.3-SNAPSHOT</mavenArchiverVersion>
-    <mavenFilteringVersion>3.3.0-SNAPSHOT</mavenFilteringVersion>
+    <mavenArchiverVersion>3.5.2</mavenArchiverVersion>
+    <mavenFilteringVersion>3.2.0</mavenFilteringVersion>
     <mavenVersion>4.0.0-alpha-1-SNAPSHOT</mavenVersion>
     <javaVersion>8</javaVersion>
     <project.build.outputTimestamp>2021-09-05T09:31:59Z</project.build.outputTimestamp>
