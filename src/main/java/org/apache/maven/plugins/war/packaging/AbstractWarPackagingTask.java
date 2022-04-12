@@ -29,6 +29,7 @@ import org.apache.maven.plugins.war.util.PathSet;
 import org.apache.maven.plugins.war.util.WebappStructure;
 import org.apache.maven.shared.filtering.MavenFilteringException;
 import org.apache.maven.shared.mapping.MappingUtils;
+import org.apache.maven.shared.utils.StringUtils;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
@@ -257,8 +258,16 @@ public abstract class AbstractWarPackagingTask
                 }
                 else
                 {
-                    // For all others we use the configured encoding
-                    encoding = context.getResourceEncoding();
+                    // Fix for MWAR-450
+                    if ( isPropertiesFile( file ) && StringUtils.isNotEmpty( context.getPropertiesEncoding() ) )
+                    {
+                        encoding = context.getPropertiesEncoding();
+                    }
+                    else
+                    {
+                        // For all others we use the configured encoding
+                        encoding = context.getResourceEncoding();
+                    }
                 }
                 // fix for MWAR-36, ensures that the parent dir are created first
                 targetFile.getParentFile().mkdirs();
@@ -475,6 +484,18 @@ public abstract class AbstractWarPackagingTask
             return MappingUtils.evaluateFileNameMapping( MappingUtils.DEFAULT_FILE_NAME_MAPPING, artifact );
         }
 
+    }
+
+    /**
+     * Determine whether a file is a properties file or not.
+     *
+     * @param file The file to check
+     * @return <code>true</code> if the file is a properties file, otherwise <code>false</code>
+     * @since 3.4.0
+     */
+    private boolean isPropertiesFile( File file )
+    {
+        return file != null && file.isFile() && file.getName().endsWith( ".properties" );
     }
 
     /**

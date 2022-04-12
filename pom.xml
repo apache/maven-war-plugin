@@ -30,7 +30,7 @@
   </parent>
 
   <artifactId>maven-war-plugin</artifactId>
-  <version>3.3.3-SNAPSHOT</version>
+  <version>3.4.0-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
   <name>Apache Maven WAR Plugin</name>
@@ -63,7 +63,7 @@
 
   <properties>
     <mavenArchiverVersion>3.5.0</mavenArchiverVersion>
-    <mavenFilteringVersion>3.1.1</mavenFilteringVersion>
+    <mavenFilteringVersion>3.2.0</mavenFilteringVersion>
     <mavenVersion>3.1.0</mavenVersion>
     <javaVersion>7</javaVersion>
     <project.build.outputTimestamp>2021-09-05T09:31:59Z</project.build.outputTimestamp>
@@ -118,7 +118,7 @@
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-shared-utils</artifactId>
-      <version>3.2.1</version>
+      <version>3.3.3</version>
     </dependency>
     
     <dependency>

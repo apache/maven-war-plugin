@@ -209,6 +209,14 @@ public interface WarPackagingContext
     String getResourceEncoding();
 
     /**
+     * Returns the encoding to use for resources that are properties files.
+     *
+     * @return the encoding for properties files
+     * @since 3.4.0
+     */
+    String getPropertiesEncoding();
+
+    /**
      * @return to use jvmChmod rather than forking chmod cli
      * @since 2.4
      */
