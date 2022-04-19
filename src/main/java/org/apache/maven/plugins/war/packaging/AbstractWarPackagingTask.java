@@ -256,18 +256,14 @@ public abstract class AbstractWarPackagingTask
                     // For xml-files we extract the encoding from the files
                     encoding = getEncoding( file );
                 }
+                else if ( isPropertiesFile( file ) && StringUtils.isNotEmpty( context.getPropertiesEncoding() ) )
+                {
+                    encoding = context.getPropertiesEncoding();
+                }
                 else
                 {
-                    // Fix for MWAR-450
-                    if ( isPropertiesFile( file ) && StringUtils.isNotEmpty( context.getPropertiesEncoding() ) )
-                    {
-                        encoding = context.getPropertiesEncoding();
-                    }
-                    else
-                    {
-                        // For all others we use the configured encoding
-                        encoding = context.getResourceEncoding();
-                    }
+                    // For all others we use the configured encoding
+                    encoding = context.getResourceEncoding();
                 }
                 // fix for MWAR-36, ensures that the parent dir are created first
                 targetFile.getParentFile().mkdirs();
@@ -487,6 +483,19 @@ public abstract class AbstractWarPackagingTask
     }
 
     /**
+     * Determine whether a file is of a certain type, by looking at the file extension.
+     *
+     * @param file The file to check
+     * @param extension The extension for a file type, including the '.'
+     * @return <code>true</code> if the file is a file of the specified type, otherwise <code>false</code>
+     * @since 3.4.0
+     */
+    private boolean isFileOfType( File file, String extension )
+    {
+        return file != null && file.isFile() && file.getName().endsWith( extension );
+    }
+
+    /**
      * Determine whether a file is a properties file or not.
      *
      * @param file The file to check
@@ -495,7 +504,7 @@ public abstract class AbstractWarPackagingTask
      */
     private boolean isPropertiesFile( File file )
     {
-        return file != null && file.isFile() && file.getName().endsWith( ".properties" );
+        return isFileOfType( file, ".properties" );
     }
 
     /**
@@ -508,6 +517,6 @@ public abstract class AbstractWarPackagingTask
      */
     private boolean isXmlFile( File file )
     {
-        return file != null && file.isFile() && file.getName().endsWith( ".xml" );
+        return isFileOfType( file, ".xml" );
     }
 }
