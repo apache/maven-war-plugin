@@ -83,7 +83,7 @@ ${project.name}
 
  * {{{./examples/rapid-testing-jetty6-plugin.html}Rapid Testing the Jetty Plugin}}
 
- * {{{./examples/skinny-wars.html}Creating Skinny WARs}}
+ * {{{https://maven.apache.org/plugins/maven-ear-plugin/examples/skinny-wars.html}Creating Skinny WARs}}
 
  * {{{./examples/including-excluding-files-from-war.html}Including and Excluding Files From the WAR}}
 
