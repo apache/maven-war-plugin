@@ -62,9 +62,9 @@
   </distributionManagement>
 
   <properties>
-    <mavenArchiverVersion>3.5.0</mavenArchiverVersion>
+    <mavenArchiverVersion>3.5.1</mavenArchiverVersion>
     <mavenFilteringVersion>3.2.0</mavenFilteringVersion>
-    <mavenVersion>3.1.0</mavenVersion>
+    <mavenVersion>3.2.5</mavenVersion>
     <javaVersion>7</javaVersion>
     <project.build.outputTimestamp>2021-09-05T09:31:59Z</project.build.outputTimestamp>
   </properties>
@@ -89,16 +89,25 @@
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-plugin-api</artifactId>
       <version>${mavenVersion}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-core</artifactId>
       <version>${mavenVersion}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-model</artifactId>
       <version>${mavenVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-artifact</artifactId>
+      <version>${mavenVersion}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
@@ -109,11 +118,6 @@
       <groupId>org.apache.maven.plugin-tools</groupId>
       <artifactId>maven-plugin-annotations</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-artifact</artifactId>
-      <version>${mavenVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
@@ -129,7 +133,7 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-archiver</artifactId>
-      <version>4.2.2</version>
+      <version>4.2.5</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -152,17 +156,13 @@
       <version>3.0.0</version>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.aether</groupId>
-      <artifactId>aether-api</artifactId>
-      <version>0.9.0.M2</version>
-    </dependency>
-    <dependency>
       <groupId>org.eclipse.sisu</groupId>
       <artifactId>org.eclipse.sisu.plexus</artifactId>
-      <version>0.0.0.M2a</version>
+      <version>0.3.5</version>
+      <scope>provided</scope>
     </dependency>
     
-    <dependency>
+    <dependency> <!-- looks up RepositorySystem -->
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-compat</artifactId>
       <version>${mavenVersion}</version>
@@ -171,13 +171,13 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.13.1</version>
+      <version>4.13.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.plugin-testing</groupId>
       <artifactId>maven-plugin-testing-harness</artifactId>
-      <version>3.1.0</version>
+      <version>3.3.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
