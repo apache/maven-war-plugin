@@ -114,6 +114,15 @@ public abstract class AbstractWarMojo
     private String resourceEncoding;
 
     /**
+     * The character encoding to use when reading and writing filtered properties files.
+     * If not specified, it will default to the value of the "resourceEncoding" parameter.
+     *
+     * @since 3.4.0
+     */
+    @Parameter
+    protected String propertiesEncoding;
+
+    /**
      * The JAR archiver needed for archiving the classes directory into a JAR file under WEB-INF/lib.
      */
     @Component( role = Archiver.class, hint = "jar" )
@@ -523,8 +532,8 @@ public abstract class AbstractWarMojo
         final WarPackagingContext context =
             new DefaultWarPackagingContext( webapplicationDirectory, structure, overlayManager, defaultFilterWrappers,
                                             getNonFilteredFileExtensions(), filteringDeploymentDescriptors,
-                                            this.artifactFactory, resourceEncoding, useJvmChmod, failOnMissingWebXml,
-                                            outputTimestamp );
+                                            this.artifactFactory, resourceEncoding, propertiesEncoding, useJvmChmod,
+                                            failOnMissingWebXml, outputTimestamp );
 
         final List<WarPackagingTask> packagingTasks = getPackagingTasks( overlayManager );
 
@@ -578,6 +587,8 @@ public abstract class AbstractWarMojo
 
         private final String resourceEncoding;
 
+        private final String propertiesEncoding;
+
         private final WebappStructure webappStructure;
 
         private final File webappDirectory;
@@ -607,6 +618,7 @@ public abstract class AbstractWarMojo
          * @param filteringDeploymentDescriptors The filtering deployment descriptors.
          * @param artifactFactory The artifact factory.
          * @param resourceEncoding The resource encoding.
+         * @param propertiesEncoding The encoding to use for properties files.
          * @param useJvmChmod use Jvm chmod or not.
          * @param failOnMissingWebXml Flag to check whether we should ignore missing web.xml or not
          * @param outputTimestamp the output timestamp for reproducible archive creation
@@ -616,7 +628,7 @@ public abstract class AbstractWarMojo
                                            List<FileUtils.FilterWrapper> filterWrappers,
                                            List<String> nonFilteredFileExtensions,
                                            boolean filteringDeploymentDescriptors, ArtifactFactory artifactFactory,
-                                           String resourceEncoding, boolean useJvmChmod,
+                                           String resourceEncoding, String propertiesEncoding, boolean useJvmChmod,
                                            final Boolean failOnMissingWebXml, String outputTimestamp )
         {
             this.webappDirectory = webappDirectory;
@@ -628,6 +640,7 @@ public abstract class AbstractWarMojo
             this.nonFilteredFileExtensions =
                 nonFilteredFileExtensions == null ? Collections.<String>emptyList() : nonFilteredFileExtensions;
             this.resourceEncoding = resourceEncoding;
+            this.propertiesEncoding = propertiesEncoding;
             // This is kinda stupid but if we loop over the current overlays and we request the path structure
             // it will register it. This will avoid wrong warning messages in a later phase
             for ( String overlayId : overlayManager.getOverlayIds() )
@@ -837,6 +850,12 @@ public abstract class AbstractWarMojo
         public String getResourceEncoding()
         {
             return resourceEncoding;
+        }
+
+        @Override
+        public String getPropertiesEncoding()
+        {
+            return propertiesEncoding;
         }
 
         @Override

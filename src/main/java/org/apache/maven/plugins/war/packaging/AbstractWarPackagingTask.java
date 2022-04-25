@@ -29,6 +29,7 @@ import org.apache.maven.plugins.war.util.PathSet;
 import org.apache.maven.plugins.war.util.WebappStructure;
 import org.apache.maven.shared.filtering.MavenFilteringException;
 import org.apache.maven.shared.mapping.MappingUtils;
+import org.apache.maven.shared.utils.StringUtils;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
@@ -255,6 +256,10 @@ public abstract class AbstractWarPackagingTask
                     // For xml-files we extract the encoding from the files
                     encoding = getEncoding( file );
                 }
+                else if ( isPropertiesFile( file ) && StringUtils.isNotEmpty( context.getPropertiesEncoding() ) )
+                {
+                    encoding = context.getPropertiesEncoding();
+                }
                 else
                 {
                     // For all others we use the configured encoding
@@ -478,6 +483,31 @@ public abstract class AbstractWarPackagingTask
     }
 
     /**
+     * Determine whether a file is of a certain type, by looking at the file extension.
+     *
+     * @param file The file to check
+     * @param extension The extension for a file type, including the '.'
+     * @return <code>true</code> if the file is a file of the specified type, otherwise <code>false</code>
+     * @since 3.4.0
+     */
+    private boolean isFileOfType( File file, String extension )
+    {
+        return file != null && file.isFile() && file.getName().endsWith( extension );
+    }
+
+    /**
+     * Determine whether a file is a properties file or not.
+     *
+     * @param file The file to check
+     * @return <code>true</code> if the file is a properties file, otherwise <code>false</code>
+     * @since 3.4.0
+     */
+    private boolean isPropertiesFile( File file )
+    {
+        return isFileOfType( file, ".properties" );
+    }
+
+    /**
      * Returns <code>true</code> if the <code>File</code>-object is a file (not a directory) that is not
      * <code>null</code> and has a file name that ends in ".xml".
      *
@@ -487,6 +517,6 @@ public abstract class AbstractWarPackagingTask
      */
     private boolean isXmlFile( File file )
     {
-        return file != null && file.isFile() && file.getName().endsWith( ".xml" );
+        return isFileOfType( file, ".xml" );
     }
 }
