@@ -21,6 +21,8 @@ package org.apache.maven.plugins.war.packaging;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
 
 import org.apache.commons.io.input.XmlStreamReader;
 import org.apache.maven.artifact.Artifact;
@@ -342,14 +344,15 @@ public abstract class AbstractWarPackagingTask
     {
         context.addResource( targetFilename );
 
-        if ( onlyIfModified && destination.lastModified() >= source.lastModified() )
+        BasicFileAttributes readAttributes = Files.readAttributes( source.toPath(), BasicFileAttributes.class );
+        if ( onlyIfModified && destination.lastModified() >= readAttributes.lastModifiedTime().toMillis() )
         {
             context.getLog().debug( " * " + targetFilename + " is up to date." );
             return false;
         }
         else
         {
-            if ( source.isDirectory() )
+            if ( readAttributes.isDirectory() )
             {
                 context.getLog().warn( " + " + targetFilename + " is packaged from the source folder" );
 
@@ -364,16 +367,14 @@ public abstract class AbstractWarPackagingTask
                 {
                     String msg = "Failed to create " + targetFilename;
                     context.getLog().error( msg, e );
-                    IOException ioe = new IOException( msg );
-                    ioe.initCause( e );
-                    throw ioe;
+                    throw new IOException( msg, e );
                 }
             }
             else
             {
                 FileUtils.copyFile( source.getCanonicalFile(), destination );
                 // preserve timestamp
-                destination.setLastModified( source.lastModified() );
+                destination.setLastModified( readAttributes.lastModifiedTime().toMillis() );
                 context.getLog().debug( " + " + targetFilename + " has been copied." );
             }
             return true;

@@ -329,7 +329,7 @@ public class WarOverlaysTest
 
         Overlay over4 = new DefaultOverlay( overlay2 );
 
-        mojo.setOverlays( new LinkedList<Overlay>() );
+        mojo.setOverlays( new LinkedList<>() );
         mojo.addOverlay( over1 );
         mojo.addOverlay( over2 );
         mojo.addOverlay( over3 );
@@ -399,7 +399,7 @@ public class WarOverlaysTest
 
         Overlay over4 = new DefaultOverlay( overlay2 );
 
-        mojo.setOverlays( new LinkedList<Overlay>() );
+        mojo.setOverlays( new LinkedList<>() );
         mojo.addOverlay( over1 );
         mojo.addOverlay( over2 );
         mojo.addOverlay( over3 );

@@ -50,13 +50,13 @@ public class MavenProject4CopyConstructor
     {
         // the pom should be located in the isolated dummy root         
         super.setFile( new File( getBasedir(), "pom.xml" ) );
-        super.setDependencyArtifacts( new HashSet<Artifact>() );
-        super.setArtifacts( new HashSet<Artifact>() );
-        super.setExtensionArtifacts( new HashSet<Artifact>() );
-        super.setRemoteArtifactRepositories( new LinkedList<ArtifactRepository>() );
-        super.setPluginArtifactRepositories( new LinkedList<ArtifactRepository>() );
-        super.setCollectedProjects( new LinkedList<MavenProject>() );
-        super.setActiveProfiles( new LinkedList<Profile>() );
+        super.setDependencyArtifacts( new HashSet<>() );
+        super.setArtifacts( new HashSet<>() );
+        super.setExtensionArtifacts( new HashSet<>() );
+        super.setRemoteArtifactRepositories( new LinkedList<>() );
+        super.setPluginArtifactRepositories( new LinkedList<>() );
+        super.setCollectedProjects( new LinkedList<>() );
+        super.setActiveProfiles( new LinkedList<>() );
         super.setOriginalModel( null );
         super.setExecutionProject( this );
         super.setBuild( getBuild() );

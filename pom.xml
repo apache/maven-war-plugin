@@ -65,7 +65,7 @@
     <mavenArchiverVersion>3.5.1</mavenArchiverVersion>
     <mavenFilteringVersion>3.2.0</mavenFilteringVersion>
     <mavenVersion>3.2.5</mavenVersion>
-    <javaVersion>7</javaVersion>
+    <javaVersion>8</javaVersion>
     <project.build.outputTimestamp>2021-09-05T09:31:59Z</project.build.outputTimestamp>
   </properties>
 
