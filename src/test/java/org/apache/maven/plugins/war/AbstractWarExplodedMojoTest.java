@@ -109,7 +109,7 @@ public abstract class AbstractWarExplodedMojoTest
             }
         }
 
-        configureMojo( mojo, new LinkedList<String>(), classesDir, webAppSource, webAppDirectory, project );
+        configureMojo( mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project );
         setVariableValueToObject( mojo, "workDirectory", workDirectory );
 
         return webAppDirectory;

@@ -34,13 +34,13 @@ public class WebappStructureTest
 {
     public void testUnknownFileNotAvailable()
     {
-        final WebappStructure structure = new WebappStructure( new ArrayList<Dependency>() );
+        final WebappStructure structure = new WebappStructure( new ArrayList<>() );
         assertFalse( structure.isRegistered( "/foo/bar.txt" ) );
     }
 
     public void testRegisterSamePathTwice()
     {
-        final WebappStructure structure = new WebappStructure( new ArrayList<Dependency>() );
+        final WebappStructure structure = new WebappStructure( new ArrayList<>() );
         structure.registerFile( "overlay1", "WEB-INF/web.xml" );
         assertFalse( structure.registerFile( "currentBuild", "WEB-INF/web.xml" ) );
     }
@@ -48,7 +48,7 @@ public class WebappStructureTest
     public void testRegisterForced()
     {
         final String path = "WEB-INF/web.xml";
-        final WebappStructure structure = new WebappStructure( new ArrayList<Dependency>() );
+        final WebappStructure structure = new WebappStructure( new ArrayList<>() );
         assertFalse("New file should return false",
                     structure.registerFileForced( "overlay1", path ));
         assertEquals( "overlay1", structure.getOwner( path ) );         
@@ -57,7 +57,7 @@ public class WebappStructureTest
     public void testRegisterSamePathTwiceForced()
     {
         final String path = "WEB-INF/web.xml";
-        final WebappStructure structure = new WebappStructure( new ArrayList<Dependency>() );
+        final WebappStructure structure = new WebappStructure( new ArrayList<>() );
         structure.registerFile( "overlay1", path );
         assertEquals( "overlay1", structure.getOwner( path ) );
         assertTrue("owner replacement should have returned true",

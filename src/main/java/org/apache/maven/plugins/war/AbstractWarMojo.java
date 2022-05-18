@@ -638,7 +638,7 @@ public abstract class AbstractWarMojo
             this.artifactFactory = artifactFactory;
             this.filteringDeploymentDescriptors = filteringDeploymentDescriptors;
             this.nonFilteredFileExtensions =
-                nonFilteredFileExtensions == null ? Collections.<String>emptyList() : nonFilteredFileExtensions;
+                nonFilteredFileExtensions == null ? Collections.emptyList() : nonFilteredFileExtensions;
             this.resourceEncoding = resourceEncoding;
             this.propertiesEncoding = propertiesEncoding;
             // This is kinda stupid but if we loop over the current overlays and we request the path structure
