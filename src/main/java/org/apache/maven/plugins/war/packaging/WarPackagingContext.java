@@ -250,4 +250,10 @@ public interface WarPackagingContext
      * @since 3.3.0
      */
     String getOutputTimestamp();
+
+    /**
+     * If files are modified, but the target is readonly, force update.
+     * @return forceOverwriteResources
+     */
+    boolean isForceOverwriteResources();
 }

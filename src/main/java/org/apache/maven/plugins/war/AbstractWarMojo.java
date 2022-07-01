@@ -138,6 +138,11 @@ public abstract class AbstractWarMojo
     private Resource[] webResources;
 
     /**
+     * If resources should be overwritten, even if they are read only
+     */
+    @Parameter( defaultValue = "false" )
+    boolean forceOverwriteResources;
+    /**
      * Filters (property files) to include during the interpolation of the pom.xml.
      */
     @Parameter
@@ -524,7 +529,7 @@ public abstract class AbstractWarMojo
             new DefaultWarPackagingContext( webapplicationDirectory, structure, overlayManager, defaultFilterWrappers,
                                             getNonFilteredFileExtensions(), filteringDeploymentDescriptors,
                                             this.artifactFactory, resourceEncoding, useJvmChmod, failOnMissingWebXml,
-                                            outputTimestamp );
+                                            outputTimestamp, forceOverwriteResources );
 
         final List<WarPackagingTask> packagingTasks = getPackagingTasks( overlayManager );
 
@@ -597,6 +602,8 @@ public abstract class AbstractWarMojo
         private final Collection<String> outdatedResources;
 
         private final String outputTimestamp;
+        
+        private final boolean forceOverwriteResources;
 
         /**
          * @param webappDirectory The web application directory.
@@ -617,7 +624,8 @@ public abstract class AbstractWarMojo
                                            List<String> nonFilteredFileExtensions,
                                            boolean filteringDeploymentDescriptors, ArtifactFactory artifactFactory,
                                            String resourceEncoding, boolean useJvmChmod,
-                                           final Boolean failOnMissingWebXml, String outputTimestamp )
+                                           final Boolean failOnMissingWebXml, String outputTimestamp,
+                                           boolean forceOverwriteResources )
         {
             this.webappDirectory = webappDirectory;
             this.webappStructure = webappStructure;
@@ -688,6 +696,7 @@ public abstract class AbstractWarMojo
                 }
             }
             this.outputTimestamp = outputTimestamp;
+            this.forceOverwriteResources = forceOverwriteResources;
         }
 
         protected boolean checkAllPathsForOutdated() 
@@ -871,6 +880,12 @@ public abstract class AbstractWarMojo
         public String getOutputTimestamp()
         {
             return outputTimestamp;
+        }
+        
+        @Override
+        public boolean isForceOverwriteResources()
+        {
+            return forceOverwriteResources;
         }
     }
 
