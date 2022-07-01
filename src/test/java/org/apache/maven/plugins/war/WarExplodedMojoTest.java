@@ -150,6 +150,65 @@ public class WarExplodedMojoTest
     /**
      * @throws Exception in case of an error.
      */
+    public void testReadOnlyFileInDestinationInExplodedWar()
+        throws Exception
+    {
+        // setup test data
+        String testId = "SimpleExplodedWar";
+        MavenProjectBasicStub project = new MavenProjectBasicStub();
+        File webAppSource = createWebAppSource( testId );
+        File classesDir = createClassesDir( testId, false );
+        File webAppResource = new File( getTestDirectory(), testId + "-resources" );
+        File webAppDirectory = new File( getTestDirectory(), testId );
+        File sampleResource = new File( webAppResource, "pix/panis_na.jpg" );
+        ResourceStub[] resources = new ResourceStub[] { new ResourceStub() };
+        
+        
+        createFile( sampleResource );
+        
+        File conflictingFile = new File( webAppDirectory, "pix/panis_na.jpg" );
+        if (conflictingFile.exists() )
+        {
+        	conflictingFile.delete();
+        }
+        
+        createFile( conflictingFile );
+        conflictingFile.setWritable(false);
+        conflictingFile.setLastModified(System.currentTimeMillis()-100_000);
+        
+        assertTrue( "sampeResource not found", sampleResource.exists() );
+
+        // configure mojo
+        resources[0].setDirectory( webAppResource.getAbsolutePath() );
+        mojo.forceOverwriteResources=true;
+        
+        this.configureMojo( mojo, new LinkedList<String>(), classesDir, webAppSource, webAppDirectory, project );
+        setVariableValueToObject( mojo, "webResources", resources );
+        mojo.execute();
+
+        // validate operation
+        File expectedWebSourceFile = new File( webAppDirectory, "pansit.jsp" );
+        File expectedWebSource2File = new File( webAppDirectory, "org/web/app/last-exile.jsp" );
+        File expectedWebResourceFile = new File( webAppDirectory, "pix/panis_na.jpg" );
+        File expectedWEBINFDir = new File( webAppDirectory, "WEB-INF" );
+        File expectedMETAINFDir = new File( webAppDirectory, "META-INF" );
+
+        assertTrue( "source files not found: " + expectedWebSourceFile.toString(), expectedWebSourceFile.exists() );
+        assertTrue( "source files not found: " + expectedWebSource2File.toString(), expectedWebSource2File.exists() );
+        assertTrue( "resources doesn't exist: " + expectedWebResourceFile, expectedWebResourceFile.exists() );
+        assertTrue( "WEB-INF not found", expectedWEBINFDir.exists() );
+        assertTrue( "META-INF not found", expectedMETAINFDir.exists() );
+
+        // house keeping
+        expectedWebSourceFile.delete();
+        expectedWebSource2File.delete();
+        expectedWebResourceFile.delete();
+        conflictingFile.delete();
+    }
+    
+    /**
+     * @throws Exception in case of an error.
+     */
     public void testExplodedWar_WithCustomWebXML()
         throws Exception
     {
