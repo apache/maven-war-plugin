@@ -89,6 +89,4 @@ Including and Excluding Files From the WAR
 +-----------------+
 
   If you have more real life examples of using regular expressions, we'd like to
-  know about them. Please file an issue in
-  {{{../issue-tracking.html}our issue tracker}} with your configuration, so we
-  can expand this page.
+  know about them. 
