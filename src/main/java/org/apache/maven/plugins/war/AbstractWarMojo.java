@@ -51,12 +51,12 @@ import org.apache.maven.plugins.war.packaging.WarPackagingTask;
 import org.apache.maven.plugins.war.packaging.WarProjectPackagingTask;
 import org.apache.maven.plugins.war.util.WebappStructure;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.shared.filtering.FilterWrapper;
 import org.apache.maven.shared.filtering.MavenFileFilter;
 import org.apache.maven.shared.filtering.MavenFilteringException;
 import org.apache.maven.shared.filtering.MavenResourcesExecution;
 import org.apache.maven.shared.filtering.MavenResourcesFiltering;
 import org.apache.maven.shared.utils.StringUtils;
-import org.apache.maven.shared.utils.io.FileUtils;
 import org.codehaus.plexus.archiver.Archiver;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
@@ -494,7 +494,7 @@ public abstract class AbstractWarMojo
             new OverlayManager( overlays, mavenProject, getDependentWarIncludes(), getDependentWarExcludes(),
                                 currentProjectOverlay );
         // CHECKSTYLE_ON: LineLength
-        List<FileUtils.FilterWrapper> defaultFilterWrappers;
+        List<FilterWrapper> defaultFilterWrappers;
         try
         {
             MavenResourcesExecution mavenResourcesExecution = new MavenResourcesExecution();
@@ -595,7 +595,7 @@ public abstract class AbstractWarMojo
 
         private final OverlayManager overlayManager;
 
-        private final List<FileUtils.FilterWrapper> filterWrappers;
+        private final List<FilterWrapper> filterWrappers;
 
         private List<String> nonFilteredFileExtensions;
 
@@ -625,7 +625,7 @@ public abstract class AbstractWarMojo
          */
         DefaultWarPackagingContext( final File webappDirectory, final WebappStructure webappStructure,
                                            final OverlayManager overlayManager,
-                                           List<FileUtils.FilterWrapper> filterWrappers,
+                                           List<FilterWrapper> filterWrappers,
                                            List<String> nonFilteredFileExtensions,
                                            boolean filteringDeploymentDescriptors, ArtifactFactory artifactFactory,
                                            String resourceEncoding, String propertiesEncoding, boolean useJvmChmod,
@@ -817,7 +817,7 @@ public abstract class AbstractWarMojo
         }
 
         @Override
-        public List<FileUtils.FilterWrapper> getFilterWrappers()
+        public List<FilterWrapper> getFilterWrappers()
         {
             return filterWrappers;
         }
