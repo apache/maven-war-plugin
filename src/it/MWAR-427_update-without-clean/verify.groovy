@@ -18,9 +18,9 @@
  */
 
 def warFile = new java.util.jar.JarFile( new File(basedir,"target/mwar427-1.0-SNAPSHOT.war"), false)
-assert warFile.getEntry('WEB-INF/lib/plexus-utils-1.4.5.jar') != null
+assert warFile.getEntry('WEB-INF/lib/plexus-utils-3.0.23.jar') != null
 assert warFile.getEntry('WEB-INF/lib/mwar427-1.0-SNAPSHOT.jar') != null
 assert warFile.getEntry('index.html') != null
 
-assert warFile.getEntry('WEB-INF/lib/plexus-utils-1.4.6.jar') == null
+assert warFile.getEntry('WEB-INF/lib/plexus-utils-3.0.24.jar') == null
 assert warFile.getEntry('root.html') != null // after MWAR-433, only WEB-INF/lib/ content is checked, other resources may be generated outside m-war-p

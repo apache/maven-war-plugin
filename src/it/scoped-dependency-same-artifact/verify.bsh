@@ -66,16 +66,16 @@ try
         return false;
     }
 
-    File plexusUtilsDependency = new File( libDir, "plexus-utils-1.4.7.jar" );
+    File plexusUtilsDependency = new File( libDir, "plexus-utils-3.0.24.jar" );
     if ( !plexusUtilsDependency.exists() || plexusUtilsDependency.isDirectory() )
     {
-        System.err.println( "plexus-utils-1.4.7.jar is missing or a directory." );
+        System.err.println( "plexus-utils-3.0.24.jar is missing or a directory." );
         return false;
     }
-    File plexusUtilsSourceDependency = new File( libDir, "plexus-utils-1.4.7-sources.jar" );
+    File plexusUtilsSourceDependency = new File( libDir, "plexus-utils-3.0.24-sources.jar" );
     if ( !plexusUtilsSourceDependency.exists() || plexusUtilsSourceDependency.isDirectory() )
     {
-        System.err.println( "plexus-utils-1.4.7-sources.jar is missing or a directory." );
+        System.err.println( "plexus-utils-3.0.24-sources.jar is missing or a directory." );
         return false;
     }
 }
