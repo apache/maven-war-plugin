@@ -65,7 +65,7 @@ public class ClassesPackager
             archiver.setArchiver( jarArchiver );
             archiver.setOutputFile( targetFile );
             archiver.setCreatedBy( "Maven WAR Plugin", "org.apache.maven.plugins", "maven-war-plugin" );
-            archiver.configureReproducible( outputTimestamp );
+            archiver.configureReproducibleBuild( outputTimestamp );
             archiver.getArchiver().addDirectory( classesDirectory );
             archiver.createArchive( session, project, archiveConfiguration );
         }
