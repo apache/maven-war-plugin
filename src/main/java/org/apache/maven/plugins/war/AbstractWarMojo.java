@@ -400,7 +400,7 @@ public abstract class AbstractWarMojo
     protected String[] getExcludes()
     {
         List<String> excludeList = new ArrayList<>();
-        if ( StringUtils.isNotEmpty( warSourceExcludes ) )
+        if ( warSourceExcludes != null && !warSourceExcludes.isEmpty() )
         {
             excludeList.addAll( Arrays.asList( StringUtils.split( warSourceExcludes, "," ) ) );
         }
