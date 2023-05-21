@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.war.stub;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.plugins.war.stub;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.plugins.war.stub;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.war.stub;
 
 import java.io.File;
 
@@ -27,63 +26,48 @@ import org.apache.maven.artifact.handler.ArtifactHandler;
  * @author Olivier Lamy
  * @since 8 juin 07
  */
-public class ZipArtifactStub
-    extends AbstractArtifactStub
-{
+public class ZipArtifactStub extends AbstractArtifactStub {
     private File zip;
 
-    public ZipArtifactStub( String basedir, ArtifactHandler artifactHandler, File zipFile )
-    {
-        super( basedir );
-        super.setArtifactHandler( artifactHandler );
+    public ZipArtifactStub(String basedir, ArtifactHandler artifactHandler, File zipFile) {
+        super(basedir);
+        super.setArtifactHandler(artifactHandler);
         this.zip = zipFile;
     }
 
-    
-    public String getId()
-    {
+    public String getId() {
         return null;
     }
 
-    public ArtifactHandler getArtifactHandler()
-    {
+    public ArtifactHandler getArtifactHandler() {
         return super.getArtifactHandler();
     }
 
-    public String getScope()
-    {
+    public String getScope() {
         return super.getScope();
     }
 
-    public String getVersion()
-    {
+    public String getVersion() {
         return "1.0";
     }
 
-    public boolean isOptional()
-    {
+    public boolean isOptional() {
         return super.isOptional();
     }
 
-    public File getFile()
-    {
+    public File getFile() {
         return this.zip;
     }
 
-    public String getType()
-    {
+    public String getType() {
         return "zip";
     }
 
-   
-    public String getArtifactId()
-    {
+    public String getArtifactId() {
         return "zipId";
     }
 
-    public String getGroupId()
-    {
+    public String getGroupId() {
         return "zipGroupId";
     }
-
 }

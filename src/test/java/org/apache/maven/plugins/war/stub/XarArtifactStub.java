@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.war.stub;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.plugins.war.stub;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,62 +16,50 @@ package org.apache.maven.plugins.war.stub;
  * specific language governing permissions and limitations
  * under the License.
  */
-
-
-import org.apache.maven.artifact.handler.ArtifactHandler;
+package org.apache.maven.plugins.war.stub;
 
 import java.io.File;
+
+import org.apache.maven.artifact.handler.ArtifactHandler;
 
 /**
  * @author Auke Schrijnen
  */
-public class XarArtifactStub
-    extends AbstractArtifactStub
-{
+public class XarArtifactStub extends AbstractArtifactStub {
     protected String groupId;
 
     private ArtifactHandler artifactHandler;
 
-    public XarArtifactStub( String basedir, ArtifactHandler artifactHandler )
-    {
-        super( basedir );
+    public XarArtifactStub(String basedir, ArtifactHandler artifactHandler) {
+        super(basedir);
         this.artifactHandler = artifactHandler;
     }
 
-    public void setGroupId( String id )
-    {
+    public void setGroupId(String id) {
         groupId = id;
     }
 
-    public String getGroupId()
-    {
-        if ( groupId != null )
-        {
+    public String getGroupId() {
+        if (groupId != null) {
             return groupId;
-        }
-        else
-        {
+        } else {
             return "org.sample.xar";
         }
     }
 
-    public String getType()
-    {
+    public String getType() {
         return "xar";
     }
 
-    public String getArtifactId()
-    {
+    public String getArtifactId() {
         return "xarartifact";
     }
 
-    public File getFile()
-    {
-        return new File( basedir, "/target/test-classes/unit/sample_wars/simple.xar" );
+    public File getFile() {
+        return new File(basedir, "/target/test-classes/unit/sample_wars/simple.xar");
     }
 
-    public ArtifactHandler getArtifactHandler()
-    {
+    public ArtifactHandler getArtifactHandler() {
         return artifactHandler;
     }
 }

@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.war.stub;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.plugins.war.stub;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,67 +16,57 @@ package org.apache.maven.plugins.war.stub;
  * specific language governing permissions and limitations
  * under the License.
  */
-
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.model.Dependency;
-import org.apache.maven.plugin.testing.stubs.ArtifactStub;
+package org.apache.maven.plugins.war.stub;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class MavenProjectArtifactsStub
-    extends MavenProjectBasicStub
-{
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.model.Dependency;
+import org.apache.maven.plugin.testing.stubs.ArtifactStub;
+
+public class MavenProjectArtifactsStub extends MavenProjectBasicStub {
     TreeSet<Artifact> artifacts;
 
-    public MavenProjectArtifactsStub()
-        throws Exception
-    {
+    public MavenProjectArtifactsStub() throws Exception {
         artifacts = new TreeSet<>();
     }
 
-    public void addArtifact( ArtifactStub stub )
-    {
-        artifacts.add( stub );
+    public void addArtifact(ArtifactStub stub) {
+        artifacts.add(stub);
     }
 
-    public Set<Artifact> getArtifacts()
-    {
+    public Set<Artifact> getArtifacts() {
         return artifacts;
     }
 
-    public List<Dependency> getDependencies()
-    {
-        if ( getArtifacts() == null )
-        {
+    public List<Dependency> getDependencies() {
+        if (getArtifacts() == null) {
             return new ArrayList<>();
         }
         final List<Dependency> dependencies = new ArrayList<>();
-        for ( Artifact a : getArtifacts() )
-        {
+        for (Artifact a : getArtifacts()) {
             Dependency dependency = new Dependency();
-            dependency.setArtifactId( a.getArtifactId() );
-            dependency.setGroupId( a.getGroupId() );
-            dependency.setVersion( a.getVersion() );
-            dependency.setScope( a.getScope() );
-            dependency.setType( a.getType() );
-            dependency.setClassifier( a.getClassifier() );
-            dependencies.add( dependency );
-
+            dependency.setArtifactId(a.getArtifactId());
+            dependency.setGroupId(a.getGroupId());
+            dependency.setVersion(a.getVersion());
+            dependency.setScope(a.getScope());
+            dependency.setType(a.getType());
+            dependency.setClassifier(a.getClassifier());
+            dependencies.add(dependency);
         }
         return dependencies;
     }
 
-    public List<String> getRuntimeClasspathElements()
-    {
+    public List<String> getRuntimeClasspathElements() {
         List<String> artifacts = new ArrayList<>();
 
         artifacts.add(
-            "src/test/resources/unit/manifest/manifest-with-classpath/sample-artifacts/maven-artifact1-1.0-SNAPSHOT.jar" );
+                "src/test/resources/unit/manifest/manifest-with-classpath/sample-artifacts/maven-artifact1-1.0-SNAPSHOT.jar");
         artifacts.add(
-            "src/test/resources/unit/manifest/manifest-with-classpath/sample-artifacts/maven-artifact2-1.0-SNAPSHOT.jar" );
+                "src/test/resources/unit/manifest/manifest-with-classpath/sample-artifacts/maven-artifact2-1.0-SNAPSHOT.jar");
 
         return artifacts;
     }

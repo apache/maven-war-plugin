@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.war;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.plugins.war;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.war;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -29,18 +28,16 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
  * Create an exploded webapp in a specified directory.
  *
  */
-@Mojo( name = "exploded", defaultPhase = LifecyclePhase.PACKAGE, threadSafe = true,
-                requiresDependencyResolution = ResolutionScope.RUNTIME )
-public class WarExplodedMojo
-    extends AbstractWarMojo
-{
+@Mojo(
+        name = "exploded",
+        defaultPhase = LifecyclePhase.PACKAGE,
+        threadSafe = true,
+        requiresDependencyResolution = ResolutionScope.RUNTIME)
+public class WarExplodedMojo extends AbstractWarMojo {
     @Override
-    public void execute()
-        throws MojoExecutionException, MojoFailureException
-    {
-        getLog().info( "Exploding webapp" );
+    public void execute() throws MojoExecutionException, MojoFailureException {
+        getLog().info("Exploding webapp");
 
-        buildExplodedWebapp( getWebappDirectory() );
+        buildExplodedWebapp(getWebappDirectory());
     }
-
 }

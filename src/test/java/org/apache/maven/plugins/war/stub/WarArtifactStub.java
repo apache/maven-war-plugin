@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.war.stub;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.plugins.war.stub;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,15 +16,14 @@ package org.apache.maven.plugins.war.stub;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.war.stub;
 
 import java.io.File;
 
 /**
  * Stub
  */
-public class WarArtifactStub
-    extends AbstractArtifactStub
-{
+public class WarArtifactStub extends AbstractArtifactStub {
 
     private String groupId;
 
@@ -36,80 +33,59 @@ public class WarArtifactStub
 
     private File file;
 
-    public WarArtifactStub( String _basedir )
-    {
-        super( _basedir );
+    public WarArtifactStub(String _basedir) {
+        super(_basedir);
     }
 
-    public String getType()
-    {
+    public String getType() {
         return "war";
     }
 
-    public String getArtifactId()
-    {
-        if ( artifactId == null )
-        {
+    public String getArtifactId() {
+        if (artifactId == null) {
             return "simple";
-        }
-        else
-        {
+        } else {
             return artifactId;
         }
     }
 
-    public void setArtifactId( String _artifactId )
-    {
+    public void setArtifactId(String _artifactId) {
         artifactId = _artifactId;
     }
 
-
-    public String getGroupId()
-    {
-        if ( groupId == null )
-        {
+    public String getGroupId() {
+        if (groupId == null) {
             return "wartests";
-        }
-        else
-        {
+        } else {
             return groupId;
         }
     }
 
-    public void setGroupId( String groupId )
-    {
+    public void setGroupId(String groupId) {
         this.groupId = groupId;
     }
 
-    public File getFile()
-    {
-        if ( file == null )
-        {
-            return new File( basedir, "/target/test-classes/unit/sample_wars/simple.war" );
-        }
-        else
-        {
+    public File getFile() {
+        if (file == null) {
+            return new File(basedir, "/target/test-classes/unit/sample_wars/simple.war");
+        } else {
             return file;
         }
     }
 
-    public void setFile( File _file )
-    {
+    public void setFile(File _file) {
         file = _file;
     }
 
-    public String getClassifier()
-    {
+    public String getClassifier() {
         return classifier;
     }
 
-    public void setClassifier( String classifier )
-    {
+    public void setClassifier(String classifier) {
         this.classifier = classifier;
     }
 
-    public boolean hasClassifier()
-    {
+    public boolean hasClassifier() {
         return classifier != null;
     }
 }

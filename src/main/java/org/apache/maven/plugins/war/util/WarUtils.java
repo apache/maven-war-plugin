@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.war.util;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.plugins.war.util;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.war.util;
 
 import java.util.Objects;
 
@@ -28,29 +27,22 @@ import org.apache.maven.project.MavenProject;
 /**
  * @author Stephane Nicoll
  */
-public class WarUtils
-{
+public class WarUtils {
 
     /**
      * @param project {@link MavenProject}
      * @param dependency {@link Dependency}
      * @return {@link Artifact}
      */
-    public static Artifact getArtifact( MavenProject project, Dependency dependency )
-    {
-        for ( Artifact artifact : project.getArtifacts() )
-        {
-            if ( artifact.getGroupId().equals( dependency.getGroupId() )
-                && artifact.getArtifactId().equals( dependency.getArtifactId() )
-                && artifact.getType().equals( dependency.getType() ) )
-            {
-                if ( artifact.getClassifier() == null && dependency.getClassifier() == null )
-                {
+    public static Artifact getArtifact(MavenProject project, Dependency dependency) {
+        for (Artifact artifact : project.getArtifacts()) {
+            if (artifact.getGroupId().equals(dependency.getGroupId())
+                    && artifact.getArtifactId().equals(dependency.getArtifactId())
+                    && artifact.getType().equals(dependency.getType())) {
+                if (artifact.getClassifier() == null && dependency.getClassifier() == null) {
                     return artifact;
-                }
-                else if ( dependency.getClassifier() != null
-                    && dependency.getClassifier().equals( artifact.getClassifier() ) )
-                {
+                } else if (dependency.getClassifier() != null
+                        && dependency.getClassifier().equals(artifact.getClassifier())) {
                     return artifact;
                 }
             }
@@ -63,43 +55,33 @@ public class WarUtils
      * @param dependency {@link Dependency}
      * @return is related or not.
      */
-    public static boolean isRelated( Artifact artifact, Dependency dependency )
-    {
-        if ( artifact == null || dependency == null )
-        {
+    public static boolean isRelated(Artifact artifact, Dependency dependency) {
+        if (artifact == null || dependency == null) {
             return false;
         }
 
-        if ( !Objects.equals( artifact.getGroupId(), dependency.getGroupId() ) )
-        {
+        if (!Objects.equals(artifact.getGroupId(), dependency.getGroupId())) {
             return false;
         }
-        if ( !Objects.equals( artifact.getArtifactId(), dependency.getArtifactId() ) )
-        {
+        if (!Objects.equals(artifact.getArtifactId(), dependency.getArtifactId())) {
             return false;
         }
-        if ( Objects.equals( artifact.getVersion(), dependency.getVersion() ) )
-        {
+        if (Objects.equals(artifact.getVersion(), dependency.getVersion())) {
             return false;
         }
-        if ( Objects.equals( artifact.getType(), dependency.getType() ) )
-        {
+        if (Objects.equals(artifact.getType(), dependency.getType())) {
             return false;
         }
-        if ( Objects.equals( artifact.getClassifier(), dependency.getClassifier() ) )
-        {
+        if (Objects.equals(artifact.getClassifier(), dependency.getClassifier())) {
             return false;
         }
-        if ( Objects.equals( artifact.getScope(), dependency.getScope() ) )
-        {
+        if (Objects.equals(artifact.getScope(), dependency.getScope())) {
             return false;
         }
-        if ( artifact.isOptional() != dependency.isOptional() )
-        {
+        if (artifact.isOptional() != dependency.isOptional()) {
             return false;
         }
 
         return true;
     }
-
 }

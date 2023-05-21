@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.war.stub;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.plugins.war.stub;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.plugins.war.stub;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.war.stub;
 
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
@@ -27,31 +26,24 @@ import org.apache.maven.artifact.versioning.VersionRange;
  * stub for copy constructor
  * to prevent the copy constructor from blowing up
  */
-public class WarArtifact4CCStub
-    extends WarArtifactStub
-{
-    public WarArtifact4CCStub( String basedir )
-    {
-        super( basedir );
+public class WarArtifact4CCStub extends WarArtifactStub {
+    public WarArtifact4CCStub(String basedir) {
+        super(basedir);
     }
 
-    public VersionRange getVersionRange()
-    {
-        return VersionRange.createFromVersion( getVersion() );
+    public VersionRange getVersionRange() {
+        return VersionRange.createFromVersion(getVersion());
     }
 
-    public String getGroupId()
-    {
+    public String getGroupId() {
         return "org.maven.plugin.test";
     }
 
-    public String getClassifier()
-    {
+    public String getClassifier() {
         return "testclassifier";
     }
 
-    public ArtifactHandler getArtifactHandler()
-    {
+    public ArtifactHandler getArtifactHandler() {
         return new DefaultArtifactHandler();
     }
 }

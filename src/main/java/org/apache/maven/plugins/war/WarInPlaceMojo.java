@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.war;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.plugins.war;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.war;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -28,16 +27,12 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
  * Generate the webapp in the WAR source directory.
  *
  */
-@Mojo( name = "inplace", requiresDependencyResolution = ResolutionScope.RUNTIME, threadSafe = true )
-public class WarInPlaceMojo
-    extends AbstractWarMojo
-{
+@Mojo(name = "inplace", requiresDependencyResolution = ResolutionScope.RUNTIME, threadSafe = true)
+public class WarInPlaceMojo extends AbstractWarMojo {
     @Override
-    public void execute()
-        throws MojoExecutionException, MojoFailureException
-    {
-        getLog().info( "Generating webapp in source directory [" + getWarSourceDirectory() + "]" );
+    public void execute() throws MojoExecutionException, MojoFailureException {
+        getLog().info("Generating webapp in source directory [" + getWarSourceDirectory() + "]");
 
-        buildExplodedWebapp( getWarSourceDirectory() );
+        buildExplodedWebapp(getWarSourceDirectory());
     }
 }

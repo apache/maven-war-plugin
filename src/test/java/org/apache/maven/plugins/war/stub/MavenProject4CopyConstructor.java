@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.war.stub;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.plugins.war.stub;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.plugins.war.stub;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.war.stub;
 
 import java.io.File;
 import java.util.HashSet;
@@ -25,40 +24,31 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.model.Profile;
-import org.apache.maven.project.MavenProject;
 
-public class MavenProject4CopyConstructor
-    extends MavenProjectBasicStub
-{
+public class MavenProject4CopyConstructor extends MavenProjectBasicStub {
     protected ModelStub model;
 
-    public MavenProject4CopyConstructor()
-        throws Exception
-    {
+    public MavenProject4CopyConstructor() throws Exception {
         initializeParentFields();
     }
 
-    public List<Artifact> getAttachedArtifacts()
-    {
+    public List<Artifact> getAttachedArtifacts() {
         return new LinkedList<>();
     }
 
     // to prevent the MavenProject copy constructor from blowing up
-    private void initializeParentFields()
-    {
-        // the pom should be located in the isolated dummy root         
-        super.setFile( new File( getBasedir(), "pom.xml" ) );
-        super.setDependencyArtifacts( new HashSet<>() );
-        super.setArtifacts( new HashSet<>() );
-        super.setExtensionArtifacts( new HashSet<>() );
-        super.setRemoteArtifactRepositories( new LinkedList<>() );
-        super.setPluginArtifactRepositories( new LinkedList<>() );
-        super.setCollectedProjects( new LinkedList<>() );
-        super.setActiveProfiles( new LinkedList<>() );
-        super.setOriginalModel( null );
-        super.setExecutionProject( this );
-        super.setBuild( getBuild() );
+    private void initializeParentFields() {
+        // the pom should be located in the isolated dummy root
+        super.setFile(new File(getBasedir(), "pom.xml"));
+        super.setDependencyArtifacts(new HashSet<>());
+        super.setArtifacts(new HashSet<>());
+        super.setExtensionArtifacts(new HashSet<>());
+        super.setRemoteArtifactRepositories(new LinkedList<>());
+        super.setPluginArtifactRepositories(new LinkedList<>());
+        super.setCollectedProjects(new LinkedList<>());
+        super.setActiveProfiles(new LinkedList<>());
+        super.setOriginalModel(null);
+        super.setExecutionProject(this);
+        super.setBuild(getBuild());
     }
 }

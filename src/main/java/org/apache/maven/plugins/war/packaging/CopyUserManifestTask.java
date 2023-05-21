@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.war.packaging;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.plugins.war.packaging;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.war.packaging;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,9 +30,7 @@ import org.apache.maven.plugin.logging.SystemStreamLog;
  * @author Haikal Saadh
  *
  */
-public class CopyUserManifestTask
-    extends AbstractWarPackagingTask
-{
+public class CopyUserManifestTask extends AbstractWarPackagingTask {
 
     /** Instance logger */
     private Log log;
@@ -43,10 +40,8 @@ public class CopyUserManifestTask
      *
      * @return logger
      */
-    public Log getLog()
-    {
-        if ( log == null )
-        {
+    public Log getLog() {
+        if (log == null) {
             log = new SystemStreamLog();
         }
         return log;
@@ -57,31 +52,22 @@ public class CopyUserManifestTask
      *
      * @param log the logger to set
      */
-    public void setLog( Log log )
-    {
+    public void setLog(Log log) {
         this.log = log;
     }
 
-    public void performPackaging( WarPackagingContext context )
-        throws MojoExecutionException, MojoFailureException
-    {
+    public void performPackaging(WarPackagingContext context) throws MojoExecutionException, MojoFailureException {
         File userManifest = context.getArchive().getManifestFile();
-        if ( userManifest != null )
-        {
+        if (userManifest != null) {
 
-            try
-            {
-                getLog().info( "Copying manifest..." );
-                File metainfDir = new File( context.getWebappDirectory(), META_INF_PATH );
-                copyFile( context, userManifest, new File( metainfDir, "MANIFEST.MF" ), "META-INF/MANIFEST.MF", true );
+            try {
+                getLog().info("Copying manifest...");
+                File metainfDir = new File(context.getWebappDirectory(), META_INF_PATH);
+                copyFile(context, userManifest, new File(metainfDir, "MANIFEST.MF"), "META-INF/MANIFEST.MF", true);
 
-            }
-            catch ( IOException e )
-            {
-                throw new MojoExecutionException( "Error copying user manifest", e );
+            } catch (IOException e) {
+                throw new MojoExecutionException("Error copying user manifest", e);
             }
         }
-
     }
-
 }

@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.war.packaging;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.plugins.war.packaging;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.war.packaging;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,13 +42,11 @@ import org.codehaus.plexus.util.FileUtils;
 /**
  * @author Stephane Nicoll
  */
-public abstract class AbstractWarPackagingTask
-    implements WarPackagingTask
-{
+public abstract class AbstractWarPackagingTask implements WarPackagingTask {
     /**
      * The default list of includes.
      */
-    public static final String[] DEFAULT_INCLUDES = { "**/**" };
+    public static final String[] DEFAULT_INCLUDES = {"**/**"};
 
     /**
      * The {@code WEB-INF} path.
@@ -73,10 +70,10 @@ public abstract class AbstractWarPackagingTask
 
     /**
      * Copies the files if possible with an optional target prefix.
-     * 
+     *
      * Copy uses a first-win strategy: files that have already been copied by previous tasks are ignored. This method
      * makes sure to update the list of protected files which gives the list of files that have already been copied.
-     * 
+     *
      * If the structure of the source directory is not the same as the root of the webapp, use the {@code targetPrefix}
      * parameter to specify in which particular directory the files should be copied. Use {@code null} to copy the
      * files with the same structure
@@ -90,38 +87,35 @@ public abstract class AbstractWarPackagingTask
      * @throws IOException if an error occurred while copying the files
      * @throws MojoExecutionException if an error occurs.
      */
-    protected void copyFiles( String sourceId, WarPackagingContext context, File sourceBaseDir, PathSet sourceFilesSet,
-                              String targetPrefix, boolean filtered )
-        throws IOException, MojoExecutionException
-    {
-        for ( String fileToCopyName : sourceFilesSet.paths() )
-        {
-            final File sourceFile = new File( sourceBaseDir, fileToCopyName );
+    protected void copyFiles(
+            String sourceId,
+            WarPackagingContext context,
+            File sourceBaseDir,
+            PathSet sourceFilesSet,
+            String targetPrefix,
+            boolean filtered)
+            throws IOException, MojoExecutionException {
+        for (String fileToCopyName : sourceFilesSet.paths()) {
+            final File sourceFile = new File(sourceBaseDir, fileToCopyName);
 
             String destinationFileName;
-            if ( targetPrefix == null )
-            {
+            if (targetPrefix == null) {
                 destinationFileName = fileToCopyName;
-            }
-            else
-            {
+            } else {
                 destinationFileName = targetPrefix + fileToCopyName;
             }
 
-            if ( filtered && !context.isNonFilteredExtension( sourceFile.getName() ) )
-            {
-                copyFilteredFile( sourceId, context, sourceFile, destinationFileName );
-            }
-            else
-            {
-                copyFile( sourceId, context, sourceFile, destinationFileName );
+            if (filtered && !context.isNonFilteredExtension(sourceFile.getName())) {
+                copyFilteredFile(sourceId, context, sourceFile, destinationFileName);
+            } else {
+                copyFile(sourceId, context, sourceFile, destinationFileName);
             }
         }
     }
 
     /**
      * Copies the files if possible as is.
-     * 
+     *
      * Copy uses a first-win strategy: files that have already been copied by previous tasks are ignored. This method
      * makes sure to update the list of protected files which gives the list of files that have already been copied.
      *
@@ -133,16 +127,15 @@ public abstract class AbstractWarPackagingTask
      * @throws IOException if an error occurred while copying the files
      * @throws MojoExecutionException break the build.
      */
-    protected void copyFiles( String sourceId, WarPackagingContext context, File sourceBaseDir, PathSet sourceFilesSet,
-                              boolean filtered )
-        throws IOException, MojoExecutionException
-    {
-        copyFiles( sourceId, context, sourceBaseDir, sourceFilesSet, null, filtered );
+    protected void copyFiles(
+            String sourceId, WarPackagingContext context, File sourceBaseDir, PathSet sourceFilesSet, boolean filtered)
+            throws IOException, MojoExecutionException {
+        copyFiles(sourceId, context, sourceBaseDir, sourceFilesSet, null, filtered);
     }
 
     /**
      * Copy the specified file if the target location has not yet already been used.
-     * 
+     *
      * The {@code targetFileName} is the relative path according to the root of the generated web application.
      *
      * @param sourceId the source id
@@ -152,85 +145,67 @@ public abstract class AbstractWarPackagingTask
      * @throws IOException if an error occurred while copying
      */
     // CHECKSTYLE_OFF: LineLength
-    protected void copyFile( String sourceId, final WarPackagingContext context, final File file, String targetFilename )
-        throws IOException
-    // CHECKSTYLE_ON: LineLength
-    {
-        final File targetFile = new File( context.getWebappDirectory(), targetFilename );
+    protected void copyFile(String sourceId, final WarPackagingContext context, final File file, String targetFilename)
+            throws IOException
+                // CHECKSTYLE_ON: LineLength
+            {
+        final File targetFile = new File(context.getWebappDirectory(), targetFilename);
 
-        if ( file.isFile() )
-        {
-            context.getWebappStructure().registerFile( sourceId, targetFilename,
-           new WebappStructure.RegistrationCallback()
-           {
-               public void registered( String ownerId, String targetFilename )
-                   throws IOException
-               {
-                   copyFile( context, file, targetFile, targetFilename,
-                             false );
-               }
-    
-               public void alreadyRegistered( String ownerId,
-                                              String targetFilename )
-                   throws IOException
-               {
-                   copyFile( context, file, targetFile, targetFilename,
-                             true );
-               }
-    
-               public void refused( String ownerId, String targetFilename,
-                                    String actualOwnerId )
-                   throws IOException
-               {
-                   context.getLog().debug( " - "
-                                               + targetFilename
-                                               + " wasn't copied because it has "
-                                               + "already been packaged for overlay ["
-                                               + actualOwnerId + "]." );
-               }
-    
-               public void superseded( String ownerId,
-                                       String targetFilename,
-                                       String deprecatedOwnerId )
-                   throws IOException
-               {
-                   context.getLog().info( "File ["
-                                              + targetFilename
-                                              + "] belonged to overlay ["
-                                              + deprecatedOwnerId
-                                              + "] so it will be overwritten." );
-                   copyFile( context, file, targetFile, targetFilename,
-                             false );
-               }
-    
-               public void supersededUnknownOwner( String ownerId,
-                                                   String targetFilename,
-                                                   String unknownOwnerId )
-                   throws IOException
-               {
-                   // CHECKSTYLE_OFF: LineLength
-                   context.getLog().warn( "File ["
-                                              + targetFilename
-                                              + "] belonged to overlay ["
-                                              + unknownOwnerId
-                                              + "] which does not exist anymore in the current project. It is recommended to invoke "
-                                              + "clean if the dependencies of the project changed." );
-                   // CHECKSTYLE_ON: LineLength
-                   copyFile( context, file, targetFile, targetFilename,
-                             false );
-               }
-           } );
-        }
-        else if ( !targetFile.exists() && !targetFile.mkdirs() )
-        {
-            context.getLog().info( "Failed to create directory " + targetFile.getAbsolutePath() );
+        if (file.isFile()) {
+            context.getWebappStructure()
+                    .registerFile(sourceId, targetFilename, new WebappStructure.RegistrationCallback() {
+                        public void registered(String ownerId, String targetFilename) throws IOException {
+                            copyFile(context, file, targetFile, targetFilename, false);
+                        }
+
+                        public void alreadyRegistered(String ownerId, String targetFilename) throws IOException {
+                            copyFile(context, file, targetFile, targetFilename, true);
+                        }
+
+                        public void refused(String ownerId, String targetFilename, String actualOwnerId)
+                                throws IOException {
+                            context.getLog()
+                                    .debug(" - "
+                                            + targetFilename
+                                            + " wasn't copied because it has "
+                                            + "already been packaged for overlay ["
+                                            + actualOwnerId + "].");
+                        }
+
+                        public void superseded(String ownerId, String targetFilename, String deprecatedOwnerId)
+                                throws IOException {
+                            context.getLog()
+                                    .info("File ["
+                                            + targetFilename
+                                            + "] belonged to overlay ["
+                                            + deprecatedOwnerId
+                                            + "] so it will be overwritten.");
+                            copyFile(context, file, targetFile, targetFilename, false);
+                        }
+
+                        public void supersededUnknownOwner(String ownerId, String targetFilename, String unknownOwnerId)
+                                throws IOException {
+                            // CHECKSTYLE_OFF: LineLength
+                            context.getLog()
+                                    .warn("File ["
+                                            + targetFilename
+                                            + "] belonged to overlay ["
+                                            + unknownOwnerId
+                                            + "] which does not exist anymore in the current project. It is recommended to invoke "
+                                            + "clean if the dependencies of the project changed.");
+                            // CHECKSTYLE_ON: LineLength
+                            copyFile(context, file, targetFile, targetFilename, false);
+                        }
+                    });
+        } else if (!targetFile.exists() && !targetFile.mkdirs()) {
+            context.getLog().info("Failed to create directory " + targetFile.getAbsolutePath());
         }
     }
 
     /**
      * Copy the specified file if the target location has not yet already been used and filter its content with the
      * configured filter properties.
-     * 
+     *
      * The {@code targetFileName} is the relative path according to the root of the generated web application.
      *
      * @param sourceId the source id
@@ -241,51 +216,39 @@ public abstract class AbstractWarPackagingTask
      * @throws IOException if an error occurred while copying
      * @throws MojoExecutionException if an error occurred while retrieving the filter properties
      */
-    protected boolean copyFilteredFile( String sourceId, final WarPackagingContext context, File file,
-                                        String targetFilename )
-        throws IOException, MojoExecutionException
-    {
-        context.addResource( targetFilename );
+    protected boolean copyFilteredFile(
+            String sourceId, final WarPackagingContext context, File file, String targetFilename)
+            throws IOException, MojoExecutionException {
+        context.addResource(targetFilename);
 
-        if ( context.getWebappStructure().registerFile( sourceId, targetFilename ) )
-        {
-            final File targetFile = new File( context.getWebappDirectory(), targetFilename );
+        if (context.getWebappStructure().registerFile(sourceId, targetFilename)) {
+            final File targetFile = new File(context.getWebappDirectory(), targetFilename);
             final String encoding;
-            try
-            {
-                if ( isXmlFile( file ) )
-                {
+            try {
+                if (isXmlFile(file)) {
                     // For xml-files we extract the encoding from the files
-                    encoding = getEncoding( file );
-                }
-                else if ( isPropertiesFile( file ) && StringUtils.isNotEmpty( context.getPropertiesEncoding() ) )
-                {
+                    encoding = getEncoding(file);
+                } else if (isPropertiesFile(file) && StringUtils.isNotEmpty(context.getPropertiesEncoding())) {
                     encoding = context.getPropertiesEncoding();
-                }
-                else
-                {
+                } else {
                     // For all others we use the configured encoding
                     encoding = context.getResourceEncoding();
                 }
                 // fix for MWAR-36, ensures that the parent dir are created first
                 targetFile.getParentFile().mkdirs();
 
-                context.getMavenFileFilter().copyFile( file, targetFile, true, context.getFilterWrappers(), encoding );
-            }
-            catch ( MavenFilteringException e )
-            {
-                throw new MojoExecutionException( e.getMessage(), e );
+                context.getMavenFileFilter().copyFile(file, targetFile, true, context.getFilterWrappers(), encoding);
+            } catch (MavenFilteringException e) {
+                throw new MojoExecutionException(e.getMessage(), e);
             }
             // CHECKSTYLE_OFF: LineLength
             // Add the file to the protected list
-            context.getLog().debug( " + " + targetFilename + " has been copied (filtered encoding='" + encoding + "')." );
+            context.getLog().debug(" + " + targetFilename + " has been copied (filtered encoding='" + encoding + "').");
             // CHECKSTYLE_ON: LineLength
             return true;
-        }
-        else
-        {
-            context.getLog().debug( " - " + targetFilename
-                                        + " wasn't copied because it has already been packaged (filtered)." );
+        } else {
+            context.getLog()
+                    .debug(" - " + targetFilename + " wasn't copied because it has already been packaged (filtered).");
             return false;
         }
     }
@@ -298,28 +261,25 @@ public abstract class AbstractWarPackagingTask
      * @param unpackDirectory the directory to use for th unpacked file
      * @throws MojoExecutionException if an error occurred while unpacking the file
      */
-    protected void doUnpack( WarPackagingContext context, File file, File unpackDirectory )
-        throws MojoExecutionException
-    {
-        String archiveExt = FileUtils.getExtension( file.getAbsolutePath() ).toLowerCase();
+    protected void doUnpack(WarPackagingContext context, File file, File unpackDirectory)
+            throws MojoExecutionException {
+        String archiveExt = FileUtils.getExtension(file.getAbsolutePath()).toLowerCase();
 
-        try
-        {
-            UnArchiver unArchiver = context.getArchiverManager().getUnArchiver( archiveExt );
-            unArchiver.setSourceFile( file );
-            unArchiver.setDestDirectory( unpackDirectory );
-            unArchiver.setOverwrite( true );
+        try {
+            UnArchiver unArchiver = context.getArchiverManager().getUnArchiver(archiveExt);
+            unArchiver.setSourceFile(file);
+            unArchiver.setDestDirectory(unpackDirectory);
+            unArchiver.setOverwrite(true);
             unArchiver.extract();
-        }
-        catch ( ArchiverException e )
-        {
-            throw new MojoExecutionException( "Error unpacking file [" + file.getAbsolutePath() + "]" + " to ["
-                + unpackDirectory.getAbsolutePath() + "]", e );
-        }
-        catch ( NoSuchArchiverException e )
-        {
-            context.getLog().warn( "Skip unpacking dependency file [" + file.getAbsolutePath()
-                                       + " with unknown extension [" + archiveExt + "]" );
+        } catch (ArchiverException e) {
+            throw new MojoExecutionException(
+                    "Error unpacking file [" + file.getAbsolutePath() + "]" + " to ["
+                            + unpackDirectory.getAbsolutePath() + "]",
+                    e);
+        } catch (NoSuchArchiverException e) {
+            context.getLog()
+                    .warn("Skip unpacking dependency file [" + file.getAbsolutePath() + " with unknown extension ["
+                            + archiveExt + "]");
         }
     }
 
@@ -338,44 +298,36 @@ public abstract class AbstractWarPackagingTask
      * @throws IOException if <code>source</code> does not exist, <code>destination</code> cannot be written to, or an
      *             IO error occurs during copying
      */
-    protected boolean copyFile( WarPackagingContext context, File source, File destination, String targetFilename,
-                                boolean onlyIfModified )
-        throws IOException
-    {
-        context.addResource( targetFilename );
+    protected boolean copyFile(
+            WarPackagingContext context, File source, File destination, String targetFilename, boolean onlyIfModified)
+            throws IOException {
+        context.addResource(targetFilename);
 
-        BasicFileAttributes readAttributes = Files.readAttributes( source.toPath(), BasicFileAttributes.class );
-        if ( onlyIfModified && destination.lastModified() >= readAttributes.lastModifiedTime().toMillis() )
-        {
-            context.getLog().debug( " * " + targetFilename + " is up to date." );
+        BasicFileAttributes readAttributes = Files.readAttributes(source.toPath(), BasicFileAttributes.class);
+        if (onlyIfModified
+                && destination.lastModified()
+                        >= readAttributes.lastModifiedTime().toMillis()) {
+            context.getLog().debug(" * " + targetFilename + " is up to date.");
             return false;
-        }
-        else
-        {
-            if ( readAttributes.isDirectory() )
-            {
-                context.getLog().warn( " + " + targetFilename + " is packaged from the source folder" );
+        } else {
+            if (readAttributes.isDirectory()) {
+                context.getLog().warn(" + " + targetFilename + " is packaged from the source folder");
 
-                try
-                {
+                try {
                     JarArchiver archiver = context.getJarArchiver();
-                    archiver.addDirectory( source );
-                    archiver.setDestFile( destination );
+                    archiver.addDirectory(source);
+                    archiver.setDestFile(destination);
                     archiver.createArchive();
-                }
-                catch ( ArchiverException e )
-                {
+                } catch (ArchiverException e) {
                     String msg = "Failed to create " + targetFilename;
-                    context.getLog().error( msg, e );
-                    throw new IOException( msg, e );
+                    context.getLog().error(msg, e);
+                    throw new IOException(msg, e);
                 }
-            }
-            else
-            {
-                FileUtils.copyFile( source.getCanonicalFile(), destination );
+            } else {
+                FileUtils.copyFile(source.getCanonicalFile(), destination);
                 // preserve timestamp
-                destination.setLastModified( readAttributes.lastModifiedTime().toMillis() );
-                context.getLog().debug( " + " + targetFilename + " has been copied." );
+                destination.setLastModified(readAttributes.lastModifiedTime().toMillis());
+                context.getLog().debug(" + " + targetFilename + " has been copied.");
             }
             return true;
         }
@@ -388,11 +340,8 @@ public abstract class AbstractWarPackagingTask
      * @return The encoding of the XML-file, or UTF-8 if it's not specified in the file
      * @throws java.io.IOException if an error occurred while reading the file
      */
-    protected String getEncoding( File webXml )
-        throws IOException
-    {
-        try ( XmlStreamReader xmlReader = new XmlStreamReader( webXml ) )
-        {
+    protected String getEncoding(File webXml) throws IOException {
+        try (XmlStreamReader xmlReader = new XmlStreamReader(webXml)) {
             return xmlReader.getEncoding();
         }
     }
@@ -405,9 +354,8 @@ public abstract class AbstractWarPackagingTask
      * @param excludes the excludes
      * @return the files to copy
      */
-    protected PathSet getFilesToIncludes( File baseDir, String[] includes, String[] excludes )
-    {
-        return getFilesToIncludes( baseDir, includes, excludes, false );
+    protected PathSet getFilesToIncludes(File baseDir, String[] includes, String[] excludes) {
+        return getFilesToIncludes(baseDir, includes, excludes, false);
     }
 
     /**
@@ -420,34 +368,30 @@ public abstract class AbstractWarPackagingTask
      * @return the files to copy
      */
     // CHECKSTYLE_OFF: LineLength
-    protected PathSet getFilesToIncludes( File baseDir, String[] includes, String[] excludes, boolean includeDirectories )
-    // CHECKSTYLE_ON: LineLength
-    {
+    protected PathSet getFilesToIncludes(
+            File baseDir, String[] includes, String[] excludes, boolean includeDirectories)
+                // CHECKSTYLE_ON: LineLength
+            {
         final DirectoryScanner scanner = new DirectoryScanner();
-        scanner.setBasedir( baseDir );
+        scanner.setBasedir(baseDir);
 
-        if ( excludes != null )
-        {
-            scanner.setExcludes( excludes );
+        if (excludes != null) {
+            scanner.setExcludes(excludes);
         }
         scanner.addDefaultExcludes();
 
-        if ( includes != null && includes.length > 0 )
-        {
-            scanner.setIncludes( includes );
-        }
-        else
-        {
-            scanner.setIncludes( DEFAULT_INCLUDES );
+        if (includes != null && includes.length > 0) {
+            scanner.setIncludes(includes);
+        } else {
+            scanner.setIncludes(DEFAULT_INCLUDES);
         }
 
         scanner.scan();
 
-        PathSet pathSet = new PathSet( scanner.getIncludedFiles() );
+        PathSet pathSet = new PathSet(scanner.getIncludedFiles());
 
-        if ( includeDirectories )
-        {
-            pathSet.addAll( scanner.getIncludedDirectories() );
+        if (includeDirectories) {
+            pathSet.addAll(scanner.getIncludedDirectories());
         }
 
         return pathSet;
@@ -455,7 +399,7 @@ public abstract class AbstractWarPackagingTask
 
     /**
      * Returns the final name of the specified artifact.
-     * 
+     *
      * If the {@code outputFileNameMapping} is set, it is used, otherwise the standard naming scheme is used.
      *
      * @param context the packaging context
@@ -463,24 +407,18 @@ public abstract class AbstractWarPackagingTask
      * @return the converted filename of the artifact
      * @throws InterpolationException in case of interpolation problem.
      */
-    protected String getArtifactFinalName( WarPackagingContext context, Artifact artifact )
-        throws InterpolationException
-    {
-        if ( context.getOutputFileNameMapping() != null )
-        {
-            return MappingUtils.evaluateFileNameMapping( context.getOutputFileNameMapping(), artifact );
+    protected String getArtifactFinalName(WarPackagingContext context, Artifact artifact)
+            throws InterpolationException {
+        if (context.getOutputFileNameMapping() != null) {
+            return MappingUtils.evaluateFileNameMapping(context.getOutputFileNameMapping(), artifact);
         }
 
         String classifier = artifact.getClassifier();
-        if ( ( classifier != null ) && !( "".equals( classifier.trim() ) ) )
-        {
-            return MappingUtils.evaluateFileNameMapping( MappingUtils.DEFAULT_FILE_NAME_MAPPING_CLASSIFIER, artifact );
+        if ((classifier != null) && !("".equals(classifier.trim()))) {
+            return MappingUtils.evaluateFileNameMapping(MappingUtils.DEFAULT_FILE_NAME_MAPPING_CLASSIFIER, artifact);
+        } else {
+            return MappingUtils.evaluateFileNameMapping(MappingUtils.DEFAULT_FILE_NAME_MAPPING, artifact);
         }
-        else
-        {
-            return MappingUtils.evaluateFileNameMapping( MappingUtils.DEFAULT_FILE_NAME_MAPPING, artifact );
-        }
-
     }
 
     /**
@@ -491,9 +429,8 @@ public abstract class AbstractWarPackagingTask
      * @return <code>true</code> if the file is a file of the specified type, otherwise <code>false</code>
      * @since 3.4.0
      */
-    private boolean isFileOfType( File file, String extension )
-    {
-        return file != null && file.isFile() && file.getName().endsWith( extension );
+    private boolean isFileOfType(File file, String extension) {
+        return file != null && file.isFile() && file.getName().endsWith(extension);
     }
 
     /**
@@ -503,9 +440,8 @@ public abstract class AbstractWarPackagingTask
      * @return <code>true</code> if the file is a properties file, otherwise <code>false</code>
      * @since 3.4.0
      */
-    private boolean isPropertiesFile( File file )
-    {
-        return isFileOfType( file, ".properties" );
+    private boolean isPropertiesFile(File file) {
+        return isFileOfType(file, ".properties");
     }
 
     /**
@@ -516,8 +452,7 @@ public abstract class AbstractWarPackagingTask
      * @return <code>true</code> if the file is an xml-file, otherwise <code>false</code>
      * @since 2.3
      */
-    private boolean isXmlFile( File file )
-    {
-        return isFileOfType( file, ".xml" );
+    private boolean isXmlFile(File file) {
+        return isFileOfType(file, ".xml");
     }
 }

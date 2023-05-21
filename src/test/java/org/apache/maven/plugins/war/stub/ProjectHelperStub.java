@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.war.stub;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.plugins.war.stub;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.plugins.war.stub;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.war.stub;
 
 import java.io.File;
 import java.util.List;
@@ -25,57 +24,39 @@ import java.util.List;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 
-public class ProjectHelperStub
-    implements MavenProjectHelper
-{
+public class ProjectHelperStub implements MavenProjectHelper {
     File artifactFile;
 
     String artifactType;
 
     String artifactClassifier;
 
-    public File getArtifactFile()
-    {
+    public File getArtifactFile() {
         return artifactFile;
     }
 
-    public String getArtifactType()
-    {
+    public String getArtifactType() {
         return artifactType;
     }
 
-    public String getArtifactClassifier()
-    {
+    public String getArtifactClassifier() {
         return artifactClassifier;
     }
 
-    public void attachArtifact( MavenProject project, File artifactFile, String artifactClassifier )
-    {
+    public void attachArtifact(MavenProject project, File artifactFile, String artifactClassifier) {}
 
-    }
+    public void attachArtifact(MavenProject project, String artifactType, File artifactFile) {}
 
-    public void attachArtifact( MavenProject project, String artifactType, File artifactFile )
-    {
-
-    }
-
-    public void attachArtifact( MavenProject project, String _artifactType, String _artifactClassifier,
-                               File _artifactFile )
-    {
+    public void attachArtifact(
+            MavenProject project, String _artifactType, String _artifactClassifier, File _artifactFile) {
         artifactType = _artifactType;
         artifactClassifier = _artifactClassifier;
         artifactFile = _artifactFile;
     }
 
-    @SuppressWarnings( "rawtypes" )
-    public void addResource( MavenProject project, String resourceDirectory, List includes, List excludes )
-    {
+    @SuppressWarnings("rawtypes")
+    public void addResource(MavenProject project, String resourceDirectory, List includes, List excludes) {}
 
-    }
-
-    @SuppressWarnings( "rawtypes" )
-    public void addTestResource( MavenProject project, String resourceDirectory, List includes, List excludes )
-    {
-
-    }
+    @SuppressWarnings("rawtypes")
+    public void addTestResource(MavenProject project, String resourceDirectory, List includes, List excludes) {}
 }

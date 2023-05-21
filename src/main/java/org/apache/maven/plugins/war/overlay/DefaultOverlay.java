@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.war.overlay;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.plugins.war.overlay;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.war.overlay;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugins.war.Overlay;
@@ -27,23 +26,20 @@ import org.apache.maven.plugins.war.Overlay;
  *
  * @author Stephane Nicoll
  */
-public class DefaultOverlay
-    extends Overlay
-{
+public class DefaultOverlay extends Overlay {
 
     /**
      * Creates an overlay for the specified artifact.
      *
      * @param a the artifact
      */
-    public DefaultOverlay( Artifact a )
-    {
+    public DefaultOverlay(Artifact a) {
         super();
-        setGroupId( a.getGroupId() );
-        setArtifactId( a.getArtifactId() );
-        setClassifier( a.getClassifier() );
-        setArtifact( a );
-        setType( a.getType() );
+        setGroupId(a.getGroupId());
+        setArtifactId(a.getArtifactId());
+        setClassifier(a.getClassifier());
+        setArtifact(a);
+        setType(a.getType());
     }
 
     /**
@@ -53,10 +49,9 @@ public class DefaultOverlay
      * @param includes the includes to use
      * @param excludes the excludes to use
      */
-    public DefaultOverlay( Artifact a, String[] includes, String[] excludes )
-    {
-        this( a );
-        setIncludes( includes );
-        setExcludes( excludes );
+    public DefaultOverlay(Artifact a, String[] includes, String[] excludes) {
+        this(a);
+        setIncludes(includes);
+        setExcludes(excludes);
     }
 }

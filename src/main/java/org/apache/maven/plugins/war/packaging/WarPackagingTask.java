@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.war.packaging;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.plugins.war.packaging;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.war.packaging;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -27,19 +26,16 @@ import org.apache.maven.plugin.MojoFailureException;
  *
  * @author Stephane Nicoll
  */
-public interface WarPackagingTask
-{
+public interface WarPackagingTask {
 
     /**
      * Performs the packaging for the specified task.
-     * 
+     *
      * The task is responsible to update the packaging context, namely with the files that have been copied.
      *
      * @param context the packaging context
      * @throws MojoExecutionException if an error occurred
      * @throws MojoFailureException if the project configuration is invalid
      */
-    void performPackaging( WarPackagingContext context )
-        throws MojoExecutionException, MojoFailureException;
-
+    void performPackaging(WarPackagingContext context) throws MojoExecutionException, MojoFailureException;
 }
