@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,61 +18,48 @@
  */
 package org.apache.maven.plugins.war.stub;
 
-import org.apache.maven.artifact.handler.ArtifactHandler;
-
 import java.io.File;
+
+import org.apache.maven.artifact.handler.ArtifactHandler;
 
 /**
  * @author Stephane Nicoll
  */
-public class MarArtifactStub
-    extends AbstractArtifactStub
-{
+public class MarArtifactStub extends AbstractArtifactStub {
     protected String groupId;
 
     private ArtifactHandler artifactHandler;
 
-    public MarArtifactStub( String basedir, ArtifactHandler artifactHandler )
-    {
-        super( basedir );
+    public MarArtifactStub(String basedir, ArtifactHandler artifactHandler) {
+        super(basedir);
         this.artifactHandler = artifactHandler;
     }
 
-    public void setGroupId( String id )
-    {
+    public void setGroupId(String id) {
         groupId = id;
     }
 
-    public String getGroupId()
-    {
-        if ( groupId != null )
-        {
+    public String getGroupId() {
+        if (groupId != null) {
             return groupId;
-        }
-        else
-        {
+        } else {
             return "org.sample.mar";
         }
     }
 
-    public String getType()
-    {
+    public String getType() {
         return "mar";
     }
 
-    public String getArtifactId()
-    {
+    public String getArtifactId() {
         return "marartifact";
     }
 
-    public File getFile()
-    {
-        return new File( basedir, "/target/test-classes/unit/sample_wars/simple.mar" );
+    public File getFile() {
+        return new File(basedir, "/target/test-classes/unit/sample_wars/simple.mar");
     }
 
-    public ArtifactHandler getArtifactHandler()
-    {
+    public ArtifactHandler getArtifactHandler() {
         return artifactHandler;
     }
 }
-

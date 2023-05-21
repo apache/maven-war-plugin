@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.war.packaging;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.plugins.war.packaging;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.war.packaging;
 
 import java.io.File;
 import java.util.List;
@@ -38,8 +37,7 @@ import org.codehaus.plexus.archiver.manager.ArchiverManager;
  *
  * @author Stephane Nicoll
  */
-public interface WarPackagingContext
-{
+public interface WarPackagingContext {
     /**
      * Returns the maven project.
      *
@@ -180,7 +178,7 @@ public interface WarPackagingContext
      * @return {@code true} if it should not be filtered, {@code false} otherwise
      * @since 2.1-alpha-2
      */
-    boolean isNonFilteredExtension( String fileName );
+    boolean isNonFilteredExtension(String fileName);
 
     /**
      * @return filtering deployment descriptor.
@@ -233,19 +231,19 @@ public interface WarPackagingContext
      * Add a live resource to the war.
      * Used to keep track of existing resources and all copied files.
      * All others are outdated and will be removed.
-     * This prevent calling <code>mvn clean</code> when resources are removed. 
-     * 
+     * This prevent calling <code>mvn clean</code> when resources are removed.
+     *
      * @param resource the resource that is to me marked as not outdated
      * @since 3.3.0
      * @see #deleteOutdatedResources()
      */
-    void addResource( String resource );
+    void addResource(String resource);
 
     /**
      * Delete outdated resources, ie resources that are found in the war but that were not added by the current
      * packaging process, then are supposed to be content from a previous run.
      * This prevent calling <code>mvn clean</code> when resources are removed.
-     * 
+     *
      * @since 3.3.0
      * @see #addResource
      */
@@ -253,7 +251,7 @@ public interface WarPackagingContext
 
     /**
      * Output timestamp for reproducible archive creation.
-     * 
+     *
      * @return the output timestamp (may be null)
      * @since 3.3.0
      */

@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.war.overlay;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.plugins.war.overlay;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.war.overlay;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
@@ -26,29 +25,25 @@ import org.apache.maven.plugin.MojoExecutionException;
  *
  * @author Stephane Nicoll
  */
-public class InvalidOverlayConfigurationException
-    extends MojoExecutionException
-{
+public class InvalidOverlayConfigurationException extends MojoExecutionException {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = -9048144470408031414L;
 
     /**
      * @param string Set the message of the exception.
      */
-    public InvalidOverlayConfigurationException( String string )
-    {
-        super( string );
+    public InvalidOverlayConfigurationException(String string) {
+        super(string);
     }
 
     /**
      * @param string Set the message of the exception.
      * @param throwable {@link Throwable}
      */
-    public InvalidOverlayConfigurationException( String string, Throwable throwable )
-    {
-        super( string, throwable );
+    public InvalidOverlayConfigurationException(String string, Throwable throwable) {
+        super(string, throwable);
     }
 }

@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.war.util;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,10 @@ package org.apache.maven.plugins.war.util;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.war.util;
+
+import java.io.File;
+import java.io.IOException;
 
 import org.apache.maven.archiver.MavenArchiveConfiguration;
 import org.apache.maven.archiver.MavenArchiver;
@@ -30,16 +32,12 @@ import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.jar.ManifestException;
 
-import java.io.File;
-import java.io.IOException;
-
 /**
  * Packages the content of the classes directory.
  *
  * @author Stephane Nicoll
  */
-public class ClassesPackager
-{
+public class ClassesPackager {
 
     /**
      * Package the classes
@@ -53,25 +51,26 @@ public class ClassesPackager
      * @param outputTimestamp the output timestamp for reproducibility
      * @throws MojoExecutionException if an error occurred while creating the archive
      */
-    public void packageClasses( File classesDirectory, File targetFile, JarArchiver jarArchiver, MavenSession session,
-                                MavenProject project, MavenArchiveConfiguration archiveConfiguration,
-                                String outputTimestamp )
-        throws MojoExecutionException
-    {
+    public void packageClasses(
+            File classesDirectory,
+            File targetFile,
+            JarArchiver jarArchiver,
+            MavenSession session,
+            MavenProject project,
+            MavenArchiveConfiguration archiveConfiguration,
+            String outputTimestamp)
+            throws MojoExecutionException {
 
-        try
-        {
+        try {
             final MavenArchiver archiver = new MavenArchiver();
-            archiver.setArchiver( jarArchiver );
-            archiver.setOutputFile( targetFile );
-            archiver.setCreatedBy( "Maven WAR Plugin", "org.apache.maven.plugins", "maven-war-plugin" );
-            archiver.configureReproducibleBuild( outputTimestamp );
-            archiver.getArchiver().addDirectory( classesDirectory );
-            archiver.createArchive( session, project, archiveConfiguration );
-        }
-        catch ( ArchiverException | ManifestException | IOException | DependencyResolutionRequiredException e )
-        {
-            throw new MojoExecutionException( "Could not create classes archive", e );
+            archiver.setArchiver(jarArchiver);
+            archiver.setOutputFile(targetFile);
+            archiver.setCreatedBy("Maven WAR Plugin", "org.apache.maven.plugins", "maven-war-plugin");
+            archiver.configureReproducibleBuild(outputTimestamp);
+            archiver.getArchiver().addDirectory(classesDirectory);
+            archiver.createArchive(session, project, archiveConfiguration);
+        } catch (ArchiverException | ManifestException | IOException | DependencyResolutionRequiredException e) {
+            throw new MojoExecutionException("Could not create classes archive", e);
         }
     }
 
@@ -81,8 +80,7 @@ public class ClassesPackager
      * @param webappDirectory the webapp directory
      * @return the classes directory of the specified webapp directory
      */
-    public File getClassesDirectory( File webappDirectory )
-    {
-        return new File( webappDirectory, AbstractWarPackagingTask.CLASSES_PATH );
+    public File getClassesDirectory(File webappDirectory) {
+        return new File(webappDirectory, AbstractWarPackagingTask.CLASSES_PATH);
     }
 }

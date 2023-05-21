@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.war.packaging;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,91 +16,75 @@ package org.apache.maven.plugins.war.packaging;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.war.packaging;
+
+import java.io.File;
+import java.io.IOException;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.war.Overlay;
 import org.apache.maven.plugins.war.util.PathSet;
 import org.codehaus.plexus.util.FileUtils;
 
-import java.io.File;
-import java.io.IOException;
-
 /**
  * Handles an overlay.
  *
  * @author Stephane Nicoll
  */
-public class OverlayPackagingTask
-    extends AbstractWarPackagingTask
-{
+public class OverlayPackagingTask extends AbstractWarPackagingTask {
     private final Overlay overlay;
 
     /**
      * @param overlay {@link #overlay}
      * @param currentProjectOverlay current overlay.
      */
-    public OverlayPackagingTask( Overlay overlay, Overlay currentProjectOverlay )
-    {
-        if ( overlay == null )
-        {
-            throw new NullPointerException( "overlay could not be null." );
+    public OverlayPackagingTask(Overlay overlay, Overlay currentProjectOverlay) {
+        if (overlay == null) {
+            throw new NullPointerException("overlay could not be null.");
         }
-        if ( overlay.equals( currentProjectOverlay ) )
-        {
-            throw new IllegalStateException( "Could not handle the current project with this task." );
+        if (overlay.equals(currentProjectOverlay)) {
+            throw new IllegalStateException("Could not handle the current project with this task.");
         }
         this.overlay = overlay;
     }
 
     @Override
-    public void performPackaging( WarPackagingContext context )
-        throws MojoExecutionException
-    {
-        context.getLog().debug( "OverlayPackagingTask performPackaging overlay.getTargetPath() "
-                                    + overlay.getTargetPath() );
-        if ( overlay.shouldSkip() )
-        {
-            context.getLog().info( "Skipping overlay [" + overlay + "]" );
-        }
-        else
-        {
-            try
-            {
-                context.getLog().info( "Processing overlay [" + overlay + "]" );
+    public void performPackaging(WarPackagingContext context) throws MojoExecutionException {
+        context.getLog()
+                .debug("OverlayPackagingTask performPackaging overlay.getTargetPath() " + overlay.getTargetPath());
+        if (overlay.shouldSkip()) {
+            context.getLog().info("Skipping overlay [" + overlay + "]");
+        } else {
+            try {
+                context.getLog().info("Processing overlay [" + overlay + "]");
 
                 // Step1: Extract if necessary
-                final File tmpDir = unpackOverlay( context, overlay );
+                final File tmpDir = unpackOverlay(context, overlay);
 
                 // Step2: setup
-                final PathSet includes = getFilesToIncludes( tmpDir, overlay.getIncludes(), overlay.getExcludes() );
+                final PathSet includes = getFilesToIncludes(tmpDir, overlay.getIncludes(), overlay.getExcludes());
 
                 // Copy
-                if ( null == overlay.getTargetPath() )
-                {
-                    copyFiles( overlay.getId(), context, tmpDir, includes, overlay.isFiltered() );
-                }
-                else
-                {
+                if (null == overlay.getTargetPath()) {
+                    copyFiles(overlay.getId(), context, tmpDir, includes, overlay.isFiltered());
+                } else {
                     // overlay.getTargetPath() must ended with /
                     // if not we add it
                     String targetPath = overlay.getTargetPath();
-                    if ( !targetPath.endsWith( "/" ) )
-                    {
+                    if (!targetPath.endsWith("/")) {
                         targetPath = targetPath + "/";
                     }
-                    copyFiles( overlay.getId(), context, tmpDir, includes, targetPath, overlay.isFiltered() );
+                    copyFiles(overlay.getId(), context, tmpDir, includes, targetPath, overlay.isFiltered());
                 }
-            }
-            catch ( IOException e )
-            {
-                throw new MojoExecutionException( "Failed to copy file for overlay [" + overlay + "]", e );
+            } catch (IOException e) {
+                throw new MojoExecutionException("Failed to copy file for overlay [" + overlay + "]", e);
             }
         }
     }
 
     /**
      * Unpacks the specified overlay.
-     * 
+     *
      * Makes sure to skip the unpack process if the overlay has already been unpacked.
      *
      * @param context the packaging context
@@ -110,20 +92,15 @@ public class OverlayPackagingTask
      * @return the directory containing the unpacked overlay
      * @throws MojoExecutionException if an error occurred while unpacking the overlay
      */
-    protected File unpackOverlay( WarPackagingContext context, Overlay overlay )
-        throws MojoExecutionException
-    {
-        final File tmpDir = getOverlayTempDirectory( context, overlay );
+    protected File unpackOverlay(WarPackagingContext context, Overlay overlay) throws MojoExecutionException {
+        final File tmpDir = getOverlayTempDirectory(context, overlay);
 
         // TODO: not sure it's good, we should reuse the markers of the dependency plugin
-        if ( FileUtils.sizeOfDirectory( tmpDir ) == 0
-            || overlay.getArtifact().getFile().lastModified() > tmpDir.lastModified() )
-        {
-            doUnpack( context, overlay.getArtifact().getFile(), tmpDir );
-        }
-        else
-        {
-            context.getLog().debug( "Overlay [" + overlay + "] was already unpacked" );
+        if (FileUtils.sizeOfDirectory(tmpDir) == 0
+                || overlay.getArtifact().getFile().lastModified() > tmpDir.lastModified()) {
+            doUnpack(context, overlay.getArtifact().getFile(), tmpDir);
+        } else {
+            context.getLog().debug("Overlay [" + overlay + "] was already unpacked");
         }
         return tmpDir;
     }
@@ -135,21 +112,17 @@ public class OverlayPackagingTask
      * @param overlay the overlay
      * @return the temp directory for the overlay
      */
-    protected File getOverlayTempDirectory( WarPackagingContext context, Overlay overlay )
-    {
-        final File groupIdDir = new File( context.getOverlaysWorkDirectory(), overlay.getGroupId() );
-        if ( !groupIdDir.exists() )
-        {
+    protected File getOverlayTempDirectory(WarPackagingContext context, Overlay overlay) {
+        final File groupIdDir = new File(context.getOverlaysWorkDirectory(), overlay.getGroupId());
+        if (!groupIdDir.exists()) {
             groupIdDir.mkdir();
         }
         String directoryName = overlay.getArtifactId();
-        if ( overlay.getClassifier() != null )
-        {
+        if (overlay.getClassifier() != null) {
             directoryName = directoryName + "-" + overlay.getClassifier();
         }
-        final File result = new File( groupIdDir, directoryName );
-        if ( !result.exists() )
-        {
+        final File result = new File(groupIdDir, directoryName);
+        if (!result.exists()) {
             result.mkdirs();
         }
         return result;

@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.war.util;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,8 +16,7 @@ package org.apache.maven.plugins.war.util;
  * specific language governing permissions and limitations
  * under the License.
  */
-
-import org.codehaus.plexus.util.DirectoryScanner;
+package org.apache.maven.plugins.war.util;
 
 import java.io.File;
 import java.util.Collection;
@@ -28,41 +25,35 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.codehaus.plexus.util.DirectoryScanner;
+
 /**
  * Set of file's paths.
- * 
+ *
  * The class extends functionality of a "normal" set of strings by a process of the paths normalization. All paths are
  * converted to unix form (slashes) and they don't start with starting /.
  *
  * @author Piotr Tabor
  */
-
-public class PathSet
-    implements Iterable<String>
-{
+public class PathSet implements Iterable<String> {
     private static final String SEPARATOR = "/";
-    private static final char SEPARATOR_CHAR = SEPARATOR.charAt( 0 );
+    private static final char SEPARATOR_CHAR = SEPARATOR.charAt(0);
     /**
      * Set of normalized paths
      */
     private Set<String> pathsSet = new LinkedHashSet<>();
 
-    static String normalizeSubPath( String path )
-    {
-        if ( path.isEmpty() )
-        {
+    static String normalizeSubPath(String path) {
+        if (path.isEmpty()) {
             return path;
         }
-        String cleanPath = path.replaceAll( "[\\\\]+", SEPARATOR )
-                .replaceAll( "[/]+" , SEPARATOR );
-        cleanPath = cleanPath.charAt( 0 ) == SEPARATOR_CHAR ? cleanPath.substring( 1 ) : cleanPath;
-        if ( cleanPath.isEmpty() )
-        {
+        String cleanPath = path.replaceAll("[\\\\]+", SEPARATOR).replaceAll("[/]+", SEPARATOR);
+        cleanPath = cleanPath.charAt(0) == SEPARATOR_CHAR ? cleanPath.substring(1) : cleanPath;
+        if (cleanPath.isEmpty()) {
             return cleanPath;
         }
-        if ( cleanPath.charAt( cleanPath.length() - 1 ) == SEPARATOR_CHAR )
-        {
-            return cleanPath.substring( 0, cleanPath.length() - 1 );
+        if (cleanPath.charAt(cleanPath.length() - 1) == SEPARATOR_CHAR) {
+            return cleanPath.substring(0, cleanPath.length() - 1);
         }
         return cleanPath;
     }
@@ -72,8 +63,7 @@ public class PathSet
     /**
      * Creates an empty paths set
      */
-    public PathSet()
-    {
+    public PathSet() {
         /* Empty default constructor */
     }
 
@@ -82,9 +72,8 @@ public class PathSet
      *
      * @param paths to be added
      */
-    public PathSet( Collection<String> paths )
-    {
-        addAll( paths );
+    public PathSet(Collection<String> paths) {
+        addAll(paths);
     }
 
     /**
@@ -92,9 +81,8 @@ public class PathSet
      *
      * @param paths to be added
      */
-    public PathSet( String[] paths )
-    {
-        addAll( paths );
+    public PathSet(String[] paths) {
+        addAll(paths);
     }
 
     /**
@@ -102,9 +90,8 @@ public class PathSet
      *
      * @param path to be added
      */
-    public void add( String path )
-    {
-        pathsSet.add( normalizeSubPath( path ) );
+    public void add(String path) {
+        pathsSet.add(normalizeSubPath(path));
     }
 
     /**
@@ -113,11 +100,9 @@ public class PathSet
      * @param paths - collection of strings to be added
      * @param prefix added to all given paths
      */
-    public void addAll( Collection<String> paths, String prefix )
-    {
-        for ( String val : paths )
-        {
-            add( prefix + SEPARATOR +  val );
+    public void addAll(Collection<String> paths, String prefix) {
+        for (String val : paths) {
+            add(prefix + SEPARATOR + val);
         }
     }
 
@@ -127,11 +112,9 @@ public class PathSet
      * @param paths to be added
      * @param prefix added to all given paths
      */
-    public void addAll( String[] paths, String prefix )
-    {
-        for ( String val : paths )
-        {
-            add( prefix + SEPARATOR + val );
+    public void addAll(String[] paths, String prefix) {
+        for (String val : paths) {
+            add(prefix + SEPARATOR + val);
         }
     }
 
@@ -141,11 +124,9 @@ public class PathSet
      * @param paths to be added
      * @param prefix added to all given paths
      */
-    public void addAll( PathSet paths, String prefix )
-    {
-        for ( String path : paths )
-        {
-            add( prefix + SEPARATOR + path );
+    public void addAll(PathSet paths, String prefix) {
+        for (String path : paths) {
+            add(prefix + SEPARATOR + path);
         }
     }
 
@@ -154,9 +135,8 @@ public class PathSet
      *
      * @param paths - collection of strings to be added
      */
-    public void addAll( Collection<String> paths )
-    {
-        addAll( paths, "" );
+    public void addAll(Collection<String> paths) {
+        addAll(paths, "");
     }
 
     /**
@@ -164,9 +144,8 @@ public class PathSet
      *
      * @param paths to be added
      */
-    public void addAll( String[] paths )
-    {
-        addAll( paths, "" );
+    public void addAll(String[] paths) {
+        addAll(paths, "");
     }
 
     /**
@@ -174,9 +153,8 @@ public class PathSet
      *
      * @param paths to be added
      */
-    public void addAll( PathSet paths )
-    {
-        addAll( paths, "" );
+    public void addAll(PathSet paths) {
+        addAll(paths, "");
     }
 
     /**
@@ -185,9 +163,8 @@ public class PathSet
      * @param path we are looking for in the set.
      * @return information if the set constains the path.
      */
-    public boolean contains( String path )
-    {
-        return pathsSet.contains( normalizeSubPath( path ) );
+    public boolean contains(String path) {
+        return pathsSet.contains(normalizeSubPath(path));
     }
 
     /**
@@ -196,9 +173,8 @@ public class PathSet
      * @param path the path to remove
      * @return true if the path was removed, false if it did not existed
      */
-    boolean remove( String path )
-    {
-        return pathsSet.remove( normalizeSubPath( path ) );
+    boolean remove(String path) {
+        return pathsSet.remove(normalizeSubPath(path));
     }
 
     /**
@@ -207,32 +183,28 @@ public class PathSet
      * @return iterator of normalized paths (strings)
      */
     @Override
-    public Iterator<String> iterator()
-    {
+    public Iterator<String> iterator() {
         return pathsSet.iterator();
     }
 
     /**
      * @return {@link #pathsSet}
      */
-    public Collection<String> paths()
-    {
+    public Collection<String> paths() {
         return pathsSet;
     }
 
     /**
      * Adds given prefix to all paths in the set.
-     * 
+     *
      * The prefix should be ended by '/'. The generated paths are normalized.
      *
      * @param prefix to be added to all items
      */
-    public void addPrefix( String prefix )
-    {
+    public void addPrefix(String prefix) {
         final Set<String> newSet = new HashSet<>();
-        for ( String path : pathsSet )
-        {
-            newSet.add( normalizeSubPath( prefix + path ) );
+        for (String path : pathsSet) {
+            newSet.add(normalizeSubPath(prefix + path));
         }
         pathsSet = newSet;
     }
@@ -242,8 +214,7 @@ public class PathSet
      *
      * @return count of the paths in the set
      */
-    public int size()
-    {
+    public int size() {
         return pathsSet.size();
     }
 
@@ -253,12 +224,10 @@ public class PathSet
      * @param directory that will be searched for file's paths to add
      * @param prefix to be added to all found files
      */
-    public void addAllFilesInDirectory( File directory, String prefix )
-    {
+    public void addAllFilesInDirectory(File directory, String prefix) {
         DirectoryScanner scanner = new DirectoryScanner();
-        scanner.setBasedir( directory );
+        scanner.setBasedir(directory);
         scanner.scan();
-        addAll( scanner.getIncludedFiles(), prefix );
+        addAll(scanner.getIncludedFiles(), prefix);
     }
-
 }

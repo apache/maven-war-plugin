@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.war.util;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.plugins.war.util;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.war.util;
 
 import java.util.Objects;
 
@@ -28,8 +27,7 @@ import org.apache.maven.model.Dependency;
  *
  * @author Stephane Nicoll
  */
-public class DependencyInfo
-{
+public class DependencyInfo {
 
     private final Dependency dependency;
 
@@ -40,8 +38,7 @@ public class DependencyInfo
      *
      * @param dependency the dependency
      */
-    public DependencyInfo( Dependency dependency )
-    {
+    public DependencyInfo(Dependency dependency) {
         this.dependency = dependency;
     }
 
@@ -50,8 +47,7 @@ public class DependencyInfo
      *
      * @return the dependency
      */
-    public Dependency getDependency()
-    {
+    public Dependency getDependency() {
         return dependency;
     }
 
@@ -60,8 +56,7 @@ public class DependencyInfo
      *
      * @return the target file name or {@code null}
      */
-    public String getTargetFileName()
-    {
+    public String getTargetFileName() {
         return targetFileName;
     }
 
@@ -70,34 +65,29 @@ public class DependencyInfo
      *
      * @param targetFileName the target file name
      */
-    public void setTargetFileName( String targetFileName )
-    {
+    public void setTargetFileName(String targetFileName) {
         this.targetFileName = targetFileName;
     }
 
     @Override
-    public boolean equals( Object o )
-    {
-        if ( this == o )
-        {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if ( o == null || getClass() != o.getClass() )
-        {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
 
         DependencyInfo that = (DependencyInfo) o;
 
-        return Objects.equals( dependency, that.dependency );
+        return Objects.equals(dependency, that.dependency);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int result;
-        result = ( dependency != null ? dependency.hashCode() : 0 );
-        result = 31 * result + ( targetFileName != null ? targetFileName.hashCode() : 0 );
+        result = (dependency != null ? dependency.hashCode() : 0);
+        result = 31 * result + (targetFileName != null ? targetFileName.hashCode() : 0);
         return result;
     }
 }

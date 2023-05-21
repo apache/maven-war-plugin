@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.war.stub;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.plugins.war.stub;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.plugins.war.stub;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.war.stub;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -28,31 +27,23 @@ import org.apache.maven.artifact.Artifact;
  * @author Olivier Lamy
  * @since 9 juin 07
  */
-public class MavenZipProject
-    extends MavenProject4CopyConstructor
-{
+public class MavenZipProject extends MavenProject4CopyConstructor {
     private Set<Artifact> artifacts;
 
-    public MavenZipProject()
-        throws Exception
-    {
+    public MavenZipProject() throws Exception {
         super();
         this.artifacts = new HashSet<>();
     }
 
-    public Set<Artifact> getArtifacts()
-    {
-        return this.artifacts;
-    }
-    
-    public Set<Artifact> getDependencyArtifacts()
-    {
+    public Set<Artifact> getArtifacts() {
         return this.artifacts;
     }
 
-    public void addArtifact( Artifact artifact )
-    {
-        this.artifacts.add( artifact );
+    public Set<Artifact> getDependencyArtifacts() {
+        return this.artifacts;
     }
 
+    public void addArtifact(Artifact artifact) {
+        this.artifacts.add(artifact);
+    }
 }

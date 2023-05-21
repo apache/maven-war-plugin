@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.war;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.plugins.war;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.war;
 
 import java.io.File;
 import java.io.IOException;
@@ -64,9 +63,7 @@ import org.codehaus.plexus.archiver.manager.ArchiverManager;
 /**
  * Contains common jobs for WAR mojos.
  */
-public abstract class AbstractWarMojo
-    extends AbstractMojo
-{
+public abstract class AbstractWarMojo extends AbstractMojo {
     private static final String META_INF = "META-INF";
 
     private static final String WEB_INF = "WEB-INF";
@@ -86,13 +83,13 @@ public abstract class AbstractWarMojo
     /**
      * The Maven project.
      */
-    @Parameter( defaultValue = "${project}", readonly = true, required = true )
+    @Parameter(defaultValue = "${project}", readonly = true, required = true)
     private MavenProject project;
 
     /**
      * The directory containing compiled classes.
      */
-    @Parameter( defaultValue = "${project.build.outputDirectory}", required = true, readonly = true )
+    @Parameter(defaultValue = "${project.build.outputDirectory}", required = true, readonly = true)
     private File classesDirectory;
 
     /**
@@ -102,7 +99,7 @@ public abstract class AbstractWarMojo
      *
      * @since 2.0.1
      */
-    @Parameter( defaultValue = "false" )
+    @Parameter(defaultValue = "false")
     private boolean archiveClasses;
 
     /**
@@ -110,7 +107,7 @@ public abstract class AbstractWarMojo
      *
      * @since 2.3
      */
-    @Parameter( defaultValue = "${project.build.sourceEncoding}" )
+    @Parameter(defaultValue = "${project.build.sourceEncoding}")
     private String resourceEncoding;
 
     /**
@@ -125,19 +122,19 @@ public abstract class AbstractWarMojo
     /**
      * The JAR archiver needed for archiving the classes directory into a JAR file under WEB-INF/lib.
      */
-    @Component( role = Archiver.class, hint = "jar" )
+    @Component(role = Archiver.class, hint = "jar")
     private JarArchiver jarArchiver;
 
     /**
      * The directory where the webapp is built.
      */
-    @Parameter( defaultValue = "${project.build.directory}/${project.build.finalName}", required = true )
+    @Parameter(defaultValue = "${project.build.directory}/${project.build.finalName}", required = true)
     private File webappDirectory;
 
     /**
      * Single directory for extra files to include in the WAR. This is where you place your JSP files.
      */
-    @Parameter( defaultValue = "${basedir}/src/main/webapp", required = true )
+    @Parameter(defaultValue = "${basedir}/src/main/webapp", required = true)
     private File warSourceDirectory;
 
     /**
@@ -160,7 +157,7 @@ public abstract class AbstractWarMojo
      * <p>
      * So, the default filtering delimiters might be specified as:
      * </p>
-     * 
+     *
      * <pre>
      * &lt;delimiters&gt;
      *   &lt;delimiter&gt;${*}&lt;/delimiter&gt;
@@ -181,7 +178,7 @@ public abstract class AbstractWarMojo
      *
      * @since 3.0.0
      */
-    @Parameter( defaultValue = "true" )
+    @Parameter(defaultValue = "true")
     private boolean useDefaultDelimiters;
 
     /**
@@ -201,7 +198,7 @@ public abstract class AbstractWarMojo
     /**
      * Directory to unpack dependent WARs into if needed.
      */
-    @Parameter( defaultValue = "${project.build.directory}/war/work", required = true )
+    @Parameter(defaultValue = "${project.build.directory}/war/work", required = true)
     private File workDirectory;
 
     /**
@@ -215,29 +212,29 @@ public abstract class AbstractWarMojo
 
     /**
      */
-    @Component( role = ArtifactFactory.class )
+    @Component(role = ArtifactFactory.class)
     private ArtifactFactory artifactFactory;
 
     /**
      * To look up Archiver/UnArchiver implementations.
      */
-    @Component( role = ArchiverManager.class )
+    @Component(role = ArchiverManager.class)
     private ArchiverManager archiverManager;
 
     /**
      */
-    @Component( role = MavenFileFilter.class, hint = "default" )
+    @Component(role = MavenFileFilter.class, hint = "default")
     private MavenFileFilter mavenFileFilter;
 
     /**
      */
-    @Component( role = MavenResourcesFiltering.class, hint = "default" )
+    @Component(role = MavenResourcesFiltering.class, hint = "default")
     private MavenResourcesFiltering mavenResourcesFiltering;
 
     /**
      * The comma separated list of tokens to include when copying the content of the warSourceDirectory.
      */
-    @Parameter( defaultValue = "**" )
+    @Parameter(defaultValue = "**")
     private String warSourceIncludes;
 
     /**
@@ -247,20 +244,20 @@ public abstract class AbstractWarMojo
     private String warSourceExcludes;
 
     /**
-     * The comma separated list of tokens to include when doing a WAR overlay. Default is 
+     * The comma separated list of tokens to include when doing a WAR overlay. Default is
      * {@link org.apache.maven.plugins.war.Overlay#DEFAULT_INCLUDES}
      *
      */
     @Parameter
-    private String dependentWarIncludes = StringUtils.join( Overlay.DEFAULT_INCLUDES, "," );
+    private String dependentWarIncludes = StringUtils.join(Overlay.DEFAULT_INCLUDES, ",");
 
     /**
-     * The comma separated list of tokens to exclude when doing a WAR overlay. Default is 
+     * The comma separated list of tokens to exclude when doing a WAR overlay. Default is
      * {@link org.apache.maven.plugins.war.Overlay#DEFAULT_EXCLUDES}
      *
      */
     @Parameter
-    private String dependentWarExcludes = StringUtils.join( Overlay.DEFAULT_EXCLUDES, "," );
+    private String dependentWarExcludes = StringUtils.join(Overlay.DEFAULT_EXCLUDES, ",");
 
     /**
      * The overlays to apply. Each &lt;overlay&gt; element may contain:
@@ -294,7 +291,7 @@ public abstract class AbstractWarMojo
     /**
      * @since 2.1-alpha-2
      */
-    @Parameter( defaultValue = "${session}", readonly = true, required = true )
+    @Parameter(defaultValue = "${session}", readonly = true, required = true)
     private MavenSession session;
 
     /**
@@ -302,7 +299,7 @@ public abstract class AbstractWarMojo
      *
      * @since 2.1-alpha-2
      */
-    @Parameter( defaultValue = "false" )
+    @Parameter(defaultValue = "false")
     private boolean filteringDeploymentDescriptors;
 
     /**
@@ -311,7 +308,7 @@ public abstract class AbstractWarMojo
      *
      * @since 2.1-alpha-2
      */
-    @Parameter( defaultValue = "false" )
+    @Parameter(defaultValue = "false")
     private boolean escapedBackslashesInFilePath;
 
     /**
@@ -329,29 +326,29 @@ public abstract class AbstractWarMojo
      *
      * @since 2.3
      */
-    @Parameter( defaultValue = "true" )
+    @Parameter(defaultValue = "true")
     private boolean recompressZippedFiles;
 
     /**
      * @since 2.4
      */
-    @Parameter( defaultValue = "false" )
+    @Parameter(defaultValue = "false")
     private boolean includeEmptyDirectories;
 
     /**
      * Stop searching endToken at the end of line
-     * 
+     *
      * @since 2.4
      */
-    @Parameter( defaultValue = "false" )
+    @Parameter(defaultValue = "false")
     private boolean supportMultiLineFiltering;
 
     /**
      * use jvmChmod rather that cli chmod and forking process
-     * 
+     *
      * @since 2.4
      */
-    @Parameter( defaultValue = "true" )
+    @Parameter(defaultValue = "true")
     private boolean useJvmChmod;
 
     /**
@@ -368,7 +365,7 @@ public abstract class AbstractWarMojo
      *
      * @since 3.3.0
      */
-    @Parameter( defaultValue = "${project.build.outputTimestamp}" )
+    @Parameter(defaultValue = "${project.build.outputTimestamp}")
     protected String outputTimestamp;
 
     /**
@@ -379,7 +376,7 @@ public abstract class AbstractWarMojo
      *
      * @since 3.3.1
      */
-    @Parameter( defaultValue = "WEB-INF/lib/" )
+    @Parameter(defaultValue = "WEB-INF/lib/")
     private String outdatedCheckPath;
 
     private final Overlay currentProjectOverlay = Overlay.createInstance();
@@ -387,8 +384,7 @@ public abstract class AbstractWarMojo
     /**
      * @return The current overlay.
      */
-    public Overlay getCurrentProjectOverlay()
-    {
+    public Overlay getCurrentProjectOverlay() {
         return currentProjectOverlay;
     }
 
@@ -397,27 +393,23 @@ public abstract class AbstractWarMojo
      *
      * @return an array of tokens to exclude
      */
-    protected String[] getExcludes()
-    {
+    protected String[] getExcludes() {
         List<String> excludeList = new ArrayList<>();
-        if ( warSourceExcludes != null && !warSourceExcludes.isEmpty() )
-        {
-            excludeList.addAll( Arrays.asList( StringUtils.split( warSourceExcludes, "," ) ) );
+        if (warSourceExcludes != null && !warSourceExcludes.isEmpty()) {
+            excludeList.addAll(Arrays.asList(StringUtils.split(warSourceExcludes, ",")));
         }
 
         // if webXML is specified, omit the one in the source directory
-        if ( webXml != null && StringUtils.isNotEmpty( webXml.getName() ) )
-        {
-            excludeList.add( "**/" + WEB_INF + "/web.xml" );
+        if (webXml != null && StringUtils.isNotEmpty(webXml.getName())) {
+            excludeList.add("**/" + WEB_INF + "/web.xml");
         }
 
         // if contextXML is specified, omit the one in the source directory
-        if ( containerConfigXML != null && StringUtils.isNotEmpty( containerConfigXML.getName() ) )
-        {
-            excludeList.add( "**/" + META_INF + "/" + containerConfigXML.getName() );
+        if (containerConfigXML != null && StringUtils.isNotEmpty(containerConfigXML.getName())) {
+            excludeList.add("**/" + META_INF + "/" + containerConfigXML.getName());
         }
 
-        return excludeList.toArray( new String[excludeList.size()] );
+        return excludeList.toArray(new String[excludeList.size()]);
     }
 
     /**
@@ -425,9 +417,8 @@ public abstract class AbstractWarMojo
      *
      * @return an array of tokens to include
      */
-    protected String[] getIncludes()
-    {
-        return StringUtils.split( StringUtils.defaultString( warSourceIncludes ), "," );
+    protected String[] getIncludes() {
+        return StringUtils.split(StringUtils.defaultString(warSourceIncludes), ",");
     }
 
     /**
@@ -435,9 +426,8 @@ public abstract class AbstractWarMojo
      *
      * @return an array of tokens to exclude
      */
-    protected String[] getDependentWarExcludes()
-    {
-        return StringUtils.split( StringUtils.defaultString( dependentWarExcludes ), "," );
+    protected String[] getDependentWarExcludes() {
+        return StringUtils.split(StringUtils.defaultString(dependentWarExcludes), ",");
     }
 
     /**
@@ -445,9 +435,8 @@ public abstract class AbstractWarMojo
      *
      * @return an array of tokens to include
      */
-    protected String[] getDependentWarIncludes()
-    {
-        return StringUtils.split( StringUtils.defaultString( dependentWarIncludes ), "," );
+    protected String[] getDependentWarIncludes() {
+        return StringUtils.split(StringUtils.defaultString(dependentWarIncludes), ",");
     }
 
     /**
@@ -455,18 +444,13 @@ public abstract class AbstractWarMojo
      * @throws MojoExecutionException In case of failure.
      * @throws MojoFailureException In case of failure.
      */
-    public void buildExplodedWebapp( File webapplicationDirectory )
-        throws MojoExecutionException, MojoFailureException
-    {
+    public void buildExplodedWebapp(File webapplicationDirectory) throws MojoExecutionException, MojoFailureException {
         webapplicationDirectory.mkdirs();
 
-        try
-        {
-            buildWebapp( project, webapplicationDirectory );
-        }
-        catch ( IOException e )
-        {
-            throw new MojoExecutionException( "Could not build webapp", e );
+        try {
+            buildWebapp(project, webapplicationDirectory);
+        } catch (IOException e) {
+            throw new MojoExecutionException("Could not build webapp", e);
         }
     }
 
@@ -480,70 +464,69 @@ public abstract class AbstractWarMojo
      * @throws MojoFailureException if an unexpected error occurred while packaging the webapp
      * @throws IOException if an error occurred while copying the files
      */
-    public void buildWebapp( MavenProject mavenProject, File webapplicationDirectory )
-        throws MojoExecutionException, MojoFailureException, IOException
-    {
+    public void buildWebapp(MavenProject mavenProject, File webapplicationDirectory)
+            throws MojoExecutionException, MojoFailureException, IOException {
 
-        WebappStructure structure = new WebappStructure( mavenProject.getDependencies() );
+        WebappStructure structure = new WebappStructure(mavenProject.getDependencies());
 
         // CHECKSTYLE_OFF: LineLength
         final long startTime = System.currentTimeMillis();
-        getLog().info( "Assembling webapp [" + mavenProject.getArtifactId() + "] in [" + webapplicationDirectory + "]" );
+        getLog().info("Assembling webapp [" + mavenProject.getArtifactId() + "] in [" + webapplicationDirectory + "]");
 
-        final OverlayManager overlayManager =
-            new OverlayManager( overlays, mavenProject, getDependentWarIncludes(), getDependentWarExcludes(),
-                                currentProjectOverlay );
+        final OverlayManager overlayManager = new OverlayManager(
+                overlays, mavenProject, getDependentWarIncludes(), getDependentWarExcludes(), currentProjectOverlay);
         // CHECKSTYLE_ON: LineLength
         List<FilterWrapper> defaultFilterWrappers;
-        try
-        {
+        try {
             MavenResourcesExecution mavenResourcesExecution = new MavenResourcesExecution();
-            mavenResourcesExecution.setEscapeString( escapeString );
-            mavenResourcesExecution.setSupportMultiLineFiltering( supportMultiLineFiltering );
-            mavenResourcesExecution.setMavenProject( mavenProject );
+            mavenResourcesExecution.setEscapeString(escapeString);
+            mavenResourcesExecution.setSupportMultiLineFiltering(supportMultiLineFiltering);
+            mavenResourcesExecution.setMavenProject(mavenProject);
 
             // if these are NOT set, just use the defaults, which are '${*}' and '@'.
-            mavenResourcesExecution.setDelimiters( delimiters, useDefaultDelimiters );
+            mavenResourcesExecution.setDelimiters(delimiters, useDefaultDelimiters);
 
-            if ( nonFilteredFileExtensions != null )
-            {
-                mavenResourcesExecution.setNonFilteredFileExtensions( nonFilteredFileExtensions );
+            if (nonFilteredFileExtensions != null) {
+                mavenResourcesExecution.setNonFilteredFileExtensions(nonFilteredFileExtensions);
             }
-            
-            if ( filters == null )
-            {
+
+            if (filters == null) {
                 filters = getProject().getBuild().getFilters();
             }
-            mavenResourcesExecution.setFilters( filters );
-            mavenResourcesExecution.setEscapedBackslashesInFilePath( escapedBackslashesInFilePath );
-            mavenResourcesExecution.setMavenSession( this.session );
-            mavenResourcesExecution.setEscapeString( this.escapeString );
-            mavenResourcesExecution.setSupportMultiLineFiltering( supportMultiLineFiltering );
+            mavenResourcesExecution.setFilters(filters);
+            mavenResourcesExecution.setEscapedBackslashesInFilePath(escapedBackslashesInFilePath);
+            mavenResourcesExecution.setMavenSession(this.session);
+            mavenResourcesExecution.setEscapeString(this.escapeString);
+            mavenResourcesExecution.setSupportMultiLineFiltering(supportMultiLineFiltering);
 
-            defaultFilterWrappers = mavenFileFilter.getDefaultFilterWrappers( mavenResourcesExecution );
+            defaultFilterWrappers = mavenFileFilter.getDefaultFilterWrappers(mavenResourcesExecution);
 
-        }
-        catch ( MavenFilteringException e )
-        {
-            getLog().error( "fail to build filtering wrappers " + e.getMessage() );
-            throw new MojoExecutionException( e.getMessage(), e );
+        } catch (MavenFilteringException e) {
+            getLog().error("fail to build filtering wrappers " + e.getMessage());
+            throw new MojoExecutionException(e.getMessage(), e);
         }
 
-        final WarPackagingContext context =
-            new DefaultWarPackagingContext( webapplicationDirectory, structure, overlayManager, defaultFilterWrappers,
-                                            getNonFilteredFileExtensions(), filteringDeploymentDescriptors,
-                                            this.artifactFactory, resourceEncoding, propertiesEncoding, useJvmChmod,
-                                            failOnMissingWebXml, outputTimestamp );
+        final WarPackagingContext context = new DefaultWarPackagingContext(
+                webapplicationDirectory,
+                structure,
+                overlayManager,
+                defaultFilterWrappers,
+                getNonFilteredFileExtensions(),
+                filteringDeploymentDescriptors,
+                this.artifactFactory,
+                resourceEncoding,
+                propertiesEncoding,
+                useJvmChmod,
+                failOnMissingWebXml,
+                outputTimestamp);
 
-        final List<WarPackagingTask> packagingTasks = getPackagingTasks( overlayManager );
+        final List<WarPackagingTask> packagingTasks = getPackagingTasks(overlayManager);
 
-        for ( WarPackagingTask warPackagingTask : packagingTasks )
-        {
-            warPackagingTask.performPackaging( context );
+        for (WarPackagingTask warPackagingTask : packagingTasks) {
+            warPackagingTask.performPackaging(context);
         }
 
-        getLog().debug( "Webapp assembled in [" + ( System.currentTimeMillis() - startTime ) + " msecs]" );
-
+        getLog().debug("Webapp assembled in [" + (System.currentTimeMillis() - startTime) + " msecs]");
     }
 
     /**
@@ -554,24 +537,18 @@ public abstract class AbstractWarMojo
      * @return the list of packaging tasks
      * @throws MojoExecutionException if the packaging tasks could not be built
      */
-    private List<WarPackagingTask> getPackagingTasks( OverlayManager overlayManager )
-        throws MojoExecutionException
-    {
+    private List<WarPackagingTask> getPackagingTasks(OverlayManager overlayManager) throws MojoExecutionException {
         final List<WarPackagingTask> packagingTasks = new ArrayList<>();
 
-        packagingTasks.add( new CopyUserManifestTask() );
+        packagingTasks.add(new CopyUserManifestTask());
 
         final List<Overlay> resolvedOverlays = overlayManager.getOverlays();
-        for ( Overlay overlay : resolvedOverlays )
-        {
-            if ( overlay.isCurrentProject() )
-            {
-                packagingTasks.add( new WarProjectPackagingTask( webResources, webXml, containerConfigXML,
-                                                                 currentProjectOverlay ) );
-            }
-            else
-            {
-                packagingTasks.add( new OverlayPackagingTask( overlay, currentProjectOverlay ) );
+        for (Overlay overlay : resolvedOverlays) {
+            if (overlay.isCurrentProject()) {
+                packagingTasks.add(
+                        new WarProjectPackagingTask(webResources, webXml, containerConfigXML, currentProjectOverlay));
+            } else {
+                packagingTasks.add(new OverlayPackagingTask(overlay, currentProjectOverlay));
             }
         }
         return packagingTasks;
@@ -580,9 +557,7 @@ public abstract class AbstractWarMojo
     /**
      * WarPackagingContext default implementation
      */
-    private class DefaultWarPackagingContext
-        implements WarPackagingContext
-    {
+    private class DefaultWarPackagingContext implements WarPackagingContext {
         private final ArtifactFactory artifactFactory;
 
         private final String resourceEncoding;
@@ -623,14 +598,19 @@ public abstract class AbstractWarMojo
          * @param failOnMissingWebXml Flag to check whether we should ignore missing web.xml or not
          * @param outputTimestamp the output timestamp for reproducible archive creation
          */
-        DefaultWarPackagingContext( final File webappDirectory, final WebappStructure webappStructure,
-                                           final OverlayManager overlayManager,
-                                           List<FilterWrapper> filterWrappers,
-                                           List<String> nonFilteredFileExtensions,
-                                           boolean filteringDeploymentDescriptors, ArtifactFactory artifactFactory,
-                                           String resourceEncoding, String propertiesEncoding, boolean useJvmChmod,
-                                           final Boolean failOnMissingWebXml, String outputTimestamp )
-        {
+        DefaultWarPackagingContext(
+                final File webappDirectory,
+                final WebappStructure webappStructure,
+                final OverlayManager overlayManager,
+                List<FilterWrapper> filterWrappers,
+                List<String> nonFilteredFileExtensions,
+                boolean filteringDeploymentDescriptors,
+                ArtifactFactory artifactFactory,
+                String resourceEncoding,
+                String propertiesEncoding,
+                boolean useJvmChmod,
+                final Boolean failOnMissingWebXml,
+                String outputTimestamp) {
             this.webappDirectory = webappDirectory;
             this.webappStructure = webappStructure;
             this.overlayManager = overlayManager;
@@ -638,257 +618,211 @@ public abstract class AbstractWarMojo
             this.artifactFactory = artifactFactory;
             this.filteringDeploymentDescriptors = filteringDeploymentDescriptors;
             this.nonFilteredFileExtensions =
-                nonFilteredFileExtensions == null ? Collections.emptyList() : nonFilteredFileExtensions;
+                    nonFilteredFileExtensions == null ? Collections.emptyList() : nonFilteredFileExtensions;
             this.resourceEncoding = resourceEncoding;
             this.propertiesEncoding = propertiesEncoding;
             // This is kinda stupid but if we loop over the current overlays and we request the path structure
             // it will register it. This will avoid wrong warning messages in a later phase
-            for ( String overlayId : overlayManager.getOverlayIds() )
-            {
-                webappStructure.getStructure( overlayId );
+            for (String overlayId : overlayManager.getOverlayIds()) {
+                webappStructure.getStructure(overlayId);
             }
             this.useJvmChmod = useJvmChmod;
             this.failOnMissingWebXml = failOnMissingWebXml;
 
-            if ( !webappDirectory.exists() )
-            {
+            if (!webappDirectory.exists()) {
                 outdatedResources = Collections.emptyList();
-            }
-            else if ( getWarSourceDirectory().toPath().equals( webappDirectory.toPath() ) )
-            {
-                getLog().info( "Can't detect outdated resources when running inplace goal" );
+            } else if (getWarSourceDirectory().toPath().equals(webappDirectory.toPath())) {
+                getLog().info("Can't detect outdated resources when running inplace goal");
                 outdatedResources = Collections.emptyList();
-            }
-            else if ( session.getStartTime() == null )
-            {
+            } else if (session.getStartTime() == null) {
                 // MWAR-439: this should never happen, but has happened in some integration context...
-                getLog().warn( "Can't detect outdated resources because unexpected session.getStartTime() == null" );
+                getLog().warn("Can't detect outdated resources because unexpected session.getStartTime() == null");
                 outdatedResources = Collections.emptyList();
-            }
-            else
-            {
+            } else {
                 outdatedResources = new ArrayList<>();
-                try
-                {
-                    if ( '\\' == File.separatorChar )
-                    {
-                        if ( ! checkAllPathsForOutdated() )
-                        {
-                            outdatedCheckPath = outdatedCheckPath.replace( '/', '\\' );
+                try {
+                    if ('\\' == File.separatorChar) {
+                        if (!checkAllPathsForOutdated()) {
+                            outdatedCheckPath = outdatedCheckPath.replace('/', '\\');
                         }
                     }
-                    Files.walkFileTree( webappDirectory.toPath(), new SimpleFileVisitor<Path>()
-                    {
+                    Files.walkFileTree(webappDirectory.toPath(), new SimpleFileVisitor<Path>() {
                         @Override
-                        public FileVisitResult visitFile( Path file, BasicFileAttributes attrs )
-                            throws IOException
-                        {
-                            if ( file.toFile().lastModified() < session.getStartTime().getTime() )
-                            {
-                                String path = webappDirectory.toPath().relativize( file ).toString();
-                                if ( checkAllPathsForOutdated() || path.startsWith( outdatedCheckPath ) )
-                                {
-                                    outdatedResources.add( path );
+                        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                            if (file.toFile().lastModified()
+                                    < session.getStartTime().getTime()) {
+                                String path = webappDirectory
+                                        .toPath()
+                                        .relativize(file)
+                                        .toString();
+                                if (checkAllPathsForOutdated() || path.startsWith(outdatedCheckPath)) {
+                                    outdatedResources.add(path);
                                 }
                             }
-                            return super.visitFile( file, attrs );
+                            return super.visitFile(file, attrs);
                         }
-                    } );
-                }
-                catch ( IOException e )
-                {
-                    getLog().warn( "Can't detect outdated resources", e );
+                    });
+                } catch (IOException e) {
+                    getLog().warn("Can't detect outdated resources", e);
                 }
             }
             this.outputTimestamp = outputTimestamp;
         }
 
-        protected boolean checkAllPathsForOutdated() 
-        {
-            return outdatedCheckPath.equals( "/" );
+        protected boolean checkAllPathsForOutdated() {
+            return outdatedCheckPath.equals("/");
         }
 
         @Override
-        public MavenProject getProject()
-        {
+        public MavenProject getProject() {
             return project;
         }
 
         @Override
-        public File getWebappDirectory()
-        {
+        public File getWebappDirectory() {
             return webappDirectory;
         }
 
         @Override
-        public File getClassesDirectory()
-        {
+        public File getClassesDirectory() {
             return classesDirectory;
         }
 
         @Override
-        public Log getLog()
-        {
+        public Log getLog() {
             return AbstractWarMojo.this.getLog();
         }
 
         @Override
-        public String getOutputFileNameMapping()
-        {
+        public String getOutputFileNameMapping() {
             return outputFileNameMapping;
         }
 
         @Override
-        public File getWebappSourceDirectory()
-        {
+        public File getWebappSourceDirectory() {
             return warSourceDirectory;
         }
 
         @Override
-        public String[] getWebappSourceIncludes()
-        {
+        public String[] getWebappSourceIncludes() {
             return getIncludes();
         }
 
         @Override
-        public String[] getWebappSourceExcludes()
-        {
+        public String[] getWebappSourceExcludes() {
             return getExcludes();
         }
 
         @Override
-        public boolean isWebappSourceIncludeEmptyDirectories()
-        {
+        public boolean isWebappSourceIncludeEmptyDirectories() {
             return includeEmptyDirectories;
         }
 
         @Override
-        public boolean archiveClasses()
-        {
+        public boolean archiveClasses() {
             return archiveClasses;
         }
 
         @Override
-        public File getOverlaysWorkDirectory()
-        {
+        public File getOverlaysWorkDirectory() {
             return workDirectory;
         }
 
         @Override
-        public ArchiverManager getArchiverManager()
-        {
+        public ArchiverManager getArchiverManager() {
             return archiverManager;
         }
 
         @Override
-        public MavenArchiveConfiguration getArchive()
-        {
+        public MavenArchiveConfiguration getArchive() {
             return archive;
         }
 
         @Override
-        public JarArchiver getJarArchiver()
-        {
+        public JarArchiver getJarArchiver() {
             return jarArchiver;
         }
 
         @Override
-        public List<String> getFilters()
-        {
+        public List<String> getFilters() {
             return filters;
         }
 
         @Override
-        public WebappStructure getWebappStructure()
-        {
+        public WebappStructure getWebappStructure() {
             return webappStructure;
         }
 
         @Override
-        public List<String> getOwnerIds()
-        {
+        public List<String> getOwnerIds() {
             return overlayManager.getOverlayIds();
         }
 
         @Override
-        public MavenFileFilter getMavenFileFilter()
-        {
+        public MavenFileFilter getMavenFileFilter() {
             return mavenFileFilter;
         }
 
         @Override
-        public List<FilterWrapper> getFilterWrappers()
-        {
+        public List<FilterWrapper> getFilterWrappers() {
             return filterWrappers;
         }
 
         @Override
-        public boolean isNonFilteredExtension( String fileName )
-        {
-            return !mavenResourcesFiltering.filteredFileExtension( fileName, nonFilteredFileExtensions );
+        public boolean isNonFilteredExtension(String fileName) {
+            return !mavenResourcesFiltering.filteredFileExtension(fileName, nonFilteredFileExtensions);
         }
 
         @Override
-        public boolean isFilteringDeploymentDescriptors()
-        {
+        public boolean isFilteringDeploymentDescriptors() {
             return filteringDeploymentDescriptors;
         }
 
         @Override
-        public ArtifactFactory getArtifactFactory()
-        {
+        public ArtifactFactory getArtifactFactory() {
             return this.artifactFactory;
         }
 
         @Override
-        public MavenSession getSession()
-        {
+        public MavenSession getSession() {
             return session;
         }
 
         @Override
-        public String getResourceEncoding()
-        {
+        public String getResourceEncoding() {
             return resourceEncoding;
         }
 
         @Override
-        public String getPropertiesEncoding()
-        {
+        public String getPropertiesEncoding() {
             return propertiesEncoding;
         }
 
         @Override
-        public boolean isUseJvmChmod()
-        {
+        public boolean isUseJvmChmod() {
             return useJvmChmod;
         }
 
         @Override
-        public Boolean isFailOnMissingWebXml()
-        {
+        public Boolean isFailOnMissingWebXml() {
             return failOnMissingWebXml;
         }
 
         @Override
-        public void addResource( String resource )
-        {
-            outdatedResources.remove( resource.replace( '/', File.separatorChar ) );            
+        public void addResource(String resource) {
+            outdatedResources.remove(resource.replace('/', File.separatorChar));
         }
 
         @Override
-        public void deleteOutdatedResources()
-        {
-            for ( String resource : outdatedResources )
-            {
-                getLog().info( "deleting outdated resource " + resource );
-                new File( getWebappDirectory(), resource ).delete();
+        public void deleteOutdatedResources() {
+            for (String resource : outdatedResources) {
+                getLog().info("deleting outdated resource " + resource);
+                new File(getWebappDirectory(), resource).delete();
             }
         }
 
         @Override
-        public String getOutputTimestamp()
-        {
+        public String getOutputTimestamp() {
             return outputTimestamp;
         }
     }
@@ -896,312 +830,273 @@ public abstract class AbstractWarMojo
     /**
      * @return The Maven Project.
      */
-    public MavenProject getProject()
-    {
+    public MavenProject getProject() {
         return project;
     }
 
     /**
      * @param project The project to be set.
      */
-    public void setProject( MavenProject project )
-    {
+    public void setProject(MavenProject project) {
         this.project = project;
     }
 
     /**
      * @return the classes directory.
      */
-    public File getClassesDirectory()
-    {
+    public File getClassesDirectory() {
         return classesDirectory;
     }
 
     /**
      * @param classesDirectory The classes directory to be set.
      */
-    public void setClassesDirectory( File classesDirectory )
-    {
+    public void setClassesDirectory(File classesDirectory) {
         this.classesDirectory = classesDirectory;
     }
 
     /**
      * @return {@link #webappDirectory}
      */
-    public File getWebappDirectory()
-    {
+    public File getWebappDirectory() {
         return webappDirectory;
     }
 
     /**
      * @param webappDirectory The web application directory.
      */
-    public void setWebappDirectory( File webappDirectory )
-    {
+    public void setWebappDirectory(File webappDirectory) {
         this.webappDirectory = webappDirectory;
     }
 
     /**
      * @return {@link #warSourceDirectory}
      */
-    public File getWarSourceDirectory()
-    {
+    public File getWarSourceDirectory() {
         return warSourceDirectory;
     }
 
     /**
      * @param warSourceDirectory {@link #warSourceDirectory}
      */
-    public void setWarSourceDirectory( File warSourceDirectory )
-    {
+    public void setWarSourceDirectory(File warSourceDirectory) {
         this.warSourceDirectory = warSourceDirectory;
     }
 
     /**
      * @return The {@link #webXml}
      */
-    public File getWebXml()
-    {
+    public File getWebXml() {
         return webXml;
     }
 
     /**
      * @param webXml The {@link #webXml}
      */
-    public void setWebXml( File webXml )
-    {
+    public void setWebXml(File webXml) {
         this.webXml = webXml;
     }
 
     /**
      * @return {@link #containerConfigXML}
      */
-    public File getContainerConfigXML()
-    {
+    public File getContainerConfigXML() {
         return containerConfigXML;
     }
 
     /**
      * @param containerConfigXML {@link #containerConfigXML}
      */
-    public void setContainerConfigXML( File containerConfigXML )
-    {
+    public void setContainerConfigXML(File containerConfigXML) {
         this.containerConfigXML = containerConfigXML;
     }
 
     /**
      * @return {@link #outputFileNameMapping}
      */
-    public String getOutputFileNameMapping()
-    {
+    public String getOutputFileNameMapping() {
         return outputFileNameMapping;
     }
 
     /**
      * @param outputFileNameMapping {@link #outputFileNameMapping}
      */
-    public void setOutputFileNameMapping( String outputFileNameMapping )
-    {
+    public void setOutputFileNameMapping(String outputFileNameMapping) {
         this.outputFileNameMapping = outputFileNameMapping;
     }
 
     /**
      * @return {@link #overlays}
      */
-    public List<Overlay> getOverlays()
-    {
+    public List<Overlay> getOverlays() {
         return overlays;
     }
 
     /**
      * @param overlays {@link #overlays}
      */
-    public void setOverlays( List<Overlay> overlays )
-    {
+    public void setOverlays(List<Overlay> overlays) {
         this.overlays = overlays;
     }
 
     /**
      * @param overlay add {@link #overlays}.
      */
-    public void addOverlay( Overlay overlay )
-    {
-        overlays.add( overlay );
+    public void addOverlay(Overlay overlay) {
+        overlays.add(overlay);
     }
 
     /**
      * @return {@link #archiveClasses}
      */
-    public boolean isArchiveClasses()
-    {
+    public boolean isArchiveClasses() {
         return archiveClasses;
     }
 
     /**
      * @param archiveClasses {@link #archiveClasses}
      */
-    public void setArchiveClasses( boolean archiveClasses )
-    {
+    public void setArchiveClasses(boolean archiveClasses) {
         this.archiveClasses = archiveClasses;
     }
 
     /**
      * @return {@link JarArchiver}
      */
-    public JarArchiver getJarArchiver()
-    {
+    public JarArchiver getJarArchiver() {
         return jarArchiver;
     }
 
     /**
      * @param jarArchiver {@link JarArchiver}
      */
-    public void setJarArchiver( JarArchiver jarArchiver )
-    {
+    public void setJarArchiver(JarArchiver jarArchiver) {
         this.jarArchiver = jarArchiver;
     }
 
     /**
      * @return {@link #webResources}.
      */
-    public Resource[] getWebResources()
-    {
+    public Resource[] getWebResources() {
         return webResources;
     }
 
     /**
      * @param webResources {@link #webResources}.
      */
-    public void setWebResources( Resource[] webResources )
-    {
+    public void setWebResources(Resource[] webResources) {
         this.webResources = webResources;
     }
 
     /**
      * @return {@link #filters}
      */
-    public List<String> getFilters()
-    {
+    public List<String> getFilters() {
         return filters;
     }
 
     /**
      * @param filters {@link #filters}
      */
-    public void setFilters( List<String> filters )
-    {
+    public void setFilters(List<String> filters) {
         this.filters = filters;
     }
 
     /**
      * @return {@link #workDirectory}
      */
-    public File getWorkDirectory()
-    {
+    public File getWorkDirectory() {
         return workDirectory;
     }
 
     /**
      * @param workDirectory {@link #workDirectory}
      */
-    public void setWorkDirectory( File workDirectory )
-    {
+    public void setWorkDirectory(File workDirectory) {
         this.workDirectory = workDirectory;
     }
 
     /**
      * @return {@link #warSourceIncludes}
      */
-    public String getWarSourceIncludes()
-    {
+    public String getWarSourceIncludes() {
         return warSourceIncludes;
     }
 
     /**
      * @param warSourceIncludes {@link #warSourceIncludes}
      */
-    public void setWarSourceIncludes( String warSourceIncludes )
-    {
+    public void setWarSourceIncludes(String warSourceIncludes) {
         this.warSourceIncludes = warSourceIncludes;
     }
 
     /**
      * @return {@link #warSourceExcludes}
      */
-    public String getWarSourceExcludes()
-    {
+    public String getWarSourceExcludes() {
         return warSourceExcludes;
     }
 
     /**
      * @param warSourceExcludes {@link #warSourceExcludes}
      */
-    public void setWarSourceExcludes( String warSourceExcludes )
-    {
+    public void setWarSourceExcludes(String warSourceExcludes) {
         this.warSourceExcludes = warSourceExcludes;
     }
 
     /**
      * @return {@link #archive}
      */
-    public MavenArchiveConfiguration getArchive()
-    {
+    public MavenArchiveConfiguration getArchive() {
         return archive;
     }
 
     /**
      * @return {@link #nonFilteredFileExtensions}
      */
-    public List<String> getNonFilteredFileExtensions()
-    {
+    public List<String> getNonFilteredFileExtensions() {
         return nonFilteredFileExtensions;
     }
 
     /**
      * @param nonFilteredFileExtensions {@link #nonFilteredFileExtensions}
      */
-    public void setNonFilteredFileExtensions( List<String> nonFilteredFileExtensions )
-    {
+    public void setNonFilteredFileExtensions(List<String> nonFilteredFileExtensions) {
         this.nonFilteredFileExtensions = nonFilteredFileExtensions;
     }
 
     /**
      * @return {@link #artifactFactory}
      */
-    public ArtifactFactory getArtifactFactory()
-    {
+    public ArtifactFactory getArtifactFactory() {
         return this.artifactFactory;
     }
 
     /**
      * @param artifactFactory {@link #artifactFactory}
      */
-    public void setArtifactFactory( ArtifactFactory artifactFactory )
-    {
+    public void setArtifactFactory(ArtifactFactory artifactFactory) {
         this.artifactFactory = artifactFactory;
     }
 
     /**
      * @return {@link #session}
      */
-    protected MavenSession getSession()
-    {
+    protected MavenSession getSession() {
         return this.session;
     }
 
     /**
      * @return {@link #recompressZippedFiles}
      */
-    protected boolean isRecompressZippedFiles()
-    {
+    protected boolean isRecompressZippedFiles() {
         return recompressZippedFiles;
     }
 
     /**
      * @return {@link #includeEmptyDirectories}
      */
-    protected boolean isIncludeEmptyDirectories()
-    {
+    protected boolean isIncludeEmptyDirectories() {
         return includeEmptyDirectories;
     }
 }

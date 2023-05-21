@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.war;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.plugins.war;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.war;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,21 +50,22 @@ import org.codehaus.plexus.util.StringUtils;
  *
  * @author <a href="evenisse@apache.org">Emmanuel Venisse</a>
  */
-@Mojo( name = "war", defaultPhase = LifecyclePhase.PACKAGE, threadSafe = true,
-                requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME )
-public class WarMojo
-    extends AbstractWarMojo
-{
+@Mojo(
+        name = "war",
+        defaultPhase = LifecyclePhase.PACKAGE,
+        threadSafe = true,
+        requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
+public class WarMojo extends AbstractWarMojo {
     /**
      * The directory for the generated WAR.
      */
-    @Parameter( defaultValue = "${project.build.directory}", required = true )
+    @Parameter(defaultValue = "${project.build.directory}", required = true)
     private String outputDirectory;
 
     /**
      * The name of the generated WAR.
      */
-    @Parameter( defaultValue = "${project.build.finalName}", required = true, readonly = true )
+    @Parameter(defaultValue = "${project.build.finalName}", required = true, readonly = true)
     private String warName;
 
     /**
@@ -98,7 +98,7 @@ public class WarMojo
     /**
      * The WAR archiver.
      */
-    @Component( role = Archiver.class, hint = "war" )
+    @Component(role = Archiver.class, hint = "war")
     private WarArchiver warArchiver;
 
     /**
@@ -110,7 +110,7 @@ public class WarMojo
      * Whether this is the main artifact being built. Set to <code>false</code> if you don't want to install or deploy
      * it to the local repository instead of the default one in an execution.
      */
-    @Parameter( defaultValue = "true" )
+    @Parameter(defaultValue = "true")
     private boolean primaryArtifact;
 
     /**
@@ -135,7 +135,7 @@ public class WarMojo
      *
      * @since 2.1-alpha-2
      */
-    @Parameter( defaultValue = "false" )
+    @Parameter(defaultValue = "false")
     private boolean attachClasses;
 
     /**
@@ -143,7 +143,7 @@ public class WarMojo
      *
      * @since 2.1-alpha-2
      */
-    @Parameter( defaultValue = "classes" )
+    @Parameter(defaultValue = "classes")
     private String classesClassifier;
 
     /**
@@ -152,7 +152,7 @@ public class WarMojo
      *
      * @since 3.0.0
      */
-    @Parameter( property = "maven.war.skip", defaultValue = "false" )
+    @Parameter(property = "maven.war.skip", defaultValue = "false")
     private boolean skip;
 
     // ----------------------------------------------------------------------
@@ -166,29 +166,21 @@ public class WarMojo
      * @throws MojoFailureException if an error.
      */
     @Override
-    public void execute()
-        throws MojoExecutionException, MojoFailureException
-    {
+    public void execute() throws MojoExecutionException, MojoFailureException {
 
-        if ( isSkip() )
-        {
-            getLog().info( "Skipping the execution." );
+        if (isSkip()) {
+            getLog().info("Skipping the execution.");
             return;
         }
 
         File warFile = getTargetWarFile();
 
-        try
-        {
-            performPackaging( warFile );
-        }
-        catch ( DependencyResolutionRequiredException | ArchiverException e )
-        {
-            throw new MojoExecutionException( "Error assembling WAR: " + e.getMessage(), e );
-        }
-        catch ( ManifestException | IOException e )
-        {
-            throw new MojoExecutionException( "Error assembling WAR", e );
+        try {
+            performPackaging(warFile);
+        } catch (DependencyResolutionRequiredException | ArchiverException e) {
+            throw new MojoExecutionException("Error assembling WAR: " + e.getMessage(), e);
+        } catch (ManifestException | IOException e) {
+            throw new MojoExecutionException("Error assembling WAR", e);
         }
     }
 
@@ -203,89 +195,80 @@ public class WarMojo
      * @throws MojoExecutionException if the execution failed
      * @throws MojoFailureException if a fatal exception occurred
      */
-    private void performPackaging( File warFile )
-        throws IOException, ManifestException, DependencyResolutionRequiredException, MojoExecutionException,
-        MojoFailureException
-    {
-        getLog().info( "Packaging webapp" );
+    private void performPackaging(File warFile)
+            throws IOException, ManifestException, DependencyResolutionRequiredException, MojoExecutionException,
+                    MojoFailureException {
+        getLog().info("Packaging webapp");
 
-        buildExplodedWebapp( getWebappDirectory() );
+        buildExplodedWebapp(getWebappDirectory());
 
         MavenArchiver archiver = new MavenArchiver();
 
-        archiver.setArchiver( warArchiver );
+        archiver.setArchiver(warArchiver);
 
-        archiver.setCreatedBy( "Maven WAR Plugin", "org.apache.maven.plugins", "maven-war-plugin" );
+        archiver.setCreatedBy("Maven WAR Plugin", "org.apache.maven.plugins", "maven-war-plugin");
 
-        archiver.setOutputFile( warFile );
+        archiver.setOutputFile(warFile);
 
         // configure for Reproducible Builds based on outputTimestamp value
-        archiver.configureReproducible( outputTimestamp );
+        archiver.configureReproducible(outputTimestamp);
 
-        getLog().debug( "Excluding " + Arrays.asList( getPackagingExcludes() )
-            + " from the generated webapp archive." );
-        getLog().debug( "Including " + Arrays.asList( getPackagingIncludes() ) + " in the generated webapp archive." );
+        getLog().debug("Excluding " + Arrays.asList(getPackagingExcludes()) + " from the generated webapp archive.");
+        getLog().debug("Including " + Arrays.asList(getPackagingIncludes()) + " in the generated webapp archive.");
 
-        warArchiver.addDirectory( getWebappDirectory(), getPackagingIncludes(), getPackagingExcludes() );
+        warArchiver.addDirectory(getWebappDirectory(), getPackagingIncludes(), getPackagingExcludes());
 
-        final File webXmlFile = new File( getWebappDirectory(), "WEB-INF/web.xml" );
-        if ( webXmlFile.exists() )
-        {
-            warArchiver.setWebxml( webXmlFile );
+        final File webXmlFile = new File(getWebappDirectory(), "WEB-INF/web.xml");
+        if (webXmlFile.exists()) {
+            warArchiver.setWebxml(webXmlFile);
         }
 
-        warArchiver.setRecompressAddedZips( isRecompressZippedFiles() );
+        warArchiver.setRecompressAddedZips(isRecompressZippedFiles());
 
-        warArchiver.setIncludeEmptyDirs( isIncludeEmptyDirectories() );
+        warArchiver.setIncludeEmptyDirs(isIncludeEmptyDirectories());
 
-        if ( Boolean.FALSE.equals( failOnMissingWebXml )
-            || ( failOnMissingWebXml == null && isProjectUsingAtLeastServlet30() ) )
-        {
-            getLog().debug( "Build won't fail if web.xml file is missing." );
-            warArchiver.setExpectWebXml( false );
+        if (Boolean.FALSE.equals(failOnMissingWebXml)
+                || (failOnMissingWebXml == null && isProjectUsingAtLeastServlet30())) {
+            getLog().debug("Build won't fail if web.xml file is missing.");
+            warArchiver.setExpectWebXml(false);
         }
 
         // create archive
-        archiver.createArchive( getSession(), getProject(), getArchive() );
+        archiver.createArchive(getSession(), getProject(), getArchive());
 
         // create the classes to be attached if necessary
-        if ( isAttachClasses() )
-        {
-            if ( isArchiveClasses() && getJarArchiver().getDestFile() != null )
-            {
+        if (isAttachClasses()) {
+            if (isArchiveClasses() && getJarArchiver().getDestFile() != null) {
                 // special handling in case of archived classes: MWAR-240
                 File targetClassesFile = getTargetClassesFile();
-                FileUtils.copyFile( getJarArchiver().getDestFile(), targetClassesFile );
-                projectHelper.attachArtifact( getProject(), "jar", getClassesClassifier(), targetClassesFile );
-            }
-            else
-            {
+                FileUtils.copyFile(getJarArchiver().getDestFile(), targetClassesFile);
+                projectHelper.attachArtifact(getProject(), "jar", getClassesClassifier(), targetClassesFile);
+            } else {
                 ClassesPackager packager = new ClassesPackager();
-                final File classesDirectory = packager.getClassesDirectory( getWebappDirectory() );
-                if ( classesDirectory.exists() )
-                {
-                    getLog().info( "Packaging classes" );
-                    packager.packageClasses( classesDirectory, getTargetClassesFile(), getJarArchiver(), getSession(),
-                                             getProject(), getArchive(), outputTimestamp );
-                    projectHelper.attachArtifact( getProject(), "jar", getClassesClassifier(), getTargetClassesFile() );
+                final File classesDirectory = packager.getClassesDirectory(getWebappDirectory());
+                if (classesDirectory.exists()) {
+                    getLog().info("Packaging classes");
+                    packager.packageClasses(
+                            classesDirectory,
+                            getTargetClassesFile(),
+                            getJarArchiver(),
+                            getSession(),
+                            getProject(),
+                            getArchive(),
+                            outputTimestamp);
+                    projectHelper.attachArtifact(getProject(), "jar", getClassesClassifier(), getTargetClassesFile());
                 }
             }
         }
 
-        if ( this.classifier != null )
-        {
-            projectHelper.attachArtifact( getProject(), "war", this.classifier, warFile );
-        }
-        else
-        {
+        if (this.classifier != null) {
+            projectHelper.attachArtifact(getProject(), "war", this.classifier, warFile);
+        } else {
             Artifact artifact = getProject().getArtifact();
-            if ( primaryArtifact )
-            {
-                artifact.setFile( warFile );
-            }
-            else if ( artifact.getFile() == null || artifact.getFile().isDirectory() )
-            {
-                artifact.setFile( warFile );
+            if (primaryArtifact) {
+                artifact.setFile(warFile);
+            } else if (artifact.getFile() == null || artifact.getFile().isDirectory()) {
+                artifact.setFile(warFile);
             }
         }
     }
@@ -305,47 +288,34 @@ public class WarMojo
      * @throws MalformedURLException if the path to a dependency file can't be transformed to a URL.
      */
     private boolean isProjectUsingAtLeastServlet30()
-        throws DependencyResolutionRequiredException, MalformedURLException
-    {
+            throws DependencyResolutionRequiredException, MalformedURLException {
         List<String> classpathElements = getProject().getCompileClasspathElements();
         URL[] urls = new URL[classpathElements.size()];
-        for ( int i = 0; i < urls.length; i++ )
-        {
-            urls[i] = new File( classpathElements.get( i ) ).toURI().toURL();
+        for (int i = 0; i < urls.length; i++) {
+            urls[i] = new File(classpathElements.get(i)).toURI().toURL();
         }
-        URLClassLoader loader = new URLClassLoader( urls, Thread.currentThread().getContextClassLoader() );
-        try
-        {
-            return hasWebServletAnnotationClassInClasspath( loader );
-        }
-        finally
-        {
-            try
-            {
+        URLClassLoader loader = new URLClassLoader(urls, Thread.currentThread().getContextClassLoader());
+        try {
+            return hasWebServletAnnotationClassInClasspath(loader);
+        } finally {
+            try {
                 loader.close();
-            }
-            catch ( IOException ex )
-            {
+            } catch (IOException ex) {
                 // ignore
             }
         }
     }
 
-    private static boolean hasWebServletAnnotationClassInClasspath( ClassLoader loader )
-    {
-        return hasClassInClasspath( loader, "javax.servlet.annotation.WebServlet" )
-                || hasClassInClasspath( loader, "jakarta.servlet.annotation.WebServlet" );
+    private static boolean hasWebServletAnnotationClassInClasspath(ClassLoader loader) {
+        return hasClassInClasspath(loader, "javax.servlet.annotation.WebServlet")
+                || hasClassInClasspath(loader, "jakarta.servlet.annotation.WebServlet");
     }
 
-    private static boolean hasClassInClasspath( ClassLoader loader, String clazz )
-    {
-        try
-        {
-            Class.forName( clazz, false, loader );
+    private static boolean hasClassInClasspath(ClassLoader loader, String clazz) {
+        try {
+            Class.forName(clazz, false, loader);
             return true;
-        }
-        catch ( ClassNotFoundException e )
-        {
+        } catch (ClassNotFoundException e) {
             return false;
         }
     }
@@ -357,35 +327,28 @@ public class WarMojo
      * @param type The type.
      * @return {@link File}
      */
-    protected static File getTargetFile( File basedir, String finalName, String classifier, String type )
-    {
-        if ( classifier == null )
-        {
+    protected static File getTargetFile(File basedir, String finalName, String classifier, String type) {
+        if (classifier == null) {
             classifier = "";
-        }
-        else if ( classifier.trim().length() > 0 && !classifier.startsWith( "-" ) )
-        {
+        } else if (classifier.trim().length() > 0 && !classifier.startsWith("-")) {
             classifier = "-" + classifier;
         }
 
-        return new File( basedir, finalName + classifier + "." + type );
+        return new File(basedir, finalName + classifier + "." + type);
     }
 
     /**
      * @return The war {@link File}
      */
-    protected File getTargetWarFile()
-    {
-        return getTargetFile( new File( getOutputDirectory() ), getWarName(), getClassifier(), "war" );
-
+    protected File getTargetWarFile() {
+        return getTargetFile(new File(getOutputDirectory()), getWarName(), getClassifier(), "war");
     }
 
     /**
      * @return The target class {@link File}
      */
-    protected File getTargetClassesFile()
-    {
-        return getTargetFile( new File( getOutputDirectory() ), getWarName(), getClassesClassifier(), "jar" );
+    protected File getTargetClassesFile() {
+        return getTargetFile(new File(getOutputDirectory()), getWarName(), getClassesClassifier(), "jar");
     }
 
     // Getters and Setters
@@ -393,190 +356,162 @@ public class WarMojo
     /**
      * @return {@link #classifier}
      */
-    public String getClassifier()
-    {
+    public String getClassifier() {
         return classifier;
     }
 
     /**
      * @param classifier {@link #classifier}
      */
-    public void setClassifier( String classifier )
-    {
+    public void setClassifier(String classifier) {
         this.classifier = classifier;
     }
 
     /**
      * @return The package excludes.
      */
-    public String[] getPackagingExcludes()
-    {
-        if ( packagingExcludes == null || packagingExcludes.isEmpty() )
-        {
+    public String[] getPackagingExcludes() {
+        if (packagingExcludes == null || packagingExcludes.isEmpty()) {
             return new String[0];
-        }
-        else
-        {
-            return StringUtils.split( packagingExcludes, "," );
+        } else {
+            return StringUtils.split(packagingExcludes, ",");
         }
     }
 
     /**
      * @param packagingExcludes {@link #packagingExcludes}
      */
-    public void setPackagingExcludes( String packagingExcludes )
-    {
+    public void setPackagingExcludes(String packagingExcludes) {
         this.packagingExcludes = packagingExcludes;
     }
 
     /**
      * @return The packaging includes.
      */
-    public String[] getPackagingIncludes()
-    {
-        if ( packagingIncludes == null || packagingIncludes.isEmpty() )
-        {
-            return new String[] { "**" };
-        }
-        else
-        {
-            return StringUtils.split( packagingIncludes, "," );
+    public String[] getPackagingIncludes() {
+        if (packagingIncludes == null || packagingIncludes.isEmpty()) {
+            return new String[] {"**"};
+        } else {
+            return StringUtils.split(packagingIncludes, ",");
         }
     }
 
     /**
      * @param packagingIncludes {@link #packagingIncludes}
      */
-    public void setPackagingIncludes( String packagingIncludes )
-    {
+    public void setPackagingIncludes(String packagingIncludes) {
         this.packagingIncludes = packagingIncludes;
     }
 
     /**
      * @return {@link #outputDirectory}
      */
-    public String getOutputDirectory()
-    {
+    public String getOutputDirectory() {
         return outputDirectory;
     }
 
     /**
      * @param outputDirectory {@link #outputDirectory}
      */
-    public void setOutputDirectory( String outputDirectory )
-    {
+    public void setOutputDirectory(String outputDirectory) {
         this.outputDirectory = outputDirectory;
     }
 
     /**
      * @return {@link #warName}
      */
-    public String getWarName()
-    {
+    public String getWarName() {
         return warName;
     }
 
     /**
      * @param warName {@link #warName}
      */
-    public void setWarName( String warName )
-    {
+    public void setWarName(String warName) {
         this.warName = warName;
     }
 
     /**
      * @return {@link #warArchiver}
      */
-    public WarArchiver getWarArchiver()
-    {
+    public WarArchiver getWarArchiver() {
         return warArchiver;
     }
 
     /**
      * @param warArchiver {@link #warArchiver}
      */
-    public void setWarArchiver( WarArchiver warArchiver )
-    {
+    public void setWarArchiver(WarArchiver warArchiver) {
         this.warArchiver = warArchiver;
     }
 
     /**
      * @return {@link #projectHelper}
      */
-    public MavenProjectHelper getProjectHelper()
-    {
+    public MavenProjectHelper getProjectHelper() {
         return projectHelper;
     }
 
     /**
      * @param projectHelper {@link #projectHelper}
      */
-    public void setProjectHelper( MavenProjectHelper projectHelper )
-    {
+    public void setProjectHelper(MavenProjectHelper projectHelper) {
         this.projectHelper = projectHelper;
     }
 
     /**
      * @return {@link #primaryArtifact}
      */
-    public boolean isPrimaryArtifact()
-    {
+    public boolean isPrimaryArtifact() {
         return primaryArtifact;
     }
 
     /**
      * @param primaryArtifact {@link #primaryArtifact}
      */
-    public void setPrimaryArtifact( boolean primaryArtifact )
-    {
+    public void setPrimaryArtifact(boolean primaryArtifact) {
         this.primaryArtifact = primaryArtifact;
     }
 
     /**
      * @return {@link #attachClasses}
      */
-    public boolean isAttachClasses()
-    {
+    public boolean isAttachClasses() {
         return attachClasses;
     }
 
     /**
      * @param attachClasses {@link #attachClasses}
      */
-    public void setAttachClasses( boolean attachClasses )
-    {
+    public void setAttachClasses(boolean attachClasses) {
         this.attachClasses = attachClasses;
     }
 
     /**
      * @return {@link #classesClassifier}
      */
-    public String getClassesClassifier()
-    {
+    public String getClassesClassifier() {
         return classesClassifier;
     }
 
     /**
      * @param classesClassifier {@link #classesClassifier}
      */
-    public void setClassesClassifier( String classesClassifier )
-    {
+    public void setClassesClassifier(String classesClassifier) {
         this.classesClassifier = classesClassifier;
     }
 
     /**
      * @return {@link #failOnMissingWebXml}
      */
-    public boolean isFailOnMissingWebXml()
-    {
+    public boolean isFailOnMissingWebXml() {
         return failOnMissingWebXml;
     }
 
     /**
      * @param failOnMissingWebXml {@link #failOnMissingWebXml}
      */
-    public void setFailOnMissingWebXml( boolean failOnMissingWebXml )
-    {
+    public void setFailOnMissingWebXml(boolean failOnMissingWebXml) {
         this.failOnMissingWebXml = failOnMissingWebXml;
     }
 
@@ -584,8 +519,7 @@ public class WarMojo
      * Skip the mojo run
      * @return {@link #skip}
      */
-    public boolean isSkip()
-    {
+    public boolean isSkip() {
         return skip;
     }
 }

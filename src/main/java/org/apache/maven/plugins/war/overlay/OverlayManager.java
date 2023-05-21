@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.war.overlay;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.plugins.war.overlay;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.war.overlay;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,8 +35,7 @@ import org.apache.maven.project.MavenProject;
  *
  * @author Stephane Nicoll
  */
-public class OverlayManager
-{
+public class OverlayManager {
     private final List<Overlay> overlays;
 
     private final MavenProject project;
@@ -46,7 +44,7 @@ public class OverlayManager
 
     /**
      * Creates a manager with the specified overlays.
-     * 
+     *
      * Note that the list is potentially updated by the manager so a new list is created based on the overlays.
      *
      * @param overlays the overlays
@@ -56,22 +54,23 @@ public class OverlayManager
      * @param currentProjectOverlay the overlay for the current project
      * @throws InvalidOverlayConfigurationException if the config is invalid
      */
-    public OverlayManager( List<Overlay> overlays, MavenProject project, String[] defaultIncludes,
-                           String[] defaultExcludes, Overlay currentProjectOverlay )
-        throws InvalidOverlayConfigurationException
-    {
+    public OverlayManager(
+            List<Overlay> overlays,
+            MavenProject project,
+            String[] defaultIncludes,
+            String[] defaultExcludes,
+            Overlay currentProjectOverlay)
+            throws InvalidOverlayConfigurationException {
         this.overlays = new ArrayList<>();
-        if ( overlays != null )
-        {
-            this.overlays.addAll( overlays );
+        if (overlays != null) {
+            this.overlays.addAll(overlays);
         }
         this.project = project;
 
         this.artifactsOverlays = getOverlaysAsArtifacts();
 
         // Initialize
-        initialize( defaultIncludes, defaultExcludes, currentProjectOverlay );
-
+        initialize(defaultIncludes, defaultExcludes, currentProjectOverlay);
     }
 
     /**
@@ -79,8 +78,7 @@ public class OverlayManager
      *
      * @return the overlays
      */
-    public List<Overlay> getOverlays()
-    {
+    public List<Overlay> getOverlays() {
         return overlays;
     }
 
@@ -89,15 +87,12 @@ public class OverlayManager
      *
      * @return the overlay ids
      */
-    public List<String> getOverlayIds()
-    {
+    public List<String> getOverlayIds() {
         final List<String> result = new ArrayList<>();
-        for ( Overlay overlay : overlays )
-        {
-            result.add( overlay.getId() );
+        for (Overlay overlay : overlays) {
+            result.add(overlay.getId());
         }
         return result;
-
     }
 
     /**
@@ -108,68 +103,58 @@ public class OverlayManager
      * @param currentProjectOverlay the overlay for the current project
      * @throws InvalidOverlayConfigurationException if the configuration is invalid
      */
-    void initialize( String[] defaultIncludes, String[] defaultExcludes, Overlay currentProjectOverlay )
-        throws InvalidOverlayConfigurationException
-    {
+    void initialize(String[] defaultIncludes, String[] defaultExcludes, Overlay currentProjectOverlay)
+            throws InvalidOverlayConfigurationException {
 
         // Build the list of configured artifacts and makes sure that each overlay
         // refer to a valid artifact
         final List<Artifact> configuredWarArtifacts = new ArrayList<>();
         final ListIterator<Overlay> it = overlays.listIterator();
-        while ( it.hasNext() )
-        {
+        while (it.hasNext()) {
             Overlay overlay = it.next();
-            if ( overlay == null )
-            {
-                throw new InvalidOverlayConfigurationException( "overlay could not be null." );
+            if (overlay == null) {
+                throw new InvalidOverlayConfigurationException("overlay could not be null.");
             }
             // If it's the current project, return the project instance
-            if ( overlay.isCurrentProject() )
-            {
+            if (overlay.isCurrentProject()) {
                 overlay = currentProjectOverlay;
-                it.set( overlay );
+                it.set(overlay);
             }
             // default includes/excludes - only if the overlay uses the default settings
-            if ( Arrays.equals( Overlay.DEFAULT_INCLUDES, overlay.getIncludes() )
-                && Arrays.equals( Overlay.DEFAULT_EXCLUDES, overlay.getExcludes() ) )
-            {
-                overlay.setIncludes( defaultIncludes );
-                overlay.setExcludes( defaultExcludes );
+            if (Arrays.equals(Overlay.DEFAULT_INCLUDES, overlay.getIncludes())
+                    && Arrays.equals(Overlay.DEFAULT_EXCLUDES, overlay.getExcludes())) {
+                overlay.setIncludes(defaultIncludes);
+                overlay.setExcludes(defaultExcludes);
             }
 
-            final Artifact artifact = getAssociatedArtifact( overlay );
-            if ( artifact != null )
-            {
-                configuredWarArtifacts.add( artifact );
-                overlay.setArtifact( artifact );
+            final Artifact artifact = getAssociatedArtifact(overlay);
+            if (artifact != null) {
+                configuredWarArtifacts.add(artifact);
+                overlay.setArtifact(artifact);
             }
         }
 
         // Build the list of missing overlays
-        for ( Artifact artifact : artifactsOverlays )
-        {
-            if ( !configuredWarArtifacts.contains( artifact ) )
-            {
+        for (Artifact artifact : artifactsOverlays) {
+            if (!configuredWarArtifacts.contains(artifact)) {
                 // Add a default overlay for the given artifact which will be applied after
                 // the ones that have been configured
-                overlays.add( new DefaultOverlay( artifact, defaultIncludes, defaultExcludes ) );
+                overlays.add(new DefaultOverlay(artifact, defaultIncludes, defaultExcludes));
             }
         }
 
         // Final validation, make sure that the current project is in there. Otherwise add it first
-        for ( Overlay overlay : overlays )
-        {
-            if ( overlay.equals( currentProjectOverlay ) )
-            {
+        for (Overlay overlay : overlays) {
+            if (overlay.equals(currentProjectOverlay)) {
                 return;
             }
         }
-        overlays.add( 0, currentProjectOverlay );
+        overlays.add(0, currentProjectOverlay);
     }
 
     /**
      * Returns the Artifact associated to the specified overlay.
-     * 
+     *
      * If the overlay defines the current project, {@code null} is returned. If no artifact could not be found for the
      * overlay a InvalidOverlayConfigurationException is thrown.
      *
@@ -178,37 +163,29 @@ public class OverlayManager
      * @throws org.apache.maven.plugins.war.overlay.InvalidOverlayConfigurationException if the overlay does not have an
      *             associated artifact
      */
-    Artifact getAssociatedArtifact( final Overlay overlay )
-        throws InvalidOverlayConfigurationException
-    {
-        if ( overlay.isCurrentProject() )
-        {
+    Artifact getAssociatedArtifact(final Overlay overlay) throws InvalidOverlayConfigurationException {
+        if (overlay.isCurrentProject()) {
             return null;
         }
 
-        for ( Artifact artifact : artifactsOverlays )
-        {
+        for (Artifact artifact : artifactsOverlays) {
             // Handle classifier dependencies properly (clash management)
-            if ( compareOverlayWithArtifact( overlay, artifact ) )
-            {
+            if (compareOverlayWithArtifact(overlay, artifact)) {
                 return artifact;
             }
         }
 
         // maybe its a project dependencies zip or an other type
         Set<Artifact> projectArtifacts = this.project.getDependencyArtifacts();
-        if ( projectArtifacts != null )
-        {
-            for ( Artifact artifact : projectArtifacts )
-            {
-                if ( compareOverlayWithArtifact( overlay, artifact ) )
-                {
+        if (projectArtifacts != null) {
+            for (Artifact artifact : projectArtifacts) {
+                if (compareOverlayWithArtifact(overlay, artifact)) {
                     return artifact;
                 }
             }
         }
         // CHECKSTYLE_OFF: LineLength
-        throw new InvalidOverlayConfigurationException( "overlay [" + overlay + "] is not a dependency of the project." );
+        throw new InvalidOverlayConfigurationException("overlay [" + overlay + "] is not a dependency of the project.");
         // CHECKSTYLE_ON: LineLength
 
     }
@@ -220,14 +197,13 @@ public class OverlayManager
      * @param artifact the artifact
      * @return boolean true if equals
      */
-    private boolean compareOverlayWithArtifact( Overlay overlay, Artifact artifact )
-    {
-        return ( Objects.equals( overlay.getGroupId(), artifact.getGroupId() )
-            && Objects.equals( overlay.getArtifactId(), artifact.getArtifactId() )
-            && Objects.equals( overlay.getType(), artifact.getType() )
-        // MWAR-241 Make sure to treat null and "" as equal when comparing the classifier
-        && Objects.equals( Objects.toString( overlay.getClassifier() ),
-                           Objects.toString( artifact.getClassifier() ) ) );
+    private boolean compareOverlayWithArtifact(Overlay overlay, Artifact artifact) {
+        return (Objects.equals(overlay.getGroupId(), artifact.getGroupId())
+                && Objects.equals(overlay.getArtifactId(), artifact.getArtifactId())
+                && Objects.equals(overlay.getType(), artifact.getType())
+                // MWAR-241 Make sure to treat null and "" as equal when comparing the classifier
+                && Objects.equals(
+                        Objects.toString(overlay.getClassifier()), Objects.toString(artifact.getClassifier())));
     }
 
     /**
@@ -235,17 +211,14 @@ public class OverlayManager
      *
      * @return the overlays as artifacts objects
      */
-    private List<Artifact> getOverlaysAsArtifacts()
-    {
-        ScopeArtifactFilter filter = new ScopeArtifactFilter( Artifact.SCOPE_RUNTIME );
+    private List<Artifact> getOverlaysAsArtifacts() {
+        ScopeArtifactFilter filter = new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME);
         final Set<Artifact> artifacts = project.getArtifacts();
 
         final List<Artifact> result = new ArrayList<>();
-        for ( Artifact artifact : artifacts )
-        {
-            if ( !artifact.isOptional() && filter.include( artifact ) && ( "war".equals( artifact.getType() ) ) )
-            {
-                result.add( artifact );
+        for (Artifact artifact : artifacts) {
+            if (!artifact.isOptional() && filter.include(artifact) && ("war".equals(artifact.getType()))) {
+                result.add(artifact);
             }
         }
         return result;

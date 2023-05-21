@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.war.packaging;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,10 @@ package org.apache.maven.plugins.war.packaging;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.war.packaging;
+
+import java.io.File;
+import java.io.IOException;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -28,58 +30,50 @@ import org.apache.maven.plugins.war.util.PathSet;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.interpolation.InterpolationException;
 
-import java.io.File;
-import java.io.IOException;
-
 /**
  * Handles the classes directory that needs to be packaged in the web application.
- * 
+ *
  * Based on the {@link WarPackagingContext#archiveClasses()} flag, the resources are either copied into to
  * {@code WEB-INF/classes} directory or archived in a jar within the {@code WEB-INF/lib} directory.
  *
  * @author Stephane Nicoll
  */
-public class ClassesPackagingTask
-    extends AbstractWarPackagingTask
-{
+public class ClassesPackagingTask extends AbstractWarPackagingTask {
     private final Overlay currentProjectOverlay;
 
     /**
      * @param currentProjectOverlay {@link #currentProjectOverlay}
      */
-    public ClassesPackagingTask( Overlay currentProjectOverlay )
-    {
+    public ClassesPackagingTask(Overlay currentProjectOverlay) {
         this.currentProjectOverlay = currentProjectOverlay;
     }
 
     @Override
-    public void performPackaging( WarPackagingContext context )
-        throws MojoExecutionException
-    {
-        final File webappClassesDirectory = new File( context.getWebappDirectory(), CLASSES_PATH );
-        if ( !webappClassesDirectory.exists() )
-        {
+    public void performPackaging(WarPackagingContext context) throws MojoExecutionException {
+        final File webappClassesDirectory = new File(context.getWebappDirectory(), CLASSES_PATH);
+        if (!webappClassesDirectory.exists()) {
             webappClassesDirectory.mkdirs();
         }
 
-        if ( context.getClassesDirectory().exists() && !context.getClassesDirectory().equals( webappClassesDirectory ) )
-        {
-            if ( context.archiveClasses() )
-            {
-                generateJarArchive( context );
-            }
-            else
-            {
-                final PathSet sources = getFilesToIncludes( context.getClassesDirectory(), null, null );
-                try
-                {
-                    copyFiles( currentProjectOverlay.getId(), context, context.getClassesDirectory(), sources,
-                               CLASSES_PATH, false );
-                }
-                catch ( IOException e )
-                {
-                    throw new MojoExecutionException( "Could not copy webapp classes ["
-                        + context.getClassesDirectory().getAbsolutePath() + "]", e );
+        if (context.getClassesDirectory().exists()
+                && !context.getClassesDirectory().equals(webappClassesDirectory)) {
+            if (context.archiveClasses()) {
+                generateJarArchive(context);
+            } else {
+                final PathSet sources = getFilesToIncludes(context.getClassesDirectory(), null, null);
+                try {
+                    copyFiles(
+                            currentProjectOverlay.getId(),
+                            context,
+                            context.getClassesDirectory(),
+                            sources,
+                            CLASSES_PATH,
+                            false);
+                } catch (IOException e) {
+                    throw new MojoExecutionException(
+                            "Could not copy webapp classes ["
+                                    + context.getClassesDirectory().getAbsolutePath() + "]",
+                            e);
                 }
             }
         }
@@ -89,40 +83,39 @@ public class ClassesPackagingTask
      * @param context The warPackingContext.
      * @throws MojoExecutionException In case of an error.
      */
-    protected void generateJarArchive( WarPackagingContext context )
-        throws MojoExecutionException
-    {
+    protected void generateJarArchive(WarPackagingContext context) throws MojoExecutionException {
         MavenProject project = context.getProject();
         ArtifactFactory factory = context.getArtifactFactory();
         Artifact artifact =
-            factory.createBuildArtifact( project.getGroupId(), project.getArtifactId(), project.getVersion(), "jar" );
+                factory.createBuildArtifact(project.getGroupId(), project.getArtifactId(), project.getVersion(), "jar");
         String archiveName;
-        try
-        {
-            archiveName = getArtifactFinalName( context, artifact );
-        }
-        catch ( InterpolationException e )
-        {
-            throw new MojoExecutionException( "Could not get the final name of the artifact [" + artifact.getGroupId()
-                + ":" + artifact.getArtifactId() + ":" + artifact.getVersion() + "]", e );
+        try {
+            archiveName = getArtifactFinalName(context, artifact);
+        } catch (InterpolationException e) {
+            throw new MojoExecutionException(
+                    "Could not get the final name of the artifact [" + artifact.getGroupId() + ":"
+                            + artifact.getArtifactId() + ":" + artifact.getVersion() + "]",
+                    e);
         }
         final String targetFilename = LIB_PATH + archiveName;
 
-        if ( context.getWebappStructure().registerFile( currentProjectOverlay.getId(), targetFilename ) )
-        {
-            context.addResource( targetFilename );
+        if (context.getWebappStructure().registerFile(currentProjectOverlay.getId(), targetFilename)) {
+            context.addResource(targetFilename);
 
-            final File libDirectory = new File( context.getWebappDirectory(), LIB_PATH );
-            final File jarFile = new File( libDirectory, archiveName );
+            final File libDirectory = new File(context.getWebappDirectory(), LIB_PATH);
+            final File jarFile = new File(libDirectory, archiveName);
             final ClassesPackager packager = new ClassesPackager();
-            packager.packageClasses( context.getClassesDirectory(), jarFile, context.getJarArchiver(),
-                                     context.getSession(), project, context.getArchive(),
-                                     context.getOutputTimestamp() );
-        }
-        else
-        {
-            context.getLog().warn( "Could not generate archive classes file [" + targetFilename
-                                       + "] has already been copied." );
+            packager.packageClasses(
+                    context.getClassesDirectory(),
+                    jarFile,
+                    context.getJarArchiver(),
+                    context.getSession(),
+                    project,
+                    context.getArchive(),
+                    context.getOutputTimestamp());
+        } else {
+            context.getLog()
+                    .warn("Could not generate archive classes file [" + targetFilename + "] has already been copied.");
         }
     }
 }

@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.war;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.plugins.war;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,10 +16,7 @@ package org.apache.maven.plugins.war;
  * specific language governing permissions and limitations
  * under the License.
  */
-
-import org.apache.maven.plugin.testing.stubs.ArtifactStub;
-import org.apache.maven.plugins.war.stub.MavenProjectArtifactsStub;
-import org.codehaus.plexus.util.FileUtils;
+package org.apache.maven.plugins.war;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -32,20 +27,20 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.maven.plugin.testing.stubs.ArtifactStub;
+import org.apache.maven.plugins.war.stub.MavenProjectArtifactsStub;
+import org.codehaus.plexus.util.FileUtils;
+
 /**
  * @author Stephane Nicoll
  */
-public abstract class AbstractWarExplodedMojoTest
-    extends AbstractWarMojoTest
-{
+public abstract class AbstractWarExplodedMojoTest extends AbstractWarMojoTest {
 
     protected WarExplodedMojo mojo;
 
-    public void setUp()
-        throws Exception
-    {
+    public void setUp() throws Exception {
         super.setUp();
-        mojo = (WarExplodedMojo) lookupMojo( "exploded", getPomFile() );
+        mojo = (WarExplodedMojo) lookupMojo("exploded", getPomFile());
     }
 
     /**
@@ -64,7 +59,7 @@ public abstract class AbstractWarExplodedMojoTest
 
     /**
      * Configures the exploded mojo for the specified test.
-     * 
+     *
      * If the {@code sourceFiles} parameter is {@code null}, sample JSPs are created by default.
      *
      * @param testId the id of the test
@@ -73,44 +68,34 @@ public abstract class AbstractWarExplodedMojoTest
      * @return the webapp directory
      * @throws Exception if an error occurs while configuring the mojo
      */
-    protected File setUpMojo( final String testId, ArtifactStub[] artifactStubs, String[] sourceFiles )
-        throws Exception
-    {
+    protected File setUpMojo(final String testId, ArtifactStub[] artifactStubs, String[] sourceFiles) throws Exception {
         final MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
-        final File webAppDirectory = new File( getTestDirectory(), testId );
+        final File webAppDirectory = new File(getTestDirectory(), testId);
 
         // Create the webapp sources
         File webAppSource;
-        if ( sourceFiles == null )
-        {
-            webAppSource = createWebAppSource( testId );
-        }
-        else
-        {
-            webAppSource = createWebAppSource( testId, false );
-            for ( String sourceFile : sourceFiles )
-            {
-                File sample = new File( webAppSource, sourceFile );
-                createFile( sample );
-
-            }
-
-        }
-
-        final File classesDir = createClassesDir( testId, true );
-        final File workDirectory = new File( getTestDirectory(), "/war/work-" + testId );
-        createDir( workDirectory );
-
-        if ( artifactStubs != null )
-        {
-            for ( ArtifactStub artifactStub : artifactStubs )
-            {
-                project.addArtifact( artifactStub );
+        if (sourceFiles == null) {
+            webAppSource = createWebAppSource(testId);
+        } else {
+            webAppSource = createWebAppSource(testId, false);
+            for (String sourceFile : sourceFiles) {
+                File sample = new File(webAppSource, sourceFile);
+                createFile(sample);
             }
         }
 
-        configureMojo( mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project );
-        setVariableValueToObject( mojo, "workDirectory", workDirectory );
+        final File classesDir = createClassesDir(testId, true);
+        final File workDirectory = new File(getTestDirectory(), "/war/work-" + testId);
+        createDir(workDirectory);
+
+        if (artifactStubs != null) {
+            for (ArtifactStub artifactStub : artifactStubs) {
+                project.addArtifact(artifactStub);
+            }
+        }
+
+        configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        setVariableValueToObject(mojo, "workDirectory", workDirectory);
 
         return webAppDirectory;
     }
@@ -123,10 +108,8 @@ public abstract class AbstractWarExplodedMojoTest
      * @return the webapp directory
      * @throws Exception if an error occurs while configuring the mojo
      */
-    protected File setUpMojo( final String testId, ArtifactStub[] artifactStubs )
-        throws Exception
-    {
-        return setUpMojo( testId, artifactStubs, null );
+    protected File setUpMojo(final String testId, ArtifactStub[] artifactStubs) throws Exception {
+        return setUpMojo(testId, artifactStubs, null);
     }
 
     /**
@@ -135,12 +118,9 @@ public abstract class AbstractWarExplodedMojoTest
      * @param directory the directory to remove
      * @throws IOException if an error occurred while removing the directory
      */
-    protected void cleanDirectory( File directory )
-        throws IOException
-    {
-        if ( directory != null && directory.isDirectory() && directory.exists() )
-        {
-            FileUtils.deleteDirectory( directory );
+    protected void cleanDirectory(File directory) throws IOException {
+        if (directory != null && directory.isDirectory() && directory.exists()) {
+            FileUtils.deleteDirectory(directory);
         }
     }
 
@@ -150,18 +130,17 @@ public abstract class AbstractWarExplodedMojoTest
      * @param webAppDirectory the webapp directory
      * @return a list of File objects that have been asserted
      */
-    protected List<File> assertDefaultContent( File webAppDirectory )
-    {
+    protected List<File> assertDefaultContent(File webAppDirectory) {
         // Validate content of the webapp
-        File expectedWebSourceFile = new File( webAppDirectory, "pansit.jsp" );
-        File expectedWebSource2File = new File( webAppDirectory, "org/web/app/last-exile.jsp" );
+        File expectedWebSourceFile = new File(webAppDirectory, "pansit.jsp");
+        File expectedWebSource2File = new File(webAppDirectory, "org/web/app/last-exile.jsp");
 
-        assertTrue( "source file not found: " + expectedWebSourceFile.toString(), expectedWebSourceFile.exists() );
-        assertTrue( "source file not found: " + expectedWebSource2File.toString(), expectedWebSource2File.exists() );
+        assertTrue("source file not found: " + expectedWebSourceFile.toString(), expectedWebSourceFile.exists());
+        assertTrue("source file not found: " + expectedWebSource2File.toString(), expectedWebSource2File.exists());
 
         final List<File> content = new ArrayList<>();
-        content.add( expectedWebSourceFile );
-        content.add( expectedWebSource2File );
+        content.add(expectedWebSourceFile);
+        content.add(expectedWebSource2File);
 
         return content;
     }
@@ -172,13 +151,12 @@ public abstract class AbstractWarExplodedMojoTest
      * @param webAppDirectory the webapp directory
      * @return a list with the web.xml File object
      */
-    protected List<File> assertWebXml( File webAppDirectory )
-    {
-        File expectedWEBXMLFile = new File( webAppDirectory, "WEB-INF/web.xml" );
-        assertTrue( "web xml not found: " + expectedWEBXMLFile.toString(), expectedWEBXMLFile.exists() );
+    protected List<File> assertWebXml(File webAppDirectory) {
+        File expectedWEBXMLFile = new File(webAppDirectory, "WEB-INF/web.xml");
+        assertTrue("web xml not found: " + expectedWEBXMLFile.toString(), expectedWEBXMLFile.exists());
 
         final List<File> content = new ArrayList<>();
-        content.add( expectedWEBXMLFile );
+        content.add(expectedWEBXMLFile);
 
         return content;
     }
@@ -191,21 +169,16 @@ public abstract class AbstractWarExplodedMojoTest
      * @param customMessage a custom message if an assertion fails
      * @return a list of File objects that have been inspected
      */
-    protected List<File> assertCustomContent( File webAppDirectory, String[] filePaths, String customMessage )
-    {
+    protected List<File> assertCustomContent(File webAppDirectory, String[] filePaths, String customMessage) {
         final List<File> content = new ArrayList<>();
-        for ( String filePath : filePaths )
-        {
-            final File expectedFile = new File( webAppDirectory, filePath );
-            if ( customMessage != null )
-            {
-                assertTrue( customMessage + " - " + expectedFile.toString(), expectedFile.exists() );
+        for (String filePath : filePaths) {
+            final File expectedFile = new File(webAppDirectory, filePath);
+            if (customMessage != null) {
+                assertTrue(customMessage + " - " + expectedFile.toString(), expectedFile.exists());
+            } else {
+                assertTrue("source file not found: " + expectedFile.toString(), expectedFile.exists());
             }
-            else
-            {
-                assertTrue( "source file not found: " + expectedFile.toString(), expectedFile.exists() );
-            }
-            content.add( expectedFile );
+            content.add(expectedFile);
         }
         return content;
     }
@@ -217,28 +190,27 @@ public abstract class AbstractWarExplodedMojoTest
      * @param expectedFiles the expected files
      * @param filter an optional filter to ignore some resources
      */
-    protected void assertWebAppContent( File webAppDirectory, List<File> expectedFiles, FileFilter filter )
-    {
+    protected void assertWebAppContent(File webAppDirectory, List<File> expectedFiles, FileFilter filter) {
         final List<File> webAppContent = new ArrayList<>();
-        if ( filter != null )
-        {
-            buildFilesList( webAppDirectory, filter, webAppContent );
-        }
-        else
-        {
-            buildFilesList( webAppDirectory, new FileFilterImpl( webAppDirectory, null ), webAppContent );
+        if (filter != null) {
+            buildFilesList(webAppDirectory, filter, webAppContent);
+        } else {
+            buildFilesList(webAppDirectory, new FileFilterImpl(webAppDirectory, null), webAppContent);
         }
 
         // Now we have the files, sort them.
-        Collections.sort( expectedFiles );
-        Collections.sort( webAppContent );
-        assertEquals( "Invalid webapp content, expected " + expectedFiles.size() + "file(s) " + expectedFiles
-            + " but got " + webAppContent.size() + " file(s) " + webAppContent, expectedFiles, webAppContent );
+        Collections.sort(expectedFiles);
+        Collections.sort(webAppContent);
+        assertEquals(
+                "Invalid webapp content, expected " + expectedFiles.size() + "file(s) " + expectedFiles + " but got "
+                        + webAppContent.size() + " file(s) " + webAppContent,
+                expectedFiles,
+                webAppContent);
     }
 
     /**
      * Builds the list of files and directories from the specified dir.
-     * 
+     *
      * Note that the filter is not used the usual way. If the filter does not accept the current file, it's not added
      * but yet the subdirectories are added if any.
      *
@@ -246,58 +218,44 @@ public abstract class AbstractWarExplodedMojoTest
      * @param filter the filter
      * @param content the current content, updated recursively
      */
-    private void buildFilesList( final File dir, FileFilter filter, final List<File> content )
-    {
+    private void buildFilesList(final File dir, FileFilter filter, final List<File> content) {
         final File[] files = dir.listFiles();
 
-        for ( File file : files )
-        {
+        for (File file : files) {
             // Add the file if the filter is ok with it
-            if ( filter.accept( file ) )
-            {
-                content.add( file );
+            if (filter.accept(file)) {
+                content.add(file);
             }
 
             // Even if the file is not accepted and is a directory, add it
-            if ( file.isDirectory() )
-            {
-                buildFilesList( file, filter, content );
+            if (file.isDirectory()) {
+                buildFilesList(file, filter, content);
             }
-
         }
     }
 
-    class FileFilterImpl
-        implements FileFilter
-    {
+    class FileFilterImpl implements FileFilter {
 
         private final List<String> rejectedFilePaths;
 
         private final int webAppDirIndex;
 
-        public FileFilterImpl( File webAppDirectory, String[] rejectedFilePaths )
-        {
-            if ( rejectedFilePaths != null )
-            {
-                this.rejectedFilePaths = Arrays.asList( rejectedFilePaths );
-            }
-            else
-            {
+        public FileFilterImpl(File webAppDirectory, String[] rejectedFilePaths) {
+            if (rejectedFilePaths != null) {
+                this.rejectedFilePaths = Arrays.asList(rejectedFilePaths);
+            } else {
                 this.rejectedFilePaths = new ArrayList<>();
             }
             this.webAppDirIndex = webAppDirectory.getAbsolutePath().length() + 1;
         }
 
-        public boolean accept( File file )
-        {
-            String effectiveRelativePath = buildRelativePath( file );
-            return !( rejectedFilePaths.contains( effectiveRelativePath ) || file.isDirectory() );
+        public boolean accept(File file) {
+            String effectiveRelativePath = buildRelativePath(file);
+            return !(rejectedFilePaths.contains(effectiveRelativePath) || file.isDirectory());
         }
 
-        private String buildRelativePath( File f )
-        {
-            return f.getAbsolutePath().substring( webAppDirIndex );
+        private String buildRelativePath(File f) {
+            return f.getAbsolutePath().substring(webAppDirIndex);
         }
     }
-
 }

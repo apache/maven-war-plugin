@@ -1,5 +1,3 @@
-package org.apache.maven.plugins.war.stub;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.plugins.war.stub;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.plugins.war.stub;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.plugins.war.stub;
 
 import java.io.File;
 import java.util.HashSet;
@@ -32,99 +31,79 @@ import org.apache.maven.project.MavenProject;
 /**
  * Stub
  */
-public class MavenProjectBasicStub
-    extends MavenProject
-{
+public class MavenProjectBasicStub extends MavenProject {
     protected String testRootDir;
 
     protected Properties properties;
 
-    public MavenProjectBasicStub()
-        throws Exception
-    {
-        super( new ModelStub() );
+    public MavenProjectBasicStub() throws Exception {
+        super(new ModelStub());
         properties = new Properties();
     }
 
-    public Set<Artifact> getArtifacts()
-    {
+    public Set<Artifact> getArtifacts() {
         return new HashSet<>();
     }
 
-    public String getName()
-    {
+    public String getName() {
         return "Test Project ";
     }
 
-    public File getBasedir()
-    {
+    public File getBasedir() {
         // create an isolated environment
         // see setupTestEnvironment for details
-        //return new File( testRootDir );
+        // return new File( testRootDir );
         return null;
     }
 
-    public String getGroupId()
-    {
+    public String getGroupId() {
         return "org.apache.maven.plugin.test";
     }
 
-    public String getArtifactId()
-    {
+    public String getArtifactId() {
         return "maven-war-plugin-test";
     }
 
-    public String getPackaging()
-    {
+    public String getPackaging() {
         return "jar";
     }
 
-    public String getVersion()
-    {
+    public String getVersion() {
         return "0.0-Test";
     }
 
-    public void addProperty( String key, String value )
-    {
-        properties.put( key, value );
+    public void addProperty(String key, String value) {
+        properties.put(key, value);
     }
 
-    public Properties getProperties()
-    {
+    public Properties getProperties() {
         return properties;
     }
 
-    public String getDescription()
-    {
+    public String getDescription() {
         return "Test Description";
     }
 
-    public Organization getOrganization()
-    {
-        return new Organization()
-        {
-            public String getName()
-            {
+    public Organization getOrganization() {
+        return new Organization() {
+            public String getName() {
                 return "Test Name";
             }
         };
     }
 
     @Override
-    public Build getBuild()
-    {
+    public Build getBuild() {
         Build build = super.getBuild();
 
-        build.setDirectory( System.getProperty( "project.build.directory" ) );
-        build.setOutputDirectory( System.getProperty( "project.build.outputDirectory" ) );
+        build.setDirectory(System.getProperty("project.build.directory"));
+        build.setOutputDirectory(System.getProperty("project.build.outputDirectory"));
 
         return build;
     }
-    
+
     @Override
-    public MavenProject clone()
-    {
+    public MavenProject clone() {
         return this;
     }
-
 }
