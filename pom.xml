@@ -25,7 +25,7 @@
   <parent>
     <artifactId>maven-plugins</artifactId>
     <groupId>org.apache.maven.plugins</groupId>
-    <version>36</version>
+    <version>39</version>
     <relativePath />
   </parent>
 
@@ -173,7 +173,8 @@
       <scope>provided</scope>
     </dependency>
     
-    <dependency> <!-- looks up RepositorySystem -->
+    <dependency>
+      <!-- looks up RepositorySystem -->
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-compat</artifactId>
       <version>${mavenVersion}</version>
