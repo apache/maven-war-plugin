@@ -372,6 +372,10 @@ public abstract class AbstractWarPackagingTask
             }
             else
             {
+                if ( context.isForceOverwriteResources() && destination.exists() && !destination.canWrite() ) 
+                {
+                    destination.setWritable( true );
+                }
                 FileUtils.copyFile( source.getCanonicalFile(), destination );
                 // preserve timestamp
                 destination.setLastModified( readAttributes.lastModifiedTime().toMillis() );
