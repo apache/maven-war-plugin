@@ -474,7 +474,7 @@ public class WarMojoTest extends AbstractWarMojoTest {
         // validate jar file
         File expectedJarFile = new File(outputDir, "simple-classes.jar");
         assertJarContent(
-                expectedJarFile, new String[] {"META-INF/MANIFEST.MF", "sample-servlet.class"}, new String[] {null, null
+                expectedJarFile, new String[] {"META-INF/MANIFEST.MF", "sample-servlet.clazz"}, new String[] {null, null
                 });
     }
 
@@ -502,7 +502,7 @@ public class WarMojoTest extends AbstractWarMojoTest {
         // validate jar file
         File expectedJarFile = new File(outputDir, "simple-mystuff.jar");
         assertJarContent(
-                expectedJarFile, new String[] {"META-INF/MANIFEST.MF", "sample-servlet.class"}, new String[] {null, null
+                expectedJarFile, new String[] {"META-INF/MANIFEST.MF", "sample-servlet.clazz"}, new String[] {null, null
                 });
     }
 
