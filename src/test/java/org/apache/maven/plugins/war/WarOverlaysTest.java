@@ -246,9 +246,9 @@ public class WarOverlaysTest extends AbstractWarExplodedMojoTest {
                         "jsp/d/b.jsp",
                         "jsp/d/c.jsp",
                         "org/sample/company/test.jsp",
-                        "WEB-INF/classes/a.class",
-                        "WEB-INF/classes/b.class",
-                        "WEB-INF/classes/c.class",
+                        "WEB-INF/classes/a.clazz",
+                        "WEB-INF/classes/b.clazz",
+                        "WEB-INF/classes/c.clazz",
                         "WEB-INF/lib/a.jar",
                         "WEB-INF/lib/b.jar",
                         "WEB-INF/lib/c.jar"
@@ -266,9 +266,9 @@ public class WarOverlaysTest extends AbstractWarExplodedMojoTest {
             assertOverlayedFile(webAppDirectory, "overlay-full-1", "jsp/d/b.jsp");
             assertOverlayedFile(webAppDirectory, "overlay-full-1", "jsp/d/c.jsp");
             assertOverlayedFile(webAppDirectory, "overlay-full-1", "WEB-INF/web.xml");
-            assertOverlayedFile(webAppDirectory, "overlay-full-1", "WEB-INF/classes/a.class");
-            assertOverlayedFile(webAppDirectory, "overlay-full-1", "WEB-INF/classes/b.class");
-            assertOverlayedFile(webAppDirectory, "overlay-full-1", "WEB-INF/classes/c.class");
+            assertOverlayedFile(webAppDirectory, "overlay-full-1", "WEB-INF/classes/a.clazz");
+            assertOverlayedFile(webAppDirectory, "overlay-full-1", "WEB-INF/classes/b.clazz");
+            assertOverlayedFile(webAppDirectory, "overlay-full-1", "WEB-INF/classes/c.clazz");
             assertOverlayedFile(webAppDirectory, "overlay-full-1", "WEB-INF/lib/a.jar");
             assertOverlayedFile(webAppDirectory, "overlay-full-1", "WEB-INF/lib/b.jar");
             assertOverlayedFile(webAppDirectory, "overlay-full-1", "WEB-INF/lib/c.jar");
@@ -327,9 +327,9 @@ public class WarOverlaysTest extends AbstractWarExplodedMojoTest {
                         "jsp/d/b.jsp",
                         "jsp/d/c.jsp",
                         "org/sample/company/test.jsp",
-                        "WEB-INF/classes/a.class",
-                        "WEB-INF/classes/b.class",
-                        "WEB-INF/classes/c.class",
+                        "WEB-INF/classes/a.clazz",
+                        "WEB-INF/classes/b.clazz",
+                        "WEB-INF/classes/c.clazz",
                         "WEB-INF/lib/a.jar",
                         "WEB-INF/lib/b.jar",
                         "WEB-INF/lib/c.jar"
@@ -344,9 +344,9 @@ public class WarOverlaysTest extends AbstractWarExplodedMojoTest {
             assertOverlayedFile(webAppDirectory, "overlay-full-1", "jsp/d/c.jsp");
             assertDefaultFileContent(testId, webAppDirectory, "org/sample/company/test.jsp");
             assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/web.xml");
-            assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/classes/a.class");
-            assertOverlayedFile(webAppDirectory, "overlay-full-3", "WEB-INF/classes/b.class");
-            assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/classes/c.class");
+            assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/classes/a.clazz");
+            assertOverlayedFile(webAppDirectory, "overlay-full-3", "WEB-INF/classes/b.clazz");
+            assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/classes/c.clazz");
             assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/lib/a.jar");
             assertOverlayedFile(webAppDirectory, "overlay-full-3", "WEB-INF/lib/b.jar");
             assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/lib/c.jar");
@@ -406,9 +406,9 @@ public class WarOverlaysTest extends AbstractWarExplodedMojoTest {
                         "jsp/d/b.jsp",
                         "jsp/d/c.jsp",
                         "org/sample/company/test.jsp",
-                        "WEB-INF/classes/a.class",
-                        "WEB-INF/classes/b.class",
-                        "WEB-INF/classes/c.class",
+                        "WEB-INF/classes/a.clazz",
+                        "WEB-INF/classes/b.clazz",
+                        "WEB-INF/classes/c.clazz",
                         "WEB-INF/lib/a.jar",
                         "WEB-INF/lib/b.jar",
                         "WEB-INF/lib/c.jar"
@@ -423,9 +423,9 @@ public class WarOverlaysTest extends AbstractWarExplodedMojoTest {
             assertOverlayedFile(webAppDirectory, "overlay-full-1", "jsp/d/c.jsp");
             assertDefaultFileContent(testId, webAppDirectory, "org/sample/company/test.jsp");
             assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/web.xml");
-            assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/classes/a.class");
-            assertOverlayedFile(webAppDirectory, "overlay-full-3", "WEB-INF/classes/b.class");
-            assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/classes/c.class");
+            assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/classes/a.clazz");
+            assertOverlayedFile(webAppDirectory, "overlay-full-3", "WEB-INF/classes/b.clazz");
+            assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/classes/c.clazz");
             assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/lib/a.jar");
             assertOverlayedFile(webAppDirectory, "overlay-full-3", "WEB-INF/lib/b.jar");
             assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/lib/c.jar");

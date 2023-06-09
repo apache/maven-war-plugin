@@ -766,7 +766,7 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
         File expectedWebSourceFile = new File(webAppDirectory, "pansit.jsp");
         File expectedWebSource2File = new File(webAppDirectory, "org/web/app/last-exile.jsp");
         // final name form is <artifactId>-<version>.<type>
-        File expectedClass = new File(webAppDirectory, "WEB-INF/classes/sample-servlet.class");
+        File expectedClass = new File(webAppDirectory, "WEB-INF/classes/sample-servlet.clazz");
 
         assertTrue("source files not found: " + expectedWebSourceFile.toString(), expectedWebSourceFile.exists());
         assertTrue("source files not found: " + expectedWebSource2File.toString(), expectedWebSource2File.exists());

@@ -157,7 +157,7 @@ public abstract class AbstractWarMojoTest extends AbstractMojoTestCase {
         createDir(classesDir);
 
         if (!empty) {
-            createFile(new File(classesDir + "/sample-servlet.class"));
+            createFile(new File(classesDir + "/sample-servlet.clazz"));
         }
 
         return classesDir;
@@ -202,9 +202,9 @@ public abstract class AbstractWarMojoTest extends AbstractMojoTestCase {
      * <ul>
      * <li>classes
      * <ul>
-     * <li>a.class</li>
-     * <li>b.class</li>
-     * <li>c.class</li>
+     * <li>a.clazz</li>
+     * <li>b.clazz</li>
+     * <li>c.clazz</li>
      * </ul>
      * </li>
      * <li>lib
@@ -240,9 +240,9 @@ public abstract class AbstractWarMojoTest extends AbstractMojoTestCase {
             "jsp/a.jsp",
             "jsp/b.jsp",
             "jsp/c.jsp",
-            "WEB-INF/classes/a.class",
-            "WEB-INF/classes/b.class",
-            "WEB-INF/classes/c.class",
+            "WEB-INF/classes/a.clazz",
+            "WEB-INF/classes/b.clazz",
+            "WEB-INF/classes/c.clazz",
             "WEB-INF/lib/a.jar",
             "WEB-INF/lib/b.jar",
             "WEB-INF/lib/c.jar",
