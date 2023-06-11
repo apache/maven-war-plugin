@@ -28,10 +28,9 @@ under the License.
     <relativePath>parent/pom.xml</relativePath>
   </parent>
 
-
   <artifactId>example</artifactId>
   <packaging>pom</packaging>
-  
+
   <name>Example Maven Multi-module project For Filtering with Delimiters</name>
   <url>http://maven.apache.org</url>
 
@@ -39,6 +38,4 @@ under the License.
     <module>parent</module>
     <module>web</module>
   </modules>
-
-
 </project>

@@ -25,40 +25,40 @@ under the License.
   <name>Maven War Plugin Bug</name>
   <description>Filtering of properties files (as a web resource) broken in maven-war-plugin version 2.4.</description>
   <packaging>war</packaging>
-  
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  	<my.maven.property>foo foo</my.maven.property>
+    <my.maven.property>foo foo</my.maven.property>
   </properties>
-  
+
   <build>
-  	<filters>
-  		<filter>src/main/resources/default.properties</filter>
-  	</filters>
-  	<resources>
-  		<resource>
-  			<directory>src/main/resources</directory>
-  			<filtering>true</filtering>
-  		</resource>
-  	</resources>
-  	<plugins>
-  		<plugin>
-  			<groupId>@project.groupId@</groupId>
-  			<artifactId>@project.artifactId@</artifactId>
+    <filters>
+      <filter>src/main/resources/default.properties</filter>
+    </filters>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>@project.groupId@</groupId>
+        <artifactId>@project.artifactId@</artifactId>
         <version>@project.version@</version>
-  			<configuration>
-				<webResources>
-					<resource>
-						<directory>src/main/resources</directory>
-						<filtering>true</filtering>
-						<includes>
-							<include>**/app.properties</include>
-						</includes>
-					</resource>
-				</webResources>
-				<archiveClasses>true</archiveClasses>
-			</configuration>
-  		</plugin>
-  	</plugins>
+        <configuration>
+        <webResources>
+          <resource>
+            <directory>src/main/resources</directory>
+            <filtering>true</filtering>
+            <includes>
+              <include>**/app.properties</include>
+            </includes>
+          </resource>
+        </webResources>
+        <archiveClasses>true</archiveClasses>
+      </configuration>
+      </plugin>
+    </plugins>
   </build>
 </project>

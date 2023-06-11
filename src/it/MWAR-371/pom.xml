@@ -18,34 +18,34 @@ specific language governing permissions and limitations
 under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>mwar371</groupId>
-	<artifactId>mwar371</artifactId>
-	<version>1.0-SNAPSHOT</version>
-	<packaging>pom</packaging>
-  <name>Maven Integration Test :: MWAR-371</name> 
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>mwar371</groupId>
+  <artifactId>mwar371</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>Maven Integration Test :: MWAR-371</name>
   <description>MWAR-371 integration test</description>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
-  	
-	<modules>
-		<module>generic</module>
-		<module>custom</module>
-	</modules>
-	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<artifactId>maven-war-plugin</artifactId>
-					<version>@project.version@</version>
-					<configuration>
-						<failOnMissingWebXml>false</failOnMissingWebXml>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
+
+  <modules>
+    <module>generic</module>
+    <module>custom</module>
+  </modules>
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-war-plugin</artifactId>
+          <version>@project.version@</version>
+          <configuration>
+            <failOnMissingWebXml>false</failOnMissingWebXml>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 </project>
