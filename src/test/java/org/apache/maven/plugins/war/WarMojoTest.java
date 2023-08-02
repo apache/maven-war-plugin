@@ -131,6 +131,43 @@ public class WarMojoTest extends AbstractWarMojoTest {
                 new String[] {"org/web/app/last-exile.jsp"});
     }
 
+    public void testSimpleWarPackagingExcludesWithRegEx() throws Exception {
+        String testId = "SimpleWarPackagingExcludesWithRegEx";
+        MavenProject4CopyConstructor project = new MavenProject4CopyConstructor();
+        String outputDir = getTestDirectory().getAbsolutePath() + "/" + testId + "-output";
+        File webAppDirectory = new File(getTestDirectory(), testId);
+        WarArtifact4CCStub warArtifact = new WarArtifact4CCStub(getBasedir());
+        String warName = "simple";
+        File webAppSource = createWebAppSource(testId);
+        File classesDir = createClassesDir(testId, true);
+        File xmlSource = createXMLConfigDir(testId, new String[] {"web.xml"});
+
+        project.setArtifact(warArtifact);
+        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        setVariableValueToObject(mojo, "outputDirectory", outputDir);
+        setVariableValueToObject(mojo, "warName", warName);
+        mojo.setWebXml(new File(xmlSource, "web.xml"));
+        setVariableValueToObject(mojo, "packagingExcludes", "%regex[.+/last-exile.+]");
+
+        mojo.execute();
+
+        // validate jar file
+        File expectedJarFile = new File(outputDir, "simple.war");
+        assertJarContent(
+                expectedJarFile,
+                new String[] {
+                    "META-INF/MANIFEST.MF",
+                    "WEB-INF/web.xml",
+                    "pansit.jsp",
+                    "META-INF/maven/org.apache.maven.plugin.test/maven-war-plugin-test/pom.xml",
+                    "META-INF/maven/org.apache.maven.plugin.test/maven-war-plugin-test/pom.properties"
+                },
+                new String[] {
+                    null, mojo.getWebXml().toString(), null, null, null,
+                },
+                new String[] {"org/web/app/last-exile.jsp"});
+    }
+
     public void testClassifier() throws Exception {
         String testId = "Classifier";
         MavenProject4CopyConstructor project = new MavenProject4CopyConstructor();
