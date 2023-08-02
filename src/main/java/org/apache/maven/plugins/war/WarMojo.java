@@ -82,7 +82,7 @@ public class WarMojo extends AbstractWarMojo {
      *
      * @since 2.1-alpha-2
      */
-    @Parameter
+    @Parameter(property = "maven.war.packagingExcludes")
     private String packagingExcludes;
 
     /**
