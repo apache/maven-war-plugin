@@ -29,7 +29,7 @@
 
   <artifactId>maven-war-plugin</artifactId>
   <version>3.4.1-SNAPSHOT</version>
-  <packaging>maven-plugin</packaging>
+  <packaging>maven-war-plugin</packaging>
 
   <name>Apache Maven WAR Plugin</name>
   <description>Builds a Web Application Archive (WAR) file from the project output and its dependencies.</description>
