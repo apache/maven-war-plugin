@@ -55,14 +55,14 @@ ${project.name}
   examples given below. To share common resources across multiple web applications, 
   see the documentation about using {{{./overlays.html}overlays}}.
 
-  In case you still have questions regarding the plugin's usage, please have a look at the 
+  If you still have questions regarding the plugin's usage, please have a look at the 
   {{{./faq.html}FAQ}} and feel free to contact the {{{./mailing-lists.html}user mailing list}}. 
   The posts to the mailing list are archived and could already contain the answer to your 
   question as part of an older thread. Hence, it is also worth browsing/searching
   the {{{./mailing-lists.html}mail archive}}.
 
-  If you feel like the plugin is missing a feature or has a defect, you can fill a 
-  feature request or bug report in our {{{./issue-management.html}issue tracker}}. 
+  If you think the plugin is missing a feature or has a defect, file a 
+  feature request or bug report in the {{{./issue-management.html}issue tracker}}. 
   When creating a new issue, please provide a comprehensive description of your
   concern. Especially for fixing bugs it is crucial that the developers can 
   reproduce your problem. For this reason, entire debug logs, POMs or most 
@@ -75,7 +75,7 @@ ${project.name}
 * Examples
 
   To provide you with better understanding on some usages of the Maven WAR Plugin,
-  you can take a look into the following examples:
+  you can look into the following examples:
 
  * {{{./examples/adding-filtering-webresources.html}Adding and Filtering External Web Resources}}
 
