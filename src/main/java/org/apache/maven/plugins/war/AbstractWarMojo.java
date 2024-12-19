@@ -40,7 +40,6 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.war.overlay.OverlayManager;
 import org.apache.maven.plugins.war.packaging.CopyUserManifestTask;
@@ -56,7 +55,6 @@ import org.apache.maven.shared.filtering.MavenFilteringException;
 import org.apache.maven.shared.filtering.MavenResourcesExecution;
 import org.apache.maven.shared.filtering.MavenResourcesFiltering;
 import org.apache.maven.shared.utils.StringUtils;
-import org.codehaus.plexus.archiver.Archiver;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 
@@ -68,7 +66,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
 
     private static final String WEB_INF = "WEB-INF";
     /**
-     * Whether or not to fail the build if the <code>web.xml</code> file is missing. Set to <code>false</code> if you
+     * Whether to fail the build if the <code>web.xml</code> file is missing. Set to <code>false</code> if you
      * want your WAR built without a <code>web.xml</code> file. This may be useful if you are building an overlay that
      * has no web.xml file.
      * <p>
@@ -118,12 +116,6 @@ public abstract class AbstractWarMojo extends AbstractMojo {
      */
     @Parameter
     protected String propertiesEncoding;
-
-    /**
-     * The JAR archiver needed for archiving the classes directory into a JAR file under WEB-INF/lib.
-     */
-    @Component(role = Archiver.class, hint = "jar")
-    private JarArchiver jarArchiver;
 
     /**
      * The directory where the webapp is built.
@@ -209,27 +201,6 @@ public abstract class AbstractWarMojo extends AbstractMojo {
      */
     @Parameter
     private String outputFileNameMapping;
-
-    /**
-     */
-    @Component(role = ArtifactFactory.class)
-    private ArtifactFactory artifactFactory;
-
-    /**
-     * To look up Archiver/UnArchiver implementations.
-     */
-    @Component(role = ArchiverManager.class)
-    private ArchiverManager archiverManager;
-
-    /**
-     */
-    @Component(role = MavenFileFilter.class, hint = "default")
-    private MavenFileFilter mavenFileFilter;
-
-    /**
-     */
-    @Component(role = MavenResourcesFiltering.class, hint = "default")
-    private MavenResourcesFiltering mavenResourcesFiltering;
 
     /**
      * The comma separated list of tokens to include when copying the content of the warSourceDirectory.
@@ -380,6 +351,35 @@ public abstract class AbstractWarMojo extends AbstractMojo {
     private String outdatedCheckPath;
 
     private final Overlay currentProjectOverlay = Overlay.createInstance();
+
+    /**
+     * The JAR archiver needed for archiving the classes directory into a JAR file under WEB-INF/lib.
+     */
+    private final JarArchiver jarArchiver;
+
+    private final ArtifactFactory artifactFactory;
+
+    /**
+     * To look up Archiver/UnArchiver implementations.
+     */
+    private final ArchiverManager archiverManager;
+
+    private final MavenFileFilter mavenFileFilter;
+
+    private final MavenResourcesFiltering mavenResourcesFiltering;
+
+    protected AbstractWarMojo(
+            JarArchiver jarArchiver,
+            ArtifactFactory artifactFactory,
+            ArchiverManager archiverManager,
+            MavenFileFilter mavenFileFilter,
+            MavenResourcesFiltering mavenResourcesFiltering) {
+        this.jarArchiver = jarArchiver;
+        this.artifactFactory = artifactFactory;
+        this.archiverManager = archiverManager;
+        this.mavenFileFilter = mavenFileFilter;
+        this.mavenResourcesFiltering = mavenResourcesFiltering;
+    }
 
     /**
      * @return The current overlay.
@@ -954,24 +954,10 @@ public abstract class AbstractWarMojo extends AbstractMojo {
     }
 
     /**
-     * @param archiveClasses {@link #archiveClasses}
-     */
-    public void setArchiveClasses(boolean archiveClasses) {
-        this.archiveClasses = archiveClasses;
-    }
-
-    /**
      * @return {@link JarArchiver}
      */
     public JarArchiver getJarArchiver() {
         return jarArchiver;
-    }
-
-    /**
-     * @param jarArchiver {@link JarArchiver}
-     */
-    public void setJarArchiver(JarArchiver jarArchiver) {
-        this.jarArchiver = jarArchiver;
     }
 
     /**
@@ -996,24 +982,10 @@ public abstract class AbstractWarMojo extends AbstractMojo {
     }
 
     /**
-     * @param filters {@link #filters}
-     */
-    public void setFilters(List<String> filters) {
-        this.filters = filters;
-    }
-
-    /**
      * @return {@link #workDirectory}
      */
     public File getWorkDirectory() {
         return workDirectory;
-    }
-
-    /**
-     * @param workDirectory {@link #workDirectory}
-     */
-    public void setWorkDirectory(File workDirectory) {
-        this.workDirectory = workDirectory;
     }
 
     /**
@@ -1024,24 +996,10 @@ public abstract class AbstractWarMojo extends AbstractMojo {
     }
 
     /**
-     * @param warSourceIncludes {@link #warSourceIncludes}
-     */
-    public void setWarSourceIncludes(String warSourceIncludes) {
-        this.warSourceIncludes = warSourceIncludes;
-    }
-
-    /**
      * @return {@link #warSourceExcludes}
      */
     public String getWarSourceExcludes() {
         return warSourceExcludes;
-    }
-
-    /**
-     * @param warSourceExcludes {@link #warSourceExcludes}
-     */
-    public void setWarSourceExcludes(String warSourceExcludes) {
-        this.warSourceExcludes = warSourceExcludes;
     }
 
     /**
@@ -1059,24 +1017,10 @@ public abstract class AbstractWarMojo extends AbstractMojo {
     }
 
     /**
-     * @param nonFilteredFileExtensions {@link #nonFilteredFileExtensions}
-     */
-    public void setNonFilteredFileExtensions(List<String> nonFilteredFileExtensions) {
-        this.nonFilteredFileExtensions = nonFilteredFileExtensions;
-    }
-
-    /**
      * @return {@link #artifactFactory}
      */
     public ArtifactFactory getArtifactFactory() {
         return this.artifactFactory;
-    }
-
-    /**
-     * @param artifactFactory {@link #artifactFactory}
-     */
-    public void setArtifactFactory(ArtifactFactory artifactFactory) {
-        this.artifactFactory = artifactFactory;
     }
 
     /**

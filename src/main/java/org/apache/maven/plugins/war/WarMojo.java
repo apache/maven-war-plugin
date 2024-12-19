@@ -18,6 +18,9 @@
  */
 package org.apache.maven.plugins.war;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -29,6 +32,7 @@ import java.util.List;
 import org.apache.maven.archiver.MavenArchiver;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
+import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
@@ -38,9 +42,13 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.plugins.war.util.ClassesPackager;
 import org.apache.maven.project.MavenProjectHelper;
+import org.apache.maven.shared.filtering.MavenFileFilter;
+import org.apache.maven.shared.filtering.MavenResourcesFiltering;
 import org.codehaus.plexus.archiver.Archiver;
 import org.codehaus.plexus.archiver.ArchiverException;
+import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.jar.ManifestException;
+import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.archiver.war.WarArchiver;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.StringUtils;
@@ -154,6 +162,16 @@ public class WarMojo extends AbstractWarMojo {
      */
     @Parameter(property = "maven.war.skip", defaultValue = "false")
     private boolean skip;
+
+    @Inject
+    public WarMojo(
+            JarArchiver jarArchiver,
+            ArtifactFactory artifactFactory,
+            ArchiverManager archiverManager,
+            @Named("default") MavenFileFilter mavenFileFilter,
+            @Named("default") MavenResourcesFiltering mavenResourcesFiltering) {
+        super(jarArchiver, artifactFactory, archiverManager, mavenFileFilter, mavenResourcesFiltering);
+    }
 
     // ----------------------------------------------------------------------
     // Implementation
