@@ -461,7 +461,7 @@ public class WarOverlaysTest extends AbstractWarExplodedMojoTest {
     }
 
     /**
-     * Asserts that the content of an overlayed file is correct.
+     * Asserts that the content of an overlaid file is correct.
      *
      * Note that the {@code filePath} is relative to both the webapp directory and the overlayed directory, defined by
      * the {@code overlayId}.
@@ -476,9 +476,5 @@ public class WarOverlaysTest extends AbstractWarExplodedMojoTest {
         final File sourceFile = new File(getWebAppSource(testId), filePath);
         final String expectedContent = sourceFile.toString();
         assertEquals("Wrong content for file " + filePath, expectedContent, FileUtils.fileRead(webAppFile));
-    }
-
-    protected ArtifactStub generateSimpleWarArtifactStub(String id) throws Exception {
-        return buildWarOverlayStub(id);
     }
 }

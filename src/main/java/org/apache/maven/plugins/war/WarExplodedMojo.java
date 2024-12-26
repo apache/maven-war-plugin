@@ -18,15 +18,22 @@
  */
 package org.apache.maven.plugins.war;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.shared.filtering.MavenFileFilter;
+import org.apache.maven.shared.filtering.MavenResourcesFiltering;
+import org.codehaus.plexus.archiver.jar.JarArchiver;
+import org.codehaus.plexus.archiver.manager.ArchiverManager;
 
 /**
  * Create an exploded webapp in a specified directory.
- *
  */
 @Mojo(
         name = "exploded",
@@ -34,6 +41,16 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
         threadSafe = true,
         requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class WarExplodedMojo extends AbstractWarMojo {
+    @Inject
+    public WarExplodedMojo(
+            JarArchiver jarArchiver,
+            ArtifactFactory artifactFactory,
+            ArchiverManager archiverManager,
+            @Named("default") MavenFileFilter mavenFileFilter,
+            @Named("default") MavenResourcesFiltering mavenResourcesFiltering) {
+        super(jarArchiver, artifactFactory, archiverManager, mavenFileFilter, mavenResourcesFiltering);
+    }
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         getLog().info("Exploding webapp");
