@@ -193,12 +193,6 @@
   </dependencies>
 
   <build>
-    <resources>
-      <resource>
-        <filtering>true</filtering>
-        <directory>src/main/resources-filtered</directory>
-      </resource>
-    </resources>
     <pluginManagement>
       <plugins>
         <plugin>
