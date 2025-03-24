@@ -60,8 +60,8 @@
     <url>https://github.com/apache/maven-war-plugin/tree/${project.scm.tag}</url>
   </scm>
   <issueManagement>
-    <system>JIRA</system>
-    <url>https://issues.apache.org/jira/browse/MWAR</url>
+    <system>Github</system>
+    <url>https://github.com/apache/maven-war-plugin/issues</url>
   </issueManagement>
   <ciManagement>
     <system>Jenkins</system>
