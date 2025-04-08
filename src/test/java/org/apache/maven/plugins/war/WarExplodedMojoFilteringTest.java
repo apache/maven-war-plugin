@@ -64,9 +64,10 @@ public class WarExplodedMojoFilteringTest extends AbstractWarExplodedMojoTest {
     /**
      * @throws Exception in case of an error.
      */
-    public void testExplodedWar_WithResourceFiltering() throws Exception {
+    @SuppressWarnings("checkstyle:MethodLength")
+    public void testExplodedWarWithResourceFiltering() throws Exception {
         // setup test data
-        String testId = "ExplodedWar_WithResourceFiltering";
+        String testId = "ExplodedWarWithResourceFiltering";
         MavenProjectBasicStub project = new MavenProjectBasicStub();
         File webAppDirectory = new File(getTestDirectory(), testId);
         File webAppSource = createWebAppSource(testId);

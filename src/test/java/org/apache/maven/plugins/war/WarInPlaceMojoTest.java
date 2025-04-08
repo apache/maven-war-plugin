@@ -25,7 +25,7 @@ import org.apache.maven.plugins.war.stub.MavenProjectBasicStub;
 import org.apache.maven.plugins.war.stub.ResourceStub;
 
 public class WarInPlaceMojoTest extends AbstractWarMojoTest {
-    protected static final String pomFilePath =
+    protected static final String POM_FILE_PATH =
             getBasedir() + "/target/test-classes/unit/warexplodedinplacemojo/plugin-config.xml";
 
     protected File getTestDirectory() throws Exception {
@@ -37,7 +37,7 @@ public class WarInPlaceMojoTest extends AbstractWarMojoTest {
     public void setUp() throws Exception {
         super.setUp();
 
-        mojo = (WarInPlaceMojo) lookupMojo("inplace", pomFilePath);
+        mojo = (WarInPlaceMojo) lookupMojo("inplace", POM_FILE_PATH);
         assertNotNull(mojo);
     }
 

@@ -19,6 +19,7 @@
 package org.apache.maven.plugins.war.stub;
 
 import java.util.Objects;
+
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;

@@ -21,8 +21,8 @@ package org.apache.maven.plugins.war.stub;
 import java.io.File;
 
 public class PARArtifactStub extends AbstractArtifactStub {
-    public PARArtifactStub(String _basedir) {
-        super(_basedir);
+    public PARArtifactStub(String basedir) {
+        super(basedir);
     }
 
     public String getType() {

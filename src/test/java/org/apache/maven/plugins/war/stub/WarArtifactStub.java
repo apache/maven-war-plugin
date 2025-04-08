@@ -49,8 +49,8 @@ public class WarArtifactStub extends AbstractArtifactStub {
         }
     }
 
-    public void setArtifactId(String _artifactId) {
-        artifactId = _artifactId;
+    public void setArtifactId(String artifactId) {
+        this.artifactId = artifactId;
     }
 
     public String getGroupId() {
@@ -73,8 +73,8 @@ public class WarArtifactStub extends AbstractArtifactStub {
         }
     }
 
-    public void setFile(File _file) {
-        file = _file;
+    public void setFile(File file) {
+        this.file = file;
     }
 
     public String getClassifier() {
