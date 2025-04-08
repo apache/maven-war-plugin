@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-plugins</artifactId>
-    <version>41</version>
+    <version>44</version>
     <relativePath />
   </parent>
 
@@ -127,6 +127,7 @@
     <dependency>
       <groupId>org.apache.maven.plugin-tools</groupId>
       <artifactId>maven-plugin-annotations</artifactId>
+      <version>${version.maven-plugin-tools}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

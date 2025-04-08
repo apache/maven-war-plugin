@@ -48,10 +48,10 @@ public class ProjectHelperStub implements MavenProjectHelper {
     public void attachArtifact(MavenProject project, String artifactType, File artifactFile) {}
 
     public void attachArtifact(
-            MavenProject project, String _artifactType, String _artifactClassifier, File _artifactFile) {
-        artifactType = _artifactType;
-        artifactClassifier = _artifactClassifier;
-        artifactFile = _artifactFile;
+            MavenProject project, String artifactType, String artifactClassifier, File artifactFile) {
+        this.artifactType = artifactType;
+        this.artifactClassifier = artifactClassifier;
+        this.artifactFile = artifactFile;
     }
 
     @SuppressWarnings("rawtypes")

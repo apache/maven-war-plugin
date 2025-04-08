@@ -52,7 +52,7 @@ public abstract class AbstractWarMojoTest extends AbstractMojoTestCase {
      *
      * @param mojo The mojo to be tested.
      * @param filters The list of filters.
-     * @param classesDir The classes directory.
+     * @param classesDir The classes' directory.
      * @param webAppSource The webAppSource.
      * @param webAppDir The webAppDir folder.
      * @param project The Maven project.
@@ -94,14 +94,14 @@ public abstract class AbstractWarMojoTest extends AbstractMojoTestCase {
      */
     protected File createXMLConfigDir(String id, String[] xmlFiles) throws Exception {
         File xmlConfigDir = new File(getTestDirectory(), "/" + id + "-test-data/xml-config");
-        File XMLFile;
+        File xmlFile;
 
         createDir(xmlConfigDir);
 
         if (xmlFiles != null) {
             for (String o : xmlFiles) {
-                XMLFile = new File(xmlConfigDir, o);
-                createFile(XMLFile);
+                xmlFile = new File(xmlConfigDir, o);
+                createFile(xmlFile);
             }
         }
 

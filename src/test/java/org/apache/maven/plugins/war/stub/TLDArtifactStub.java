@@ -21,8 +21,8 @@ package org.apache.maven.plugins.war.stub;
 import java.io.File;
 
 public class TLDArtifactStub extends AbstractArtifactStub {
-    public TLDArtifactStub(String _basedir) {
-        super(_basedir);
+    public TLDArtifactStub(String basedir) {
+        super(basedir);
     }
 
     public String getType() {

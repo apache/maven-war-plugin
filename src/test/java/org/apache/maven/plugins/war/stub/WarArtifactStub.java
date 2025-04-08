@@ -33,8 +33,8 @@ public class WarArtifactStub extends AbstractArtifactStub {
 
     private File file;
 
-    public WarArtifactStub(String _basedir) {
-        super(_basedir);
+    public WarArtifactStub(String basedir) {
+        super(basedir);
     }
 
     public String getType() {
