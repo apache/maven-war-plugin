@@ -18,6 +18,8 @@
  */
 package org.apache.maven.plugins.war.stub;
 
+import java.util.Objects;
+
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
@@ -27,8 +29,8 @@ import org.apache.maven.plugin.testing.stubs.ArtifactStub;
 public abstract class AbstractArtifactStub extends ArtifactStub {
     protected String basedir;
 
-    public AbstractArtifactStub(String _basedir) {
-        basedir = _basedir;
+    public AbstractArtifactStub(String basedir) {
+        this.basedir = basedir;
     }
 
     public String getVersion() {
@@ -127,5 +129,10 @@ public abstract class AbstractArtifactStub extends ArtifactStub {
         // We don't consider the version range in the comparison, just the resolved version
 
         return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(basedir);
     }
 }

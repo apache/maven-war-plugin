@@ -240,7 +240,7 @@ public abstract class AbstractWarExplodedMojoTest extends AbstractWarMojoTest {
 
         private final int webAppDirIndex;
 
-        public FileFilterImpl(File webAppDirectory, String[] rejectedFilePaths) {
+        FileFilterImpl(File webAppDirectory, String[] rejectedFilePaths) {
             if (rejectedFilePaths != null) {
                 this.rejectedFilePaths = Arrays.asList(rejectedFilePaths);
             } else {

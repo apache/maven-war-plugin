@@ -26,8 +26,8 @@ import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 public class EJBClientArtifactStub extends AbstractArtifactStub {
     protected String groupId;
 
-    public EJBClientArtifactStub(String _basedir) {
-        super(_basedir);
+    public EJBClientArtifactStub(String basedir) {
+        super(basedir);
     }
 
     public void setGroupId(String id) {

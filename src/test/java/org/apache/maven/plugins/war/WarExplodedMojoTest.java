@@ -143,9 +143,9 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
     /**
      * @throws Exception in case of an error.
      */
-    public void testExplodedWar_WithCustomWebXML() throws Exception {
+    public void testExplodedWarWithCustomWebXML() throws Exception {
         // setup test data
-        String testId = "ExplodedWar_WithCustomWebXML";
+        String testId = "ExplodedWarWithCustomWebXML";
         MavenProjectBasicStub project = new MavenProjectBasicStub();
         File webAppSource = createWebAppSource(testId);
         File classesDir = createClassesDir(testId, true);
@@ -179,9 +179,9 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
     /**
      * @throws Exception in case of an error.
      */
-    public void testExplodedWar_WithContainerConfigXML() throws Exception {
+    public void testExplodedWarWithContainerConfigXML() throws Exception {
         // setup test data
-        String testId = "ExplodedWar_WithContainerConfigXML";
+        String testId = "ExplodedWarWithContainerConfigXML";
         MavenProjectBasicStub project = new MavenProjectBasicStub();
         File classesDir = createClassesDir(testId, true);
         File webAppSource = createWebAppSource(testId);
@@ -216,12 +216,12 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
     /**
      * @throws Exception in case of an error.
      */
-    public void testExplodedWar_WithSimpleExternalWARFile() throws Exception {
+    public void testExplodedWarWithSimpleExternalWARFile() throws Exception {
         // setup test data
         MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         WarArtifactStub warArtifact = new WarArtifactStub(getBasedir());
 
-        String testId = "ExplodedWar_WithSimpleExternalWARFile";
+        String testId = "ExplodedWarWithSimpleExternalWARFile";
         File webAppDirectory = new File(getTestDirectory(), testId);
         File webAppSource = createWebAppSource(testId);
         File classesDir = createClassesDir(testId, true);
@@ -310,9 +310,9 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
     /**
      * @throws Exception in case of an error.
      */
-    public void testExplodedWar_WithEJB() throws Exception {
+    public void testExplodedWarWithEJB() throws Exception {
         // setup test data
-        String testId = "ExplodedWar_WithEJB";
+        String testId = "ExplodedWarWithEJB";
         MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         File webAppDirectory = new File(getTestDirectory(), testId);
         File webAppSource = createWebAppSource(testId);
@@ -381,9 +381,9 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
     /**
      * @throws Exception in case of an error.
      */
-    public void testExplodedWar_WithEJBClient() throws Exception {
+    public void testExplodedWarWithEJBClient() throws Exception {
         // setup test data
-        String testId = "ExplodedWar_WithEJB";
+        String testId = "ExplodedWarWithEJB";
         MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         File webAppDirectory = new File(getTestDirectory(), testId);
         File webAppSource = createWebAppSource(testId);
@@ -417,9 +417,9 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
     /**
      * @throws Exception in case of an error.
      */
-    public void testExplodedWar_WithTLD() throws Exception {
+    public void testExplodedWarWithTLD() throws Exception {
         // setup test data
-        String testId = "ExplodedWar_WithTLD";
+        String testId = "ExplodedWarWithTLD";
         MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         File webAppDirectory = new File(getTestDirectory(), testId);
         File webAppSource = createWebAppSource(testId);
@@ -453,9 +453,9 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
     /**
      * @throws Exception in case of an error.
      */
-    public void testExplodedWar_WithPAR() throws Exception {
+    public void testExplodedWarWithPAR() throws Exception {
         // setup test data
-        String testId = "ExplodedWar_WithPAR";
+        String testId = "ExplodedWarWithPAR";
         MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         File webAppDirectory = new File(getTestDirectory(), testId);
         File webAppSource = createWebAppSource(testId);
@@ -603,9 +603,9 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
     /**
      * @throws Exception in case of an error.
      */
-    public void testExplodedWar_WithDuplicateDependencies() throws Exception {
+    public void testExplodedWarWithDuplicateDependencies() throws Exception {
         // setup test data
-        String testId = "ExplodedWar_WithDuplicateDependencies";
+        String testId = "ExplodedWarWithDuplicateDependencies";
         MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         File webAppDirectory = new File(getTestDirectory(), testId);
         File webAppSource = createWebAppSource(testId);
@@ -647,9 +647,9 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
     /**
      * @throws Exception in case of an error.
      */
-    public void testExplodedWar_DuplicateWithClassifier() throws Exception {
+    public void testExplodedWarDuplicateWithClassifier() throws Exception {
         // setup test data
-        String testId = "ExplodedWar_DuplicateWithClassifier";
+        String testId = "ExplodedWarDuplicateWithClassifier";
         MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         File webAppDirectory = new File(getTestDirectory(), testId);
         File webAppSource = createWebAppSource(testId);
@@ -697,9 +697,9 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
     /**
      * @throws Exception in case of an error.
      */
-    public void testExplodedWar_WithClasses() throws Exception {
+    public void testExplodedWarWithClasses() throws Exception {
         // setup test data
-        String testId = "ExplodedWar_WithClasses";
+        String testId = "ExplodedWarWithClasses";
         MavenProjectBasicStub project = new MavenProjectBasicStub();
         File webAppDirectory = new File(getTestDirectory(), testId);
         File webAppSource = createWebAppSource(testId);
@@ -728,9 +728,9 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
     /**
      * @throws Exception in case of an error.
      */
-    public void testExplodedWar_WithSourceIncludeExclude() throws Exception {
+    public void testExplodedWarWithSourceIncludeExclude() throws Exception {
         // setup test data
-        String testId = "ExplodedWar_WithSourceIncludeExclude";
+        String testId = "ExplodedWarWithSourceIncludeExclude";
         MavenProjectBasicStub project = new MavenProjectBasicStub();
         File webAppSource = createWebAppSource(testId);
         File classesDir = createClassesDir(testId, true);
@@ -763,9 +763,9 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
     /**
      * @throws Exception in case of an error.
      */
-    public void testExplodedWar_WithWarDependencyIncludeExclude() throws Exception {
+    public void testExplodedWarWithWarDependencyIncludeExclude() throws Exception {
         // setup test data
-        String testId = "ExplodedWar_WithWarDependencyIncludeExclude";
+        String testId = "ExplodedWarWithWarDependencyIncludeExclude";
         MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         IncludeExcludeWarArtifactStub includeexcludeWarArtifact = new IncludeExcludeWarArtifactStub(getBasedir());
         File webAppDirectory = new File(getTestDirectory(), testId);

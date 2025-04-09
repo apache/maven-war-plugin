@@ -598,6 +598,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
          * @param failOnMissingWebXml Flag to check whether we should ignore missing web.xml or not
          * @param outputTimestamp the output timestamp for reproducible archive creation
          */
+        @SuppressWarnings("checkstyle:ParameterNumber")
         DefaultWarPackagingContext(
                 final File webappDirectory,
                 final WebappStructure webappStructure,

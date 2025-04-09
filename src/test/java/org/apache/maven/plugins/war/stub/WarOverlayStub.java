@@ -29,8 +29,8 @@ public class WarOverlayStub extends AbstractArtifactStub {
 
     private File file;
 
-    public WarOverlayStub(String _basedir, String artifactId, File warFile) {
-        super(_basedir);
+    public WarOverlayStub(String basedir, String artifactId, File warFile) {
+        super(basedir);
         if (artifactId == null) {
             throw new NullPointerException("Id could not be null.");
         }

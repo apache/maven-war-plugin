@@ -39,8 +39,8 @@ public class ResourceStub extends Resource {
         return new ArrayList<>();
     }
 
-    public void setDirectory(String _directory) {
-        directory = _directory;
+    public void setDirectory(String directory) {
+        this.directory = directory;
     }
 
     public String getDirectory() {
