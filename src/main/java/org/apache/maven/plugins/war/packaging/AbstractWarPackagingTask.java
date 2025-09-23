@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.List;
 
 import org.apache.commons.io.input.XmlStreamReader;
 import org.apache.maven.artifact.Artifact;
@@ -38,6 +39,7 @@ import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
 import org.codehaus.plexus.interpolation.InterpolationException;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.SelectorUtils;
 
 /**
  * @author Stephane Nicoll
@@ -149,6 +151,10 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
             throws IOException
                 // CHECKSTYLE_ON: LineLength
             {
+        if (isExcluded(targetFilename, context.getPackagingIncludes(), context.getPackagingExcludes())) {
+            context.getLog().debug("Skipping excluded file: " + targetFilename);
+            return;
+        }
         final File targetFile = new File(context.getWebappDirectory(), targetFilename);
 
         if (file.isFile()) {
@@ -454,5 +460,27 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
      */
     private boolean isXmlFile(File file) {
         return isFileOfType(file, ".xml");
+    }
+
+    /**
+     * Check whether the specified file is excluded or not.
+     *
+     * @param targetFilename the target filename
+     * @param packagingIncludes the includes
+     * @param packagingExcludes the excludes
+     * @return true if the file is excluded
+     */
+    private boolean isExcluded(String targetFilename, List<String> packagingIncludes, List<String> packagingExcludes) {
+        for (String exclude : packagingExcludes) {
+            if (SelectorUtils.matchPath(exclude.trim(), targetFilename)) {
+                return true;
+            }
+        }
+        for (String include : packagingIncludes) {
+            if (SelectorUtils.matchPath(include.trim(), targetFilename)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
