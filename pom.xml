@@ -79,6 +79,9 @@
     <mavenFilteringVersion>3.4.0</mavenFilteringVersion>
     <mavenVersion>3.2.5</mavenVersion>
     <javaVersion>8</javaVersion>
+
+    <!-- TODO remove with next parent version bump -->
+    <version.maven-invoker-plugin>3.9.1</version.maven-invoker-plugin>
     <project.build.outputTimestamp>2023-06-11T20:08:08Z</project.build.outputTimestamp>
   </properties>
 
