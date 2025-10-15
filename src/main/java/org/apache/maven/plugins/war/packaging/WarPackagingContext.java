@@ -256,4 +256,16 @@ public interface WarPackagingContext {
      * @since 3.3.0
      */
     String getOutputTimestamp();
+
+    /**
+     * @return list of packaging excludes.
+     * @since 3.4.1
+     */
+    List<String> getPackagingExcludes();
+
+    /**
+     * @return list of packaging includes.
+     * @since 3.4.1
+     */
+    List<String> getPackagingIncludes();
 }

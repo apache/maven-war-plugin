@@ -231,6 +231,26 @@ public abstract class AbstractWarMojo extends AbstractMojo {
     private String dependentWarExcludes = StringUtils.join(Overlay.DEFAULT_EXCLUDES, ",");
 
     /**
+     * The comma separated list of tokens to exclude from the WAR before packaging. This option may be used to implement
+     * the skinny WAR use case. Note that you can use the Java Regular Expressions engine to include and exclude
+     * specific pattern using the expression %regex[]. Hint: read the about (?!Pattern).
+     *
+     * @since 2.1-alpha-2
+     */
+    @Parameter(property = "maven.war.packagingExcludes")
+    private String packagingExcludes;
+
+    /**
+     * The comma separated list of tokens to include in the WAR before packaging. By default everything is included.
+     * This option may be used to implement the skinny WAR use case. Note that you can use the Java Regular Expressions
+     * engine to include and exclude specific pattern using the expression %regex[].
+     *
+     * @since 2.1-beta-1
+     */
+    @Parameter
+    private String packagingIncludes;
+
+    /**
      * The overlays to apply. Each &lt;overlay&gt; element may contain:
      * <ul>
      * <li>id (defaults to {@code currentBuild})</li>
@@ -826,6 +846,24 @@ public abstract class AbstractWarMojo extends AbstractMojo {
         public String getOutputTimestamp() {
             return outputTimestamp;
         }
+
+        /**
+         * @return list of packaging excludes.
+         * @since 3.4.1
+         */
+        @Override
+        public List<String> getPackagingExcludes() {
+            return Arrays.asList(AbstractWarMojo.this.getPackagingExcludes());
+        }
+
+        /**
+         * @return list of packaging includes.
+         * @since 3.4.1
+         */
+        @Override
+        public List<String> getPackagingIncludes() {
+            return Arrays.asList(AbstractWarMojo.this.getPackagingIncludes());
+        }
     }
 
     /**
@@ -1043,5 +1081,41 @@ public abstract class AbstractWarMojo extends AbstractMojo {
      */
     protected boolean isIncludeEmptyDirectories() {
         return includeEmptyDirectories;
+    }
+
+    /**
+     * @return The package excludes.
+     */
+    public String[] getPackagingExcludes() {
+        if (packagingExcludes == null || packagingExcludes.isEmpty()) {
+            return new String[0];
+        } else {
+            return org.codehaus.plexus.util.StringUtils.split(packagingExcludes, ",");
+        }
+    }
+
+    /**
+     * @param packagingExcludes {@link #packagingExcludes}
+     */
+    public void setPackagingExcludes(String packagingExcludes) {
+        this.packagingExcludes = packagingExcludes;
+    }
+
+    /**
+     * @return The packaging includes.
+     */
+    public String[] getPackagingIncludes() {
+        if (packagingIncludes == null || packagingIncludes.isEmpty()) {
+            return new String[] {"**"};
+        } else {
+            return org.codehaus.plexus.util.StringUtils.split(packagingIncludes, ",");
+        }
+    }
+
+    /**
+     * @param packagingIncludes {@link #packagingIncludes}
+     */
+    public void setPackagingIncludes(String packagingIncludes) {
+        this.packagingIncludes = packagingIncludes;
     }
 }

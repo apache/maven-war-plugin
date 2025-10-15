@@ -51,7 +51,6 @@ import org.codehaus.plexus.archiver.jar.ManifestException;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.archiver.war.WarArchiver;
 import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Build a WAR file.
@@ -82,26 +81,6 @@ public class WarMojo extends AbstractWarMojo {
      */
     @Parameter
     private String classifier;
-
-    /**
-     * The comma separated list of tokens to exclude from the WAR before packaging. This option may be used to implement
-     * the skinny WAR use case. Note that you can use the Java Regular Expressions engine to include and exclude
-     * specific pattern using the expression %regex[]. Hint: read the about (?!Pattern).
-     *
-     * @since 2.1-alpha-2
-     */
-    @Parameter(property = "maven.war.packagingExcludes")
-    private String packagingExcludes;
-
-    /**
-     * The comma separated list of tokens to include in the WAR before packaging. By default everything is included.
-     * This option may be used to implement the skinny WAR use case. Note that you can use the Java Regular Expressions
-     * engine to include and exclude specific pattern using the expression %regex[].
-     *
-     * @since 2.1-beta-1
-     */
-    @Parameter
-    private String packagingIncludes;
 
     /**
      * The WAR archiver.
@@ -383,42 +362,6 @@ public class WarMojo extends AbstractWarMojo {
      */
     public void setClassifier(String classifier) {
         this.classifier = classifier;
-    }
-
-    /**
-     * @return The package excludes.
-     */
-    public String[] getPackagingExcludes() {
-        if (packagingExcludes == null || packagingExcludes.isEmpty()) {
-            return new String[0];
-        } else {
-            return StringUtils.split(packagingExcludes, ",");
-        }
-    }
-
-    /**
-     * @param packagingExcludes {@link #packagingExcludes}
-     */
-    public void setPackagingExcludes(String packagingExcludes) {
-        this.packagingExcludes = packagingExcludes;
-    }
-
-    /**
-     * @return The packaging includes.
-     */
-    public String[] getPackagingIncludes() {
-        if (packagingIncludes == null || packagingIncludes.isEmpty()) {
-            return new String[] {"**"};
-        } else {
-            return StringUtils.split(packagingIncludes, ",");
-        }
-    }
-
-    /**
-     * @param packagingIncludes {@link #packagingIncludes}
-     */
-    public void setPackagingIncludes(String packagingIncludes) {
-        this.packagingIncludes = packagingIncludes;
     }
 
     /**
