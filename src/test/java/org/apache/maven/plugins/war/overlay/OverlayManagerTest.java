@@ -25,33 +25,33 @@ import org.apache.maven.plugin.testing.stubs.ArtifactStub;
 import org.apache.maven.plugins.war.Overlay;
 import org.apache.maven.plugins.war.stub.MavenProjectArtifactsStub;
 import org.apache.maven.plugins.war.stub.WarArtifactStub;
-import org.codehaus.plexus.PlexusTestCase;
+import org.junit.jupiter.api.Test;
 
 import static org.apache.maven.plugins.war.Overlay.DEFAULT_EXCLUDES;
 import static org.apache.maven.plugins.war.Overlay.DEFAULT_INCLUDES;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author Stephane Nicoll
  */
-public class OverlayManagerTest extends PlexusTestCase {
+class OverlayManagerTest {
 
+    @Test
     public void testEmptyProject() throws Exception {
         final MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         final List<Overlay> overlays = new ArrayList<>();
-        try {
-            final Overlay currentProjectOverlay = Overlay.createInstance();
-            OverlayManager manager =
-                    new OverlayManager(overlays, project, DEFAULT_INCLUDES, DEFAULT_EXCLUDES, currentProjectOverlay);
-            assertNotNull(manager.getOverlays());
-            assertEquals(1, manager.getOverlays().size());
-            assertEquals(currentProjectOverlay, manager.getOverlays().get(0));
-        } catch (InvalidOverlayConfigurationException e) {
-            e.printStackTrace();
-            fail("Should not have failed to validate a valid overly config " + e.getMessage());
-        }
+        final Overlay currentProjectOverlay = Overlay.createInstance();
+        OverlayManager manager =
+                new OverlayManager(overlays, project, DEFAULT_INCLUDES, DEFAULT_EXCLUDES, currentProjectOverlay);
+        assertNotNull(manager.getOverlays());
+        assertEquals(1, manager.getOverlays().size());
+        assertEquals(currentProjectOverlay, manager.getOverlays().get(0));
     }
 
-    public void testAutodetectSimpleOverlay(Overlay currentProjectOverlay) throws Exception {
+    // TODO investigate what test should do ....
+    void testAutodetectSimpleOverlay(Overlay currentProjectOverlay) throws Exception {
 
         final MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         final ArtifactStub first = newWarArtifact("test", "test-webapp");
@@ -59,20 +59,16 @@ public class OverlayManagerTest extends PlexusTestCase {
 
         final List<Overlay> overlays = new ArrayList<>();
 
-        try {
-            final Overlay overlay = currentProjectOverlay;
-            OverlayManager manager = new OverlayManager(overlays, project, DEFAULT_INCLUDES, DEFAULT_EXCLUDES, overlay);
-            assertNotNull(manager.getOverlays());
-            assertEquals(2, manager.getOverlays().size());
-            assertEquals(overlay, manager.getOverlays().get(0));
-            assertEquals(new DefaultOverlay(first), manager.getOverlays().get(1));
-        } catch (InvalidOverlayConfigurationException e) {
-            e.printStackTrace();
-            fail("Should not have failed to validate a valid overlay config " + e.getMessage());
-        }
+        final Overlay overlay = currentProjectOverlay;
+        OverlayManager manager = new OverlayManager(overlays, project, DEFAULT_INCLUDES, DEFAULT_EXCLUDES, overlay);
+        assertNotNull(manager.getOverlays());
+        assertEquals(2, manager.getOverlays().size());
+        assertEquals(overlay, manager.getOverlays().get(0));
+        assertEquals(new DefaultOverlay(first), manager.getOverlays().get(1));
     }
 
-    public void testSimpleOverlay() throws Exception {
+    @Test
+    void testSimpleOverlay() throws Exception {
 
         final MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         final ArtifactStub first = newWarArtifact("test", "test-webapp");
@@ -81,21 +77,17 @@ public class OverlayManagerTest extends PlexusTestCase {
         final List<Overlay> overlays = new ArrayList<>();
         overlays.add(new DefaultOverlay(first));
 
-        try {
-            final Overlay currentProjectOverlay = Overlay.createInstance();
-            OverlayManager manager =
-                    new OverlayManager(overlays, project, DEFAULT_INCLUDES, DEFAULT_EXCLUDES, currentProjectOverlay);
-            assertNotNull(manager.getOverlays());
-            assertEquals(2, manager.getOverlays().size());
-            assertEquals(Overlay.createInstance(), manager.getOverlays().get(0));
-            assertEquals(overlays.get(0), manager.getOverlays().get(1));
-        } catch (InvalidOverlayConfigurationException e) {
-            e.printStackTrace();
-            fail("Should not have failed to validate a valid overlay config " + e.getMessage());
-        }
+        final Overlay currentProjectOverlay = Overlay.createInstance();
+        OverlayManager manager =
+                new OverlayManager(overlays, project, DEFAULT_INCLUDES, DEFAULT_EXCLUDES, currentProjectOverlay);
+        assertNotNull(manager.getOverlays());
+        assertEquals(2, manager.getOverlays().size());
+        assertEquals(Overlay.createInstance(), manager.getOverlays().get(0));
+        assertEquals(overlays.get(0), manager.getOverlays().get(1));
     }
 
-    public void testUnknownOverlay() throws Exception {
+    @Test
+    void testUnknownOverlay() throws Exception {
 
         final MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         final ArtifactStub first = newWarArtifact("test", "test-webapp");
@@ -104,16 +96,14 @@ public class OverlayManagerTest extends PlexusTestCase {
         final List<Overlay> overlays = new ArrayList<>();
         overlays.add(new Overlay("test", "test-webapp-2"));
 
-        try {
-            final Overlay currentProjectOverlay = Overlay.createInstance();
-            new OverlayManager(overlays, project, DEFAULT_INCLUDES, DEFAULT_EXCLUDES, currentProjectOverlay);
-            fail("Should have failed to validate an unknown overlay");
-        } catch (InvalidOverlayConfigurationException e) {
-            // OK
-        }
+        final Overlay currentProjectOverlay = Overlay.createInstance();
+        assertThrows(
+                InvalidOverlayConfigurationException.class,
+                () -> new OverlayManager(overlays, project, DEFAULT_INCLUDES, DEFAULT_EXCLUDES, currentProjectOverlay));
     }
 
-    public void testCustomCurrentProject() throws Exception {
+    @Test
+    void testCustomCurrentProject() throws Exception {
 
         final MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         final ArtifactStub first = newWarArtifact("test", "test-webapp");
@@ -126,22 +116,17 @@ public class OverlayManagerTest extends PlexusTestCase {
         final Overlay currentProjectOverlay = Overlay.createInstance();
         overlays.add(currentProjectOverlay);
 
-        try {
-            OverlayManager manager =
-                    new OverlayManager(overlays, project, DEFAULT_INCLUDES, DEFAULT_EXCLUDES, currentProjectOverlay);
-            assertNotNull(manager.getOverlays());
-            assertEquals(3, manager.getOverlays().size());
-            assertEquals(overlays.get(0), manager.getOverlays().get(0));
-            assertEquals(currentProjectOverlay, manager.getOverlays().get(1));
-            assertEquals(new DefaultOverlay(second), manager.getOverlays().get(2));
-
-        } catch (InvalidOverlayConfigurationException e) {
-            e.printStackTrace();
-            fail("Should not have failed to validate a valid overlay config " + e.getMessage());
-        }
+        OverlayManager manager =
+                new OverlayManager(overlays, project, DEFAULT_INCLUDES, DEFAULT_EXCLUDES, currentProjectOverlay);
+        assertNotNull(manager.getOverlays());
+        assertEquals(3, manager.getOverlays().size());
+        assertEquals(overlays.get(0), manager.getOverlays().get(0));
+        assertEquals(currentProjectOverlay, manager.getOverlays().get(1));
+        assertEquals(new DefaultOverlay(second), manager.getOverlays().get(2));
     }
 
-    public void testOverlaysWithSameArtifactAndGroupId() throws Exception {
+    @Test
+    void testOverlaysWithSameArtifactAndGroupId() throws Exception {
 
         final MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         final ArtifactStub first = newWarArtifact("test", "test-webapp");
@@ -154,24 +139,18 @@ public class OverlayManagerTest extends PlexusTestCase {
         overlays.add(new DefaultOverlay(first));
         overlays.add(new DefaultOverlay(second));
 
-        try {
-            final Overlay currentProjectOverlay = Overlay.createInstance();
-            OverlayManager manager =
-                    new OverlayManager(overlays, project, DEFAULT_INCLUDES, DEFAULT_EXCLUDES, currentProjectOverlay);
-            assertNotNull(manager.getOverlays());
-            assertEquals(3, manager.getOverlays().size());
-            assertEquals(currentProjectOverlay, manager.getOverlays().get(0));
-            assertEquals(overlays.get(0), manager.getOverlays().get(1));
-            assertEquals(overlays.get(1), manager.getOverlays().get(2));
-
-        } catch (InvalidOverlayConfigurationException e) {
-            e.printStackTrace();
-            fail("Should not have failed to validate a valid overlay config " + e.getMessage());
-        }
+        final Overlay currentProjectOverlay = Overlay.createInstance();
+        OverlayManager manager =
+                new OverlayManager(overlays, project, DEFAULT_INCLUDES, DEFAULT_EXCLUDES, currentProjectOverlay);
+        assertNotNull(manager.getOverlays());
+        assertEquals(3, manager.getOverlays().size());
+        assertEquals(currentProjectOverlay, manager.getOverlays().get(0));
+        assertEquals(overlays.get(0), manager.getOverlays().get(1));
+        assertEquals(overlays.get(1), manager.getOverlays().get(2));
     }
 
     protected ArtifactStub newWarArtifact(String groupId, String artifactId, String classifier) {
-        final WarArtifactStub a = new WarArtifactStub(getBasedir());
+        final WarArtifactStub a = new WarArtifactStub("");
         a.setGroupId(groupId);
         a.setArtifactId(artifactId);
         if (classifier != null) {
