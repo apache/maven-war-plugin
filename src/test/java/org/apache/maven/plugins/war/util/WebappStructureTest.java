@@ -20,73 +20,46 @@ package org.apache.maven.plugins.war.util;
 
 import java.util.ArrayList;
 
-import junit.framework.TestCase;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.model.Dependency;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Stephane Nicoll
  */
-public class WebappStructureTest extends TestCase {
+public class WebappStructureTest {
+    @Test
     public void testUnknownFileNotAvailable() {
         final WebappStructure structure = new WebappStructure(new ArrayList<>());
         assertFalse(structure.isRegistered("/foo/bar.txt"));
     }
 
+    @Test
     public void testRegisterSamePathTwice() {
         final WebappStructure structure = new WebappStructure(new ArrayList<>());
         structure.registerFile("overlay1", "WEB-INF/web.xml");
         assertFalse(structure.registerFile("currentBuild", "WEB-INF/web.xml"));
     }
 
+    @Test
     public void testRegisterForced() {
         final String path = "WEB-INF/web.xml";
         final WebappStructure structure = new WebappStructure(new ArrayList<>());
-        assertFalse("New file should return false", structure.registerFileForced("overlay1", path));
+        assertFalse(structure.registerFileForced("overlay1", path), "New file should return false");
         assertEquals("overlay1", structure.getOwner(path));
     }
 
+    @Test
     public void testRegisterSamePathTwiceForced() {
         final String path = "WEB-INF/web.xml";
         final WebappStructure structure = new WebappStructure(new ArrayList<>());
         structure.registerFile("overlay1", path);
         assertEquals("overlay1", structure.getOwner(path));
-        assertTrue("owner replacement should have returned true", structure.registerFileForced("currentBuild", path));
+        assertTrue(structure.registerFileForced("currentBuild", path), "owner replacement should have returned true");
         assertEquals("currentBuild", structure.getOwner(path));
     }
 
-    protected Dependency createDependency(
-            String groupId, String artifactId, String version, String type, String scope, String classifier) {
-        final Dependency dep = new Dependency();
-        dep.setGroupId(groupId);
-        dep.setArtifactId(artifactId);
-        dep.setVersion(version);
-        if (type == null) {
-            dep.setType("jar");
-        } else {
-            dep.setType(type);
-        }
-        if (scope != null) {
-            dep.setScope(scope);
-        } else {
-            dep.setScope(Artifact.SCOPE_COMPILE);
-        }
-        if (classifier != null) {
-            dep.setClassifier(classifier);
-        }
-        return dep;
-    }
-
-    protected Dependency createDependency(
-            String groupId, String artifactId, String version, String type, String scope) {
-        return createDependency(groupId, artifactId, version, type, scope, null);
-    }
-
-    protected Dependency createDependency(String groupId, String artifactId, String version, String type) {
-        return createDependency(groupId, artifactId, version, type, null);
-    }
-
-    protected Dependency createDependency(String groupId, String artifactId, String version) {
-        return createDependency(groupId, artifactId, version, null);
-    }
+    // ... existing code ...
 }

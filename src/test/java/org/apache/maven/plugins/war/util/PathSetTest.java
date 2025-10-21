@@ -24,36 +24,42 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import junit.framework.TestCase;
 import org.codehaus.plexus.util.StringUtils;
+import org.junit.jupiter.api.Test;
 
-public class PathSetTest extends TestCase {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public class PathSetTest {
 
     /* --------------- Normalization tests --------------*/
 
     /**
      * Test method for 'org.apache.maven.plugin.war.PathSet.normalizeSubPath(String)'
      */
+    @Test
     public void testNormalizeSubPath() {
-        assertEquals("Normalized path error", "", PathSet.normalizeSubPath(""));
-        assertEquals("Normalized path error", "", PathSet.normalizeSubPath("/"));
-        assertEquals("Normalized path error", "", PathSet.normalizeSubPath("////"));
-        assertEquals("Normalized path error", "", PathSet.normalizeSubPath("\\"));
-        assertEquals("Normalized path error", "", PathSet.normalizeSubPath("\\\\\\\\"));
+        assertEquals("", PathSet.normalizeSubPath(""), "Normalized path error");
+        assertEquals("", PathSet.normalizeSubPath("/"), "Normalized path error");
+        assertEquals("", PathSet.normalizeSubPath("////"), "Normalized path error");
+        assertEquals("", PathSet.normalizeSubPath("\\"), "Normalized path error");
+        assertEquals("", PathSet.normalizeSubPath("\\\\\\\\"), "Normalized path error");
 
-        assertEquals("Normalized path error", "abc", PathSet.normalizeSubPath("abc"));
-        assertEquals("Normalized path error", "abc", PathSet.normalizeSubPath("/abc"));
-        assertEquals("Normalized path error", "abc", PathSet.normalizeSubPath("////abc"));
-        assertEquals("Normalized path error", "abc", PathSet.normalizeSubPath("\\abc"));
-        assertEquals("Normalized path error", "abc", PathSet.normalizeSubPath("\\\\\\\\abc"));
+        assertEquals("abc", PathSet.normalizeSubPath("abc"), "Normalized path error");
+        assertEquals("abc", PathSet.normalizeSubPath("/abc"), "Normalized path error");
+        assertEquals("abc", PathSet.normalizeSubPath("////abc"), "Normalized path error");
+        assertEquals("abc", PathSet.normalizeSubPath("\\abc"), "Normalized path error");
+        assertEquals("abc", PathSet.normalizeSubPath("\\\\\\\\abc"), "Normalized path error");
 
-        assertEquals("Normalized path error", "abc/def/xyz", PathSet.normalizeSubPath("abc/def\\xyz\\"));
-        assertEquals("Normalized path error", "abc/def/xyz", PathSet.normalizeSubPath("/abc/def/xyz/"));
-        assertEquals("Normalized path error", "abc/def/xyz", PathSet.normalizeSubPath("////abc/def/xyz/"));
-        assertEquals("Normalized path error", "abc/def/xyz", PathSet.normalizeSubPath("\\abc/def/xyz/"));
-        assertEquals("Normalized path error", "abc/def/xyz", PathSet.normalizeSubPath("\\\\\\\\abc/def/xyz/"));
+        assertEquals("abc/def/xyz", PathSet.normalizeSubPath("abc/def\\xyz\\"), "Normalized path error");
+        assertEquals("abc/def/xyz", PathSet.normalizeSubPath("/abc/def/xyz/"), "Normalized path error");
+        assertEquals("abc/def/xyz", PathSet.normalizeSubPath("////abc/def/xyz/"), "Normalized path error");
+        assertEquals("abc/def/xyz", PathSet.normalizeSubPath("\\abc/def/xyz/"), "Normalized path error");
+        assertEquals("abc/def/xyz", PathSet.normalizeSubPath("\\\\\\\\abc/def/xyz/"), "Normalized path error");
         // MWAR-371
-        assertEquals("Normalized path error", "abc/def/ghi", PathSet.normalizeSubPath("///abc/////def////ghi//"));
+        assertEquals("abc/def/ghi", PathSet.normalizeSubPath("///abc/////def////ghi//"), "Normalized path error");
     }
 
     /* -------------- Operations tests ------------------*/
@@ -70,26 +76,27 @@ public class PathSetTest extends TestCase {
      * <li>org.apache.maven.plugin.war.PathSet.addPrefix(String)</li>
      * </ul>
      */
+    @Test
     public void testPathsSetBasic() {
         PathSet ps = new PathSet();
-        assertEquals("Unexpected PathSet size", ps.size(), 0);
+        assertEquals(0, ps.size(), "Unexpected PathSet size");
         Iterator<String> iter = ps.iterator();
-        assertNotNull("Iterator is null", iter);
-        assertFalse("Can iterate on empty set", iter.hasNext());
+        assertNotNull(iter, "Iterator is null");
+        assertFalse(iter.hasNext(), "Can iterate on empty set");
 
         ps.add("abc");
-        assertEquals("Unexpected PathSet size", ps.size(), 1);
+        assertEquals(1, ps.size(), "Unexpected PathSet size");
         ps.add("abc");
-        assertEquals("Unexpected PathSet size", ps.size(), 1);
+        assertEquals(1, ps.size(), "Unexpected PathSet size");
         ps.add("xyz/abc");
-        assertEquals("Unexpected PathSet size", ps.size(), 2);
+        assertEquals(2, ps.size(), "Unexpected PathSet size");
         ps.add("///abc");
-        assertEquals("Unexpected PathSet size", ps.size(), 2);
+        assertEquals(2, ps.size(), "Unexpected PathSet size");
         ps.add("///xyz\\abc");
-        assertEquals("Unexpected PathSet size", ps.size(), 2);
+        assertEquals(2, ps.size(), "Unexpected PathSet size");
 
         ps.addAll(ps);
-        assertEquals("Unexpected PathSet size", ps.size(), 2);
+        assertEquals(2, ps.size(), "Unexpected PathSet size");
 
         int i = 0;
         for (String pathstr : ps) {
@@ -100,7 +107,7 @@ public class PathSetTest extends TestCase {
             assertFalse(ps.contains("/" + StringUtils.replace(pathstr, '/', '\\') + "/a"));
             assertFalse(ps.contains("/a/" + StringUtils.replace(pathstr, '/', '\\')));
         }
-        assertEquals("Wrong count of iterations", 2, i);
+        assertEquals(2, i, "Wrong count of iterations");
 
         ps.addPrefix("/ab/c/");
         i = 0;
@@ -114,7 +121,7 @@ public class PathSetTest extends TestCase {
             assertFalse(ps.contains("/" + StringUtils.replace(pathstr, '/', '\\') + "/a"));
             assertFalse(ps.contains("/ab/" + StringUtils.replace(pathstr, '/', '\\')));
         }
-        assertEquals("Wrong count of iterations", 2, i);
+        assertEquals(2, i, "Wrong count of iterations");
     }
 
     /**
@@ -127,6 +134,7 @@ public class PathSetTest extends TestCase {
      * <li>org.apache.maven.plugin.war.PathSet.AddAll(Collection,String)</li>
      * </ul>
      */
+    @Test
     public void testPathsSetAddAlls() {
         Set<String> s1set = new HashSet<>();
         s1set.add("/a/b");
@@ -137,19 +145,19 @@ public class PathSetTest extends TestCase {
         String[] s2ar = new String[] {"/a/b", "a2/b2/c2", "a2\\b2/c2", "//21//22\23a"};
 
         PathSet ps1 = new PathSet(s1set);
-        assertEquals("Unexpected PathSet size", 3, ps1.size());
+        assertEquals(3, ps1.size(), "Unexpected PathSet size");
 
         PathSet ps2 = new PathSet(s2ar);
-        assertEquals("Unexpected PathSet size", 3, ps2.size());
+        assertEquals(3, ps2.size(), "Unexpected PathSet size");
 
         ps1.addAll(s2ar);
-        assertEquals("Unexpected PathSet size", 5, ps1.size());
+        assertEquals(5, ps1.size(), "Unexpected PathSet size");
 
         ps2.addAll(s1set);
-        assertEquals("Unexpected PathSet size", 5, ps2.size());
+        assertEquals(5, ps2.size(), "Unexpected PathSet size");
 
         for (String str : ps1) {
-            assertTrue(str, ps2.contains(str));
+            assertTrue(ps2.contains(str), str);
             assertTrue(ps2.contains("/" + str));
             assertTrue(ps1.contains(str));
             assertTrue(ps1.contains("/" + str));
@@ -163,13 +171,13 @@ public class PathSetTest extends TestCase {
         }
 
         ps1.addAll(s2ar, "/pref/");
-        assertEquals("Unexpected PathSet size", 8, ps1.size());
+        assertEquals(8, ps1.size(), "Unexpected PathSet size");
 
         ps2.addAll(s2ar, "/pref/");
-        assertEquals("Unexpected PathSet size", 8, ps2.size());
+        assertEquals(8, ps2.size(), "Unexpected PathSet size");
 
         for (String str : ps1) {
-            assertTrue(str, ps2.contains(str));
+            assertTrue(ps2.contains(str), str);
             assertTrue(ps2.contains("/" + str));
             assertTrue(ps1.contains(str));
             assertTrue(ps1.contains("/" + str));
@@ -184,7 +192,7 @@ public class PathSetTest extends TestCase {
 
         PathSet ps3 = new PathSet();
         ps3.addAll(new String[] {"a/b/c"}, "d");
-        assertTrue("Unexpected PathSet path", ps3.contains("d/a/b/c"));
+        assertTrue(ps3.contains("d/a/b/c"), "Unexpected PathSet path");
     }
 
     /**
@@ -192,6 +200,7 @@ public class PathSetTest extends TestCase {
      *
      * @throws IOException if an io error occurred
      */
+    @Test
     public void testAddAllFilesInDirectory() throws IOException {
         PathSet ps = new PathSet();
 
@@ -213,11 +222,11 @@ public class PathSetTest extends TestCase {
         d1d2f2.createNewFile();
 
         ps.addAllFilesInDirectory(new File("target/testAddAllFilesInDirectory"), "123/");
-        assertEquals("Unexpected PathSet size", 4, ps.size());
+        assertEquals(4, ps.size(), "Unexpected PathSet size");
 
         /*No changes after adding duplicates*/
         ps.addAllFilesInDirectory(new File("target/testAddAllFilesInDirectory"), "123/");
-        assertEquals("Unexpected PathSet size", 4, ps.size());
+        assertEquals(4, ps.size(), "Unexpected PathSet size");
 
         /*Cleanup*/
 
@@ -226,7 +235,7 @@ public class PathSetTest extends TestCase {
 
         /*No changes after adding a subset of files*/
         ps.addAllFilesInDirectory(new File("target/testAddAllFilesInDirectory"), "123/");
-        assertEquals("Unexpected PathSet size", 4, ps.size());
+        assertEquals(4, ps.size(), "Unexpected PathSet size");
 
         d1d2f1.delete();
         d1d2f2.delete();
