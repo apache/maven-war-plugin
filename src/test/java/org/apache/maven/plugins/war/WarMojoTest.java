@@ -55,10 +55,6 @@ public class WarMojoTest extends AbstractWarMojoTest {
         mojo = (WarMojo) lookupMojo("war", pomFile);
     }
 
-    public void testEnvironment() throws Exception {
-        // see setup
-    }
-
     public void testSimpleWar() throws Exception {
         String testId = "SimpleWar";
         MavenProject4CopyConstructor project = new MavenProject4CopyConstructor();
