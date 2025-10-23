@@ -88,8 +88,6 @@ public class WarMojo extends AbstractWarMojo {
     @Component(role = Archiver.class, hint = "war")
     private WarArchiver warArchiver;
 
-    /**
-     */
     @Component
     private MavenProjectHelper projectHelper;
 
@@ -160,7 +158,7 @@ public class WarMojo extends AbstractWarMojo {
      * Executes the WarMojo on the current project.
      *
      * @throws MojoExecutionException if an error occurred while building the webapp
-     * @throws MojoFailureException if an error.
+     * @throws MojoFailureException if an error
      */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -185,10 +183,10 @@ public class WarMojo extends AbstractWarMojo {
      * Generates the webapp according to the {@code mode} attribute.
      *
      * @param warFile the target WAR file
-     * @throws IOException if an error occurred while copying files
      * @throws ArchiverException if the archive could not be created
-     * @throws ManifestException if the manifest could not be created
      * @throws DependencyResolutionRequiredException if an error occurred while resolving the dependencies
+     * @throws IOException if an error occurred while copying files
+     * @throws ManifestException if the manifest could not be created
      * @throws MojoExecutionException if the execution failed
      * @throws MojoFailureException if a fatal exception occurred
      */
@@ -280,9 +278,9 @@ public class WarMojo extends AbstractWarMojo {
      * dependencies (which includes provided dependencies) of the Maven project.
      *
      * @return <code>true</code> if the project being built depends on Servlet 3.0 API or Jakarta Servlet API,
-     *         <code>false</code> otherwise.
-     * @throws DependencyResolutionRequiredException if the compile elements can't be resolved.
-     * @throws MalformedURLException if the path to a dependency file can't be transformed to a URL.
+     *         <code>false</code> otherwise
+     * @throws DependencyResolutionRequiredException if the compile elements can't be resolved
+     * @throws MalformedURLException if the path to a dependency file can't be transformed to a URL
      */
     private boolean isProjectUsingAtLeastServlet30()
             throws DependencyResolutionRequiredException, MalformedURLException {
@@ -318,10 +316,10 @@ public class WarMojo extends AbstractWarMojo {
     }
 
     /**
-     * @param basedir The basedir
-     * @param finalName The finalName
-     * @param classifier The classifier.
-     * @param type The type.
+     * @param basedir the basedir
+     * @param finalName the finalName
+     * @param classifier the classifier
+     * @param type the type
      * @return {@link File}
      */
     protected static File getTargetFile(File basedir, String finalName, String classifier, String type) {
@@ -335,14 +333,14 @@ public class WarMojo extends AbstractWarMojo {
     }
 
     /**
-     * @return The war {@link File}
+     * @return the war {@link File}
      */
     protected File getTargetWarFile() {
         return getTargetFile(new File(getOutputDirectory()), getWarName(), getClassifier(), "war");
     }
 
     /**
-     * @return The target class {@link File}
+     * @return the target class {@link File}
      */
     protected File getTargetClassesFile() {
         return getTargetFile(new File(getOutputDirectory()), getWarName(), getClassesClassifier(), "jar");
@@ -477,7 +475,8 @@ public class WarMojo extends AbstractWarMojo {
     }
 
     /**
-     * Skip the mojo run
+     * Skip the mojo run.
+     *
      * @return {@link #skip}
      */
     public boolean isSkip() {

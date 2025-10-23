@@ -40,7 +40,7 @@ import org.codehaus.plexus.archiver.jar.ManifestException;
 public class ClassesPackager {
 
     /**
-     * Package the classes
+     * Package the classes.
      *
      * @param classesDirectory the classes directory
      * @param targetFile the target file

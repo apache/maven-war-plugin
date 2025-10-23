@@ -135,7 +135,7 @@ public class ArtifactsPackagingTask extends AbstractWarPackagingTask {
      *
      * @param context the packaging context
      * @param artifacts set of artifacts
-     * @return List of duplicated artifacts as bundling file names
+     * @return list of duplicated artifacts as bundling file names
      */
     private List<String> findDuplicates(WarPackagingContext context, Set<Artifact> artifacts)
             throws InterpolationException {

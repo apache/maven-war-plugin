@@ -172,7 +172,7 @@ public interface WarPackagingContext {
     List<FilterWrapper> getFilterWrappers();
 
     /**
-     * Specify if the given {@code fileName} belongs to the list of extensions that must not be filtered
+     * Specify if the given {@code fileName} belongs to the list of extensions that must not be filtered.
      *
      * @param fileName the name of file
      * @return {@code true} if it should not be filtered, {@code false} otherwise
@@ -181,7 +181,7 @@ public interface WarPackagingContext {
     boolean isNonFilteredExtension(String fileName);
 
     /**
-     * @return filtering deployment descriptor.
+     * @return filtering deployment descriptor
      */
     boolean isFilteringDeploymentDescriptors();
 
@@ -221,7 +221,7 @@ public interface WarPackagingContext {
     boolean isUseJvmChmod();
 
     /**
-     * Returns the flag that switch on/off the missing web.xml validation
+     * Returns the flag that switch on/off the missing web.xml validation.
      *
      * @return failOnMissingWebXml
      */
@@ -234,8 +234,8 @@ public interface WarPackagingContext {
      * This prevent calling <code>mvn clean</code> when resources are removed.
      *
      * @param resource the resource that is to me marked as not outdated
-     * @since 3.3.0
      * @see #deleteOutdatedResources()
+     * @since 3.3.0
      */
     void addResource(String resource);
 
@@ -244,8 +244,8 @@ public interface WarPackagingContext {
      * packaging process, then are supposed to be content from a previous run.
      * This prevent calling <code>mvn clean</code> when resources are removed.
      *
-     * @since 3.3.0
      * @see #addResource
+     * @since 3.3.0
      */
     void deleteOutdatedResources();
 
@@ -258,13 +258,13 @@ public interface WarPackagingContext {
     String getOutputTimestamp();
 
     /**
-     * @return list of packaging excludes.
+     * @return list of packaging excludes
      * @since 3.4.1
      */
     List<String> getPackagingExcludes();
 
     /**
-     * @return list of packaging includes.
+     * @return list of packaging includes
      * @since 3.4.1
      */
     List<String> getPackagingIncludes();

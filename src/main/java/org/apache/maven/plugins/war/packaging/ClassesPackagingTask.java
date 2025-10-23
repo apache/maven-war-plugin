@@ -80,8 +80,8 @@ public class ClassesPackagingTask extends AbstractWarPackagingTask {
     }
 
     /**
-     * @param context The warPackingContext.
-     * @throws MojoExecutionException In case of an error.
+     * @param context the warPackingContext
+     * @throws MojoExecutionException in case of an error
      */
     protected void generateJarArchive(WarPackagingContext context) throws MojoExecutionException {
         MavenProject project = context.getProject();

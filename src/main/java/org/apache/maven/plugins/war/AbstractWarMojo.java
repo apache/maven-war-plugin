@@ -217,7 +217,6 @@ public abstract class AbstractWarMojo extends AbstractMojo {
     /**
      * The comma separated list of tokens to include when doing a WAR overlay. Default is
      * {@link org.apache.maven.plugins.war.Overlay#DEFAULT_INCLUDES}
-     *
      */
     @Parameter
     private String dependentWarIncludes = StringUtils.join(Overlay.DEFAULT_INCLUDES, ",");
@@ -225,7 +224,6 @@ public abstract class AbstractWarMojo extends AbstractMojo {
     /**
      * The comma separated list of tokens to exclude when doing a WAR overlay. Default is
      * {@link org.apache.maven.plugins.war.Overlay#DEFAULT_EXCLUDES}
-     *
      */
     @Parameter
     private String dependentWarExcludes = StringUtils.join(Overlay.DEFAULT_EXCLUDES, ",");
@@ -327,7 +325,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
     private boolean includeEmptyDirectories;
 
     /**
-     * Stop searching endToken at the end of line
+     * Stop searching endToken at the end of line.
      *
      * @since 2.4
      */
@@ -335,7 +333,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
     private boolean supportMultiLineFiltering;
 
     /**
-     * use jvmChmod rather that cli chmod and forking process
+     * Use jvmChmod rather that cli chmod and forking process.
      *
      * @since 2.4
      */
@@ -402,7 +400,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
     }
 
     /**
-     * @return The current overlay.
+     * @return the current overlay
      */
     public Overlay getCurrentProjectOverlay() {
         return currentProjectOverlay;
@@ -460,9 +458,9 @@ public abstract class AbstractWarMojo extends AbstractMojo {
     }
 
     /**
-     * @param webapplicationDirectory The web application directory.
-     * @throws MojoExecutionException In case of failure.
-     * @throws MojoFailureException In case of failure.
+     * @param webapplicationDirectory the web application directory
+     * @throws MojoExecutionException in case of failure
+     * @throws MojoFailureException in case of failure
      */
     public void buildExplodedWebapp(File webapplicationDirectory) throws MojoExecutionException, MojoFailureException {
         webapplicationDirectory.mkdirs();
@@ -480,9 +478,9 @@ public abstract class AbstractWarMojo extends AbstractMojo {
      *
      * @param mavenProject the maven project
      * @param webapplicationDirectory the target directory
+     * @throws IOException if an error occurred while copying the files
      * @throws MojoExecutionException if an error occurred while packaging the webapp
      * @throws MojoFailureException if an unexpected error occurred while packaging the webapp
-     * @throws IOException if an error occurred while copying the files
      */
     public void buildWebapp(MavenProject mavenProject, File webapplicationDirectory)
             throws MojoExecutionException, MojoFailureException, IOException {
@@ -575,7 +573,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
     }
 
     /**
-     * WarPackagingContext default implementation
+     * WarPackagingContext default implementation.
      */
     private class DefaultWarPackagingContext implements WarPackagingContext {
         private final ArtifactFactory artifactFactory;
@@ -605,17 +603,17 @@ public abstract class AbstractWarMojo extends AbstractMojo {
         private final String outputTimestamp;
 
         /**
-         * @param webappDirectory The web application directory.
-         * @param webappStructure The web app structure.
-         * @param overlayManager The overlay manager.
-         * @param filterWrappers The filter wrappers
-         * @param nonFilteredFileExtensions The non filtered file extensions.
-         * @param filteringDeploymentDescriptors The filtering deployment descriptors.
-         * @param artifactFactory The artifact factory.
-         * @param resourceEncoding The resource encoding.
-         * @param propertiesEncoding The encoding to use for properties files.
-         * @param useJvmChmod use Jvm chmod or not.
-         * @param failOnMissingWebXml Flag to check whether we should ignore missing web.xml or not
+         * @param webappDirectory the web application directory
+         * @param webappStructure the web app structure
+         * @param overlayManager the overlay manager
+         * @param filterWrappers the filter wrappers
+         * @param nonFilteredFileExtensions the non filtered file extensions
+         * @param filteringDeploymentDescriptors the filtering deployment descriptors
+         * @param artifactFactory the artifact factory
+         * @param resourceEncoding the resource encoding
+         * @param propertiesEncoding the encoding to use for properties files
+         * @param useJvmChmod use Jvm chmod or not
+         * @param failOnMissingWebXml flag to check whether we should ignore missing web.xml or not
          * @param outputTimestamp the output timestamp for reproducible archive creation
          */
         @SuppressWarnings("checkstyle:ParameterNumber")
@@ -848,7 +846,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
         }
 
         /**
-         * @return list of packaging excludes.
+         * @return list of packaging excludes
          * @since 3.4.1
          */
         @Override
@@ -857,7 +855,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
         }
 
         /**
-         * @return list of packaging includes.
+         * @return list of packaging includes
          * @since 3.4.1
          */
         @Override
@@ -867,28 +865,28 @@ public abstract class AbstractWarMojo extends AbstractMojo {
     }
 
     /**
-     * @return The Maven Project.
+     * @return the Maven Project
      */
     public MavenProject getProject() {
         return project;
     }
 
     /**
-     * @param project The project to be set.
+     * @param project the project to be set
      */
     public void setProject(MavenProject project) {
         this.project = project;
     }
 
     /**
-     * @return the classes directory.
+     * @return the classes directory
      */
     public File getClassesDirectory() {
         return classesDirectory;
     }
 
     /**
-     * @param classesDirectory The classes directory to be set.
+     * @param classesDirectory the classes directory to be set
      */
     public void setClassesDirectory(File classesDirectory) {
         this.classesDirectory = classesDirectory;
@@ -902,7 +900,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
     }
 
     /**
-     * @param webappDirectory The web application directory.
+     * @param webappDirectory the web application directory
      */
     public void setWebappDirectory(File webappDirectory) {
         this.webappDirectory = webappDirectory;
@@ -923,14 +921,14 @@ public abstract class AbstractWarMojo extends AbstractMojo {
     }
 
     /**
-     * @return The {@link #webXml}
+     * @return the {@link #webXml}
      */
     public File getWebXml() {
         return webXml;
     }
 
     /**
-     * @param webXml The {@link #webXml}
+     * @param webXml the {@link #webXml}
      */
     public void setWebXml(File webXml) {
         this.webXml = webXml;
@@ -979,7 +977,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
     }
 
     /**
-     * @param overlay add {@link #overlays}.
+     * @param overlay add {@link #overlays}
      */
     public void addOverlay(Overlay overlay) {
         overlays.add(overlay);
@@ -1000,14 +998,14 @@ public abstract class AbstractWarMojo extends AbstractMojo {
     }
 
     /**
-     * @return {@link #webResources}.
+     * @return {@link #webResources}
      */
     public Resource[] getWebResources() {
         return webResources;
     }
 
     /**
-     * @param webResources {@link #webResources}.
+     * @param webResources {@link #webResources}
      */
     public void setWebResources(Resource[] webResources) {
         this.webResources = webResources;
@@ -1084,7 +1082,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
     }
 
     /**
-     * @return The package excludes.
+     * @return the package excludes
      */
     public String[] getPackagingExcludes() {
         if (packagingExcludes == null || packagingExcludes.isEmpty()) {
@@ -1102,7 +1100,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
     }
 
     /**
-     * @return The packaging includes.
+     * @return the packaging includes
      */
     public String[] getPackagingIncludes() {
         if (packagingIncludes == null || packagingIncludes.isEmpty()) {

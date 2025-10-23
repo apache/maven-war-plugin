@@ -197,8 +197,8 @@ public class WarProjectPackagingTask extends AbstractWarPackagingTask {
      * @param webinfDir the web-inf directory
      * @param metainfDir the meta-inf directory
      * @param failOnMissingWebXml if build should fail if web.xml is not found
-     * @throws MojoFailureException if the web.xml is specified but does not exist and failOnMissingWebXml is true
      * @throws MojoExecutionException if an error occurred while copying the descriptors
+     * @throws MojoFailureException if the web.xml is specified but does not exist and failOnMissingWebXml is true
      */
     protected void handleDeploymentDescriptors(
             WarPackagingContext context, File webinfDir, File metainfDir, Boolean failOnMissingWebXml)

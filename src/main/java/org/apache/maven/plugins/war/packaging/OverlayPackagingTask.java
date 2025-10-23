@@ -36,7 +36,7 @@ public class OverlayPackagingTask extends AbstractWarPackagingTask {
 
     /**
      * @param overlay {@link #overlay}
-     * @param currentProjectOverlay current overlay.
+     * @param currentProjectOverlay current overlay
      */
     public OverlayPackagingTask(Overlay overlay, Overlay currentProjectOverlay) {
         if (overlay == null) {
