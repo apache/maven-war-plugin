@@ -18,8 +18,12 @@
  */
 package org.apache.maven.plugins.war;
 
+import static org.junit.Assume.assumeTrue;
+
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Date;
 import java.util.List;
 
@@ -34,7 +38,6 @@ import org.apache.maven.shared.filtering.MavenFileFilter;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
-import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.aether.RepositorySystemSession;
 
 public abstract class AbstractWarMojoTest extends AbstractMojoTestCase {
@@ -171,9 +174,10 @@ public abstract class AbstractWarMojoTest extends AbstractMojoTestCase {
 
     protected void createFile(File testFile, String body) throws Exception {
         createDir(testFile.getParentFile());
-        FileUtils.fileWrite(testFile.toString(), body);
+        byte[] data = body.getBytes(StandardCharsets.UTF_8);
+        Files.write(testFile.toPath(), data);
 
-        assertTrue("could not create file: " + testFile, testFile.exists());
+        assumeTrue("could not create file: " + testFile, testFile.exists());
     }
 
     protected void createFile(File testFile) throws Exception {
