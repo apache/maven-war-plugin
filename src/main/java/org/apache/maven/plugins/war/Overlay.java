@@ -318,8 +318,8 @@ public class Overlay {
     public int hashCode() {
         int result;
         result = (getId() != null ? getId().hashCode() : 0);
-        result = 31 * result + (includes != null ? includes.hashCode() : 0);
-        result = 31 * result + (excludes != null ? excludes.hashCode() : 0);
+        result = 31 * result + (includes != null ? Arrays.hashCode(includes) : 0);
+        result = 31 * result + (excludes != null ? Arrays.hashCode(excludes) : 0);
         return result;
     }
 
