@@ -19,7 +19,6 @@
 package org.apache.maven.plugins.war;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,7 +34,6 @@ import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -44,11 +42,10 @@ import org.apache.maven.plugins.war.util.ClassesPackager;
 import org.apache.maven.project.MavenProjectHelper;
 import org.apache.maven.shared.filtering.MavenFileFilter;
 import org.apache.maven.shared.filtering.MavenResourcesFiltering;
-import org.codehaus.plexus.archiver.Archiver;
 import org.codehaus.plexus.archiver.ArchiverException;
-import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.jar.ManifestException;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
+import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
 import org.codehaus.plexus.archiver.war.WarArchiver;
 import org.codehaus.plexus.util.FileUtils;
 
@@ -81,15 +78,6 @@ public class WarMojo extends AbstractWarMojo {
      */
     @Parameter
     private String classifier;
-
-    /**
-     * The WAR archiver.
-     */
-    @Component(role = Archiver.class, hint = "war")
-    private WarArchiver warArchiver;
-
-    @Component
-    private MavenProjectHelper projectHelper;
 
     /**
      * Whether this is the main artifact being built. Set to <code>false</code> if you don't want to install or deploy
@@ -140,14 +128,17 @@ public class WarMojo extends AbstractWarMojo {
     @Parameter(property = "maven.war.skip", defaultValue = "false")
     private boolean skip;
 
+    private final MavenProjectHelper projectHelper;
+
     @Inject
     public WarMojo(
-            JarArchiver jarArchiver,
             ArtifactFactory artifactFactory,
             ArchiverManager archiverManager,
-            @Named("default") MavenFileFilter mavenFileFilter,
-            @Named("default") MavenResourcesFiltering mavenResourcesFiltering) {
-        super(jarArchiver, artifactFactory, archiverManager, mavenFileFilter, mavenResourcesFiltering);
+            MavenFileFilter mavenFileFilter,
+            MavenResourcesFiltering mavenResourcesFiltering,
+            MavenProjectHelper projectHelper) {
+        super(artifactFactory, archiverManager, mavenFileFilter, mavenResourcesFiltering);
+        this.projectHelper = projectHelper;
     }
 
     // ----------------------------------------------------------------------
@@ -199,6 +190,7 @@ public class WarMojo extends AbstractWarMojo {
 
         MavenArchiver archiver = new MavenArchiver();
 
+        WarArchiver warArchiver = getWarArchiver();
         archiver.setArchiver(warArchiver);
 
         archiver.setCreatedBy("Maven WAR Plugin", "org.apache.maven.plugins", "maven-war-plugin");
@@ -390,18 +382,12 @@ public class WarMojo extends AbstractWarMojo {
         this.warName = warName;
     }
 
-    /**
-     * @return {@link #warArchiver}
-     */
     public WarArchiver getWarArchiver() {
-        return warArchiver;
-    }
-
-    /**
-     * @param warArchiver {@link #warArchiver}
-     */
-    public void setWarArchiver(WarArchiver warArchiver) {
-        this.warArchiver = warArchiver;
+        try {
+            return (WarArchiver) getArchiverManager().getArchiver("war");
+        } catch (NoSuchArchiverException e) {
+            throw new IllegalStateException("Cannot find war archiver", e);
+        }
     }
 
     /**
@@ -409,13 +395,6 @@ public class WarMojo extends AbstractWarMojo {
      */
     public MavenProjectHelper getProjectHelper() {
         return projectHelper;
-    }
-
-    /**
-     * @param projectHelper {@link #projectHelper}
-     */
-    public void setProjectHelper(MavenProjectHelper projectHelper) {
-        this.projectHelper = projectHelper;
     }
 
     /**

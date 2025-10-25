@@ -57,6 +57,7 @@ import org.apache.maven.shared.filtering.MavenResourcesFiltering;
 import org.apache.maven.shared.utils.StringUtils;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
+import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
 
 /**
  * Contains common jobs for WAR mojos.
@@ -379,16 +380,23 @@ public abstract class AbstractWarMojo extends AbstractMojo {
     private final MavenResourcesFiltering mavenResourcesFiltering;
 
     protected AbstractWarMojo(
-            JarArchiver jarArchiver,
             ArtifactFactory artifactFactory,
             ArchiverManager archiverManager,
             MavenFileFilter mavenFileFilter,
             MavenResourcesFiltering mavenResourcesFiltering) {
-        this.jarArchiver = jarArchiver;
         this.artifactFactory = artifactFactory;
         this.archiverManager = archiverManager;
         this.mavenFileFilter = mavenFileFilter;
         this.mavenResourcesFiltering = mavenResourcesFiltering;
+        try {
+            this.jarArchiver = (JarArchiver) archiverManager.getArchiver("jar");
+        } catch (NoSuchArchiverException e) {
+            throw new IllegalStateException("Cannot find jar archiver", e);
+        }
+    }
+
+    public ArchiverManager getArchiverManager() {
+        return archiverManager;
     }
 
     /**
