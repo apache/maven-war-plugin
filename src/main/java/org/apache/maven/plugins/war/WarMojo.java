@@ -31,7 +31,7 @@ import java.util.List;
 import org.apache.maven.archiver.MavenArchiver;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
-import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -132,12 +132,12 @@ public class WarMojo extends AbstractWarMojo {
 
     @Inject
     public WarMojo(
-            ArtifactFactory artifactFactory,
+            ArtifactHandlerManager artifactHandlerManager,
             ArchiverManager archiverManager,
             MavenFileFilter mavenFileFilter,
             MavenResourcesFiltering mavenResourcesFiltering,
             MavenProjectHelper projectHelper) {
-        super(artifactFactory, archiverManager, mavenFileFilter, mavenResourcesFiltering);
+        super(artifactHandlerManager, archiverManager, mavenFileFilter, mavenResourcesFiltering);
         this.projectHelper = projectHelper;
     }
 

@@ -22,7 +22,7 @@ import java.io.File;
 import java.util.List;
 
 import org.apache.maven.archiver.MavenArchiveConfiguration;
-import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.war.util.WebappStructure;
@@ -186,9 +186,11 @@ public interface WarPackagingContext {
     boolean isFilteringDeploymentDescriptors();
 
     /**
-     * @return {@link ArtifactFactory}
+     * Returns the artifact handler manager.
+     *
+     * @return the artifact handler manager
      */
-    ArtifactFactory getArtifactFactory();
+    ArtifactHandlerManager getArtifactHandlerManager();
 
     /**
      * Returns the Maven session.

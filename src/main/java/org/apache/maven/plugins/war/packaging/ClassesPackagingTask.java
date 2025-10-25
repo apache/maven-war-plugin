@@ -22,7 +22,8 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.DefaultArtifact;
+import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.war.Overlay;
 import org.apache.maven.plugins.war.util.ClassesPackager;
@@ -85,9 +86,15 @@ public class ClassesPackagingTask extends AbstractWarPackagingTask {
      */
     protected void generateJarArchive(WarPackagingContext context) throws MojoExecutionException {
         MavenProject project = context.getProject();
-        ArtifactFactory factory = context.getArtifactFactory();
-        Artifact artifact =
-                factory.createBuildArtifact(project.getGroupId(), project.getArtifactId(), project.getVersion(), "jar");
+        ArtifactHandlerManager artifactHandlerManager = context.getArtifactHandlerManager();
+        Artifact artifact = new DefaultArtifact(
+                project.getGroupId(),
+                project.getArtifactId(),
+                project.getVersion(),
+                null,
+                "jar",
+                "",
+                artifactHandlerManager.getArtifactHandler("jar"));
         String archiveName;
         try {
             archiveName = getArtifactFinalName(context, artifact);
