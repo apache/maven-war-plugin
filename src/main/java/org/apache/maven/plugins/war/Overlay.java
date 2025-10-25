@@ -69,7 +69,7 @@ public class Overlay {
 
     private String targetPath;
 
-    /** default overlay type is war */
+    /** Default overlay type is war. */
     private String type = "war";
 
     /**
@@ -99,7 +99,7 @@ public class Overlay {
     }
 
     /**
-     * @return {@link Overlay} instance.
+     * @return {@link Overlay} instance
      */
     public static Overlay createInstance() {
         Overlay overlay = new Overlay();
@@ -110,7 +110,7 @@ public class Overlay {
     // Getters and Setters
 
     /**
-     * @return The id.
+     * @return the id
      */
     public String getId() {
         if (id == null) {
@@ -125,7 +125,7 @@ public class Overlay {
     }
 
     /**
-     * @param id The id.
+     * @param id the id
      */
     public void setId(String id) {
         this.id = id;

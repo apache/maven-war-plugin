@@ -28,17 +28,16 @@ import org.apache.maven.plugin.logging.SystemStreamLog;
 
 /**
  * @author Haikal Saadh
- *
  */
 public class CopyUserManifestTask extends AbstractWarPackagingTask {
 
-    /** Instance logger */
+    /** Instance logger. */
     private Log log;
 
     /**
-     *  Returns the logger.
+     * Returns the logger.
      *
-     * @return logger
+     * return logger.
      */
     public Log getLog() {
         if (log == null) {

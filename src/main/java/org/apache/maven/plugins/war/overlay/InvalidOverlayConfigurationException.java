@@ -27,20 +27,17 @@ import org.apache.maven.plugin.MojoExecutionException;
  */
 public class InvalidOverlayConfigurationException extends MojoExecutionException {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = -9048144470408031414L;
 
     /**
-     * @param string Set the message of the exception.
+     * @param string set the message of the exception
      */
     public InvalidOverlayConfigurationException(String string) {
         super(string);
     }
 
     /**
-     * @param string Set the message of the exception.
+     * @param string set the message of the exception
      * @param throwable {@link Throwable}
      */
     public InvalidOverlayConfigurationException(String string, Throwable throwable) {

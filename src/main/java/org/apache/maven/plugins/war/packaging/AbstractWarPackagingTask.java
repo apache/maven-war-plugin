@@ -78,16 +78,16 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
      *
      * If the structure of the source directory is not the same as the root of the webapp, use the {@code targetPrefix}
      * parameter to specify in which particular directory the files should be copied. Use {@code null} to copy the
-     * files with the same structure
+     * files with the same structure.
      *
      * @param sourceId the source id
      * @param context the context to use
      * @param sourceBaseDir the base directory from which the {@code sourceFilesSet} will be copied
      * @param sourceFilesSet the files to be copied
      * @param targetPrefix the prefix to add to the target file name
-     * @param filtered filter or not.
+     * @param filtered filter or not
      * @throws IOException if an error occurred while copying the files
-     * @throws MojoExecutionException if an error occurs.
+     * @throws MojoExecutionException if an error occurs
      */
     protected void copyFiles(
             String sourceId,
@@ -125,9 +125,9 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
      * @param context the context to use
      * @param sourceBaseDir the base directory from which the {@code sourceFilesSet} will be copied
      * @param sourceFilesSet the files to be copied
-     * @param filtered filter or not.
+     * @param filtered filter or not
      * @throws IOException if an error occurred while copying the files
-     * @throws MojoExecutionException break the build.
+     * @throws MojoExecutionException break the build
      */
     protected void copyFiles(
             String sourceId, WarPackagingContext context, File sourceBaseDir, PathSet sourceFilesSet, boolean filtered)
@@ -297,7 +297,7 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
      *
      * @param context the packaging context
      * @param source an existing non-directory <code>File</code> to copy bytes from
-     * @param destination a non-directory <code>File</code> to write bytes to (possibly overwriting).
+     * @param destination a non-directory <code>File</code> to write bytes to (possibly overwriting)
      * @param targetFilename the relative path of the file from the webapp root directory
      * @param onlyIfModified if true, copy the file only if the source has changed, always copy otherwise
      * @return true if the file has been copied/updated, false otherwise
@@ -343,7 +343,7 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
      * Get the encoding from an XML-file.
      *
      * @param webXml the XML-file
-     * @return The encoding of the XML-file, or UTF-8 if it's not specified in the file
+     * @return the encoding of the XML-file, or UTF-8 if it's not specified in the file
      * @throws java.io.IOException if an error occurred while reading the file
      */
     protected String getEncoding(File webXml) throws IOException {
@@ -370,7 +370,7 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
      * @param baseDir the base directory to start from
      * @param includes the includes
      * @param excludes the excludes
-     * @param includeDirectories include directories yes or not.
+     * @param includeDirectories include directories yes or not
      * @return the files to copy
      */
     // CHECKSTYLE_OFF: LineLength
@@ -411,7 +411,7 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
      * @param context the packaging context
      * @param artifact the artifact
      * @return the converted filename of the artifact
-     * @throws InterpolationException in case of interpolation problem.
+     * @throws InterpolationException in case of interpolation problem
      */
     protected String getArtifactFinalName(WarPackagingContext context, Artifact artifact)
             throws InterpolationException {
@@ -430,8 +430,8 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
     /**
      * Determine whether a file is of a certain type, by looking at the file extension.
      *
-     * @param file The file to check
-     * @param extension The extension for a file type, including the '.'
+     * @param file the file to check
+     * @param extension the extension for a file type, including the '.'
      * @return <code>true</code> if the file is a file of the specified type, otherwise <code>false</code>
      * @since 3.4.0
      */
@@ -442,7 +442,7 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
     /**
      * Determine whether a file is a properties file or not.
      *
-     * @param file The file to check
+     * @param file the file to check
      * @return <code>true</code> if the file is a properties file, otherwise <code>false</code>
      * @since 3.4.0
      */
@@ -454,7 +454,7 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
      * Returns <code>true</code> if the <code>File</code>-object is a file (not a directory) that is not
      * <code>null</code> and has a file name that ends in ".xml".
      *
-     * @param file The file to check
+     * @param file the file to check
      * @return <code>true</code> if the file is an xml-file, otherwise <code>false</code>
      * @since 2.3
      */

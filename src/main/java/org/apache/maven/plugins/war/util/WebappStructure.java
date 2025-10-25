@@ -168,7 +168,7 @@ public class WebappStructure {
      * Returns the owner of the specified {@code path}. If the file is not registered, returns {@code null}
      *
      * @param path the relative path from the webapp root directory
-     * @return the owner or {@code null}.
+     * @return the owner or {@code null}
      */
     public String getOwner(String path) {
         if (!isRegistered(path)) {

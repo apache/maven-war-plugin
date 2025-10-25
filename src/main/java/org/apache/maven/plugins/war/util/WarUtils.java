@@ -53,7 +53,7 @@ public class WarUtils {
     /**
      * @param artifact {@link Artifact}
      * @param dependency {@link Dependency}
-     * @return is related or not.
+     * @return is related or not
      */
     public static boolean isRelated(Artifact artifact, Dependency dependency) {
         if (artifact == null || dependency == null) {
