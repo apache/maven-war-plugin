@@ -20,7 +20,7 @@ package org.apache.maven.plugins.war;
 
 import javax.inject.Inject;
 
-import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -41,11 +41,11 @@ import org.codehaus.plexus.archiver.manager.ArchiverManager;
 public class WarExplodedMojo extends AbstractWarMojo {
     @Inject
     public WarExplodedMojo(
-            ArtifactFactory artifactFactory,
+            ArtifactHandlerManager artifactHandlerManager,
             ArchiverManager archiverManager,
             MavenFileFilter mavenFileFilter,
             MavenResourcesFiltering mavenResourcesFiltering) {
-        super(artifactFactory, archiverManager, mavenFileFilter, mavenResourcesFiltering);
+        super(artifactHandlerManager, archiverManager, mavenFileFilter, mavenResourcesFiltering);
     }
 
     @Override
