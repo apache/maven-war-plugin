@@ -68,7 +68,6 @@ public abstract class AbstractWarMojoTest extends AbstractMojoTestCase {
             throws Exception {
         setVariableValueToObject(mojo, "filters", filters);
         setVariableValueToObject(mojo, "mavenFileFilter", lookup(MavenFileFilter.class.getName()));
-        setVariableValueToObject(mojo, "useJvmChmod", Boolean.TRUE);
 
         MavenExecutionRequest request = new DefaultMavenExecutionRequest()
                 .setSystemProperties(System.getProperties())

@@ -215,12 +215,6 @@ public interface WarPackagingContext {
     String getPropertiesEncoding();
 
     /**
-     * @return to use jvmChmod rather than forking chmod cli
-     * @since 2.4
-     */
-    boolean isUseJvmChmod();
-
-    /**
      * Returns the flag that switch on/off the missing web.xml validation.
      *
      * @return failOnMissingWebXml
