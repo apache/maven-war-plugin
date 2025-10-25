@@ -41,10 +41,6 @@ public class WarInPlaceMojoTest extends AbstractWarMojoTest {
         assertNotNull(mojo);
     }
 
-    public void testEnvironment() throws Exception {
-        // see setUp
-    }
-
     public void testSimpleExplodedInplaceWar() throws Exception {
         // setup test data
         String testId = "SimpleExplodedInplaceWar";

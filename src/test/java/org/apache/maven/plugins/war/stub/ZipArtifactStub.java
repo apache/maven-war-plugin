@@ -39,20 +39,8 @@ public class ZipArtifactStub extends AbstractArtifactStub {
         return null;
     }
 
-    public ArtifactHandler getArtifactHandler() {
-        return super.getArtifactHandler();
-    }
-
-    public String getScope() {
-        return super.getScope();
-    }
-
     public String getVersion() {
         return "1.0";
-    }
-
-    public boolean isOptional() {
-        return super.isOptional();
     }
 
     public File getFile() {

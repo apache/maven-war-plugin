@@ -51,10 +51,6 @@ public class WarOverlaysTest extends AbstractWarExplodedMojoTest {
         return new File(getBasedir(), "target/test-classes/unit/waroverlays");
     }
 
-    public void testEnvironment() throws Exception {
-        // see setup
-    }
-
     public void testNoOverlay() throws Exception {
         // setup test data
         final String testId = "no-overlay";
