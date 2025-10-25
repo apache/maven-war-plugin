@@ -33,7 +33,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.maven.archiver.MavenArchiveConfiguration;
-import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
@@ -368,7 +368,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
      */
     private final JarArchiver jarArchiver;
 
-    private final ArtifactFactory artifactFactory;
+    private final ArtifactHandlerManager artifactHandlerManager;
 
     /**
      * To look up Archiver/UnArchiver implementations.
@@ -380,11 +380,11 @@ public abstract class AbstractWarMojo extends AbstractMojo {
     private final MavenResourcesFiltering mavenResourcesFiltering;
 
     protected AbstractWarMojo(
-            ArtifactFactory artifactFactory,
+            ArtifactHandlerManager artifactHandlerManager,
             ArchiverManager archiverManager,
             MavenFileFilter mavenFileFilter,
             MavenResourcesFiltering mavenResourcesFiltering) {
-        this.artifactFactory = artifactFactory;
+        this.artifactHandlerManager = artifactHandlerManager;
         this.archiverManager = archiverManager;
         this.mavenFileFilter = mavenFileFilter;
         this.mavenResourcesFiltering = mavenResourcesFiltering;
@@ -531,7 +531,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
                 defaultFilterWrappers,
                 getNonFilteredFileExtensions(),
                 filteringDeploymentDescriptors,
-                this.artifactFactory,
+                artifactHandlerManager,
                 resourceEncoding,
                 propertiesEncoding,
                 failOnMissingWebXml,
@@ -575,7 +575,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
      * WarPackagingContext default implementation.
      */
     private class DefaultWarPackagingContext implements WarPackagingContext {
-        private final ArtifactFactory artifactFactory;
+        private final ArtifactHandlerManager artifactHandlerManager;
 
         private final String resourceEncoding;
 
@@ -606,7 +606,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
          * @param filterWrappers the filter wrappers
          * @param nonFilteredFileExtensions the non filtered file extensions
          * @param filteringDeploymentDescriptors the filtering deployment descriptors
-         * @param artifactFactory the artifact factory
+         * @param artifactHandlerManager the artifact handler manager
          * @param resourceEncoding the resource encoding
          * @param propertiesEncoding the encoding to use for properties files
          * @param failOnMissingWebXml flag to check whether we should ignore missing web.xml or not
@@ -620,7 +620,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
                 List<FilterWrapper> filterWrappers,
                 List<String> nonFilteredFileExtensions,
                 boolean filteringDeploymentDescriptors,
-                ArtifactFactory artifactFactory,
+                ArtifactHandlerManager artifactHandlerManager,
                 String resourceEncoding,
                 String propertiesEncoding,
                 final Boolean failOnMissingWebXml,
@@ -629,7 +629,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
             this.webappStructure = webappStructure;
             this.overlayManager = overlayManager;
             this.filterWrappers = filterWrappers;
-            this.artifactFactory = artifactFactory;
+            this.artifactHandlerManager = artifactHandlerManager;
             this.filteringDeploymentDescriptors = filteringDeploymentDescriptors;
             this.nonFilteredFileExtensions =
                     nonFilteredFileExtensions == null ? Collections.emptyList() : nonFilteredFileExtensions;
@@ -792,8 +792,8 @@ public abstract class AbstractWarMojo extends AbstractMojo {
         }
 
         @Override
-        public ArtifactFactory getArtifactFactory() {
-            return this.artifactFactory;
+        public ArtifactHandlerManager getArtifactHandlerManager() {
+            return this.artifactHandlerManager;
         }
 
         @Override
@@ -1040,13 +1040,6 @@ public abstract class AbstractWarMojo extends AbstractMojo {
      */
     public List<String> getNonFilteredFileExtensions() {
         return nonFilteredFileExtensions;
-    }
-
-    /**
-     * @return {@link #artifactFactory}
-     */
-    public ArtifactFactory getArtifactFactory() {
-        return this.artifactFactory;
     }
 
     /**
