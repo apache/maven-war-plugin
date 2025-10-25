@@ -333,14 +333,6 @@ public abstract class AbstractWarMojo extends AbstractMojo {
     private boolean supportMultiLineFiltering;
 
     /**
-     * Use jvmChmod rather that cli chmod and forking process.
-     *
-     * @since 2.4
-     */
-    @Parameter(defaultValue = "true")
-    private boolean useJvmChmod;
-
-    /**
      * The archive configuration to use. See <a href="http://maven.apache.org/shared/maven-archiver/index.html">Maven
      * Archiver Reference</a>.
      */
@@ -534,7 +526,6 @@ public abstract class AbstractWarMojo extends AbstractMojo {
                 this.artifactFactory,
                 resourceEncoding,
                 propertiesEncoding,
-                useJvmChmod,
                 failOnMissingWebXml,
                 outputTimestamp);
 
@@ -594,8 +585,6 @@ public abstract class AbstractWarMojo extends AbstractMojo {
 
         private boolean filteringDeploymentDescriptors;
 
-        private boolean useJvmChmod;
-
         private final Boolean failOnMissingWebXml;
 
         private final Collection<String> outdatedResources;
@@ -612,7 +601,6 @@ public abstract class AbstractWarMojo extends AbstractMojo {
          * @param artifactFactory the artifact factory
          * @param resourceEncoding the resource encoding
          * @param propertiesEncoding the encoding to use for properties files
-         * @param useJvmChmod use Jvm chmod or not
          * @param failOnMissingWebXml flag to check whether we should ignore missing web.xml or not
          * @param outputTimestamp the output timestamp for reproducible archive creation
          */
@@ -627,7 +615,6 @@ public abstract class AbstractWarMojo extends AbstractMojo {
                 ArtifactFactory artifactFactory,
                 String resourceEncoding,
                 String propertiesEncoding,
-                boolean useJvmChmod,
                 final Boolean failOnMissingWebXml,
                 String outputTimestamp) {
             this.webappDirectory = webappDirectory;
@@ -645,7 +632,6 @@ public abstract class AbstractWarMojo extends AbstractMojo {
             for (String overlayId : overlayManager.getOverlayIds()) {
                 webappStructure.getStructure(overlayId);
             }
-            this.useJvmChmod = useJvmChmod;
             this.failOnMissingWebXml = failOnMissingWebXml;
 
             if (!webappDirectory.exists()) {
@@ -815,11 +801,6 @@ public abstract class AbstractWarMojo extends AbstractMojo {
         @Override
         public String getPropertiesEncoding() {
             return propertiesEncoding;
-        }
-
-        @Override
-        public boolean isUseJvmChmod() {
-            return useJvmChmod;
         }
 
         @Override
