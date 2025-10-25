@@ -332,7 +332,6 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
         File expectedWebSource2File = new File(webAppDirectory, "org/web/app/last-exile.jsp");
         // final name form is <artifactId>-<version>.<type>
         File expectedEJBArtifact = new File(webAppDirectory, "WEB-INF/lib/ejbartifact-0.0-Test.jar");
-        // File expectedEJBArtifact = new File( webAppDirectory, "WEB-INF/lib/ejbartifact-0.0-Test.jar" );
 
         assertTrue("source files not found: " + expectedWebSourceFile.toString(), expectedWebSourceFile.exists());
         assertTrue("source files not found: " + expectedWebSource2File.toString(), expectedWebSource2File.exists());
