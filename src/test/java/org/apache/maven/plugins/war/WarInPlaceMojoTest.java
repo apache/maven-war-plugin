@@ -19,7 +19,6 @@
 package org.apache.maven.plugins.war;
 
 import java.io.File;
-import java.util.LinkedList;
 
 import org.apache.maven.plugins.war.stub.MavenProjectBasicStub;
 import org.apache.maven.plugins.war.stub.ResourceStub;
@@ -55,7 +54,7 @@ public class WarInPlaceMojoTest extends AbstractWarMojoTest {
 
         // configure mojo
         resources[0].setDirectory(webAppResource.getAbsolutePath());
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, null, project);
+        this.configureMojo(mojo, classesDir, webAppSource, null, project);
         setVariableValueToObject(mojo, "webResources", resources);
         mojo.execute();
 

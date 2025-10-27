@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -67,7 +66,7 @@ public class WarMojoTest extends AbstractWarMojoTest {
         File xmlSource = createXMLConfigDir(testId, new String[] {"web.xml"});
 
         project.setArtifact(warArtifact);
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         setVariableValueToObject(mojo, "outputDirectory", outputDir);
         setVariableValueToObject(mojo, "warName", warName);
         mojo.setWebXml(new File(xmlSource, "web.xml"));
@@ -101,7 +100,7 @@ public class WarMojoTest extends AbstractWarMojoTest {
         File xmlSource = createXMLConfigDir(testId, new String[] {"web.xml"});
 
         project.setArtifact(warArtifact);
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         setVariableValueToObject(mojo, "outputDirectory", outputDir);
         setVariableValueToObject(mojo, "warName", warName);
         mojo.setWebXml(new File(xmlSource, "web.xml"));
@@ -139,7 +138,7 @@ public class WarMojoTest extends AbstractWarMojoTest {
         File xmlSource = createXMLConfigDir(testId, new String[] {"web.xml"});
 
         project.setArtifact(warArtifact);
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         setVariableValueToObject(mojo, "outputDirectory", outputDir);
         setVariableValueToObject(mojo, "warName", warName);
         mojo.setWebXml(new File(xmlSource, "web.xml"));
@@ -177,7 +176,7 @@ public class WarMojoTest extends AbstractWarMojoTest {
         File xmlSource = createXMLConfigDir(testId, new String[] {"web.xml"});
 
         project.setArtifact(warArtifact);
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         setVariableValueToObject(mojo, "projectHelper", projectHelper);
         setVariableValueToObject(mojo, "classifier", "test-classifier");
         setVariableValueToObject(mojo, "outputDirectory", outputDir);
@@ -215,7 +214,7 @@ public class WarMojoTest extends AbstractWarMojoTest {
 
         warArtifact.setFile(new File("error.war"));
         project.setArtifact(warArtifact);
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         setVariableValueToObject(mojo, "projectHelper", projectHelper);
         setVariableValueToObject(mojo, "outputDirectory", outputDir);
         setVariableValueToObject(mojo, "warName", warName);
@@ -256,7 +255,7 @@ public class WarMojoTest extends AbstractWarMojoTest {
 
         warArtifact.setFile(new File("error.war"));
         project.setArtifact(warArtifact);
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         setVariableValueToObject(mojo, "projectHelper", projectHelper);
         setVariableValueToObject(mojo, "outputDirectory", outputDir);
         setVariableValueToObject(mojo, "warName", warName);
@@ -295,7 +294,7 @@ public class WarMojoTest extends AbstractWarMojoTest {
         createFile(configFile, "<config></config>");
 
         project.setArtifact(warArtifact);
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         setVariableValueToObject(mojo, "outputDirectory", outputDir);
         setVariableValueToObject(mojo, "warName", warName);
         mojo.setWebXml(new File(xmlSource, "web.xml"));
@@ -334,7 +333,7 @@ public class WarMojoTest extends AbstractWarMojoTest {
         createFile(configFile, "<config></config>");
 
         project.setArtifact(warArtifact);
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         setVariableValueToObject(mojo, "outputDirectory", outputDir);
         setVariableValueToObject(mojo, "warName", warName);
         mojo.setWebXml(new File(xmlSource, "web.xml"));
@@ -370,7 +369,7 @@ public class WarMojoTest extends AbstractWarMojoTest {
         File classesDir = createClassesDir(testId, true);
 
         project.setArtifact(warArtifact);
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         setVariableValueToObject(mojo, "outputDirectory", outputDir);
         setVariableValueToObject(mojo, "warName", warName);
         mojo.setFailOnMissingWebXml(false);
@@ -404,7 +403,7 @@ public class WarMojoTest extends AbstractWarMojoTest {
         File classesDir = createClassesDir(testId, true);
 
         project.setArtifact(warArtifact);
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         setVariableValueToObject(mojo, "outputDirectory", outputDir);
         setVariableValueToObject(mojo, "warName", warName);
         mojo.setFailOnMissingWebXml(true);
@@ -436,7 +435,7 @@ public class WarMojoTest extends AbstractWarMojoTest {
 
         project.setArtifact(warArtifact);
         project.setFile(warArtifact.getFile());
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         setVariableValueToObject(mojo, "outputDirectory", outputDir);
         setVariableValueToObject(mojo, "warName", warName);
 
@@ -470,7 +469,7 @@ public class WarMojoTest extends AbstractWarMojoTest {
 
         project.setArtifact(warArtifact);
         project.setFile(warArtifact.getFile());
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         setVariableValueToObject(mojo, "outputDirectory", outputDir);
         setVariableValueToObject(mojo, "warName", warName);
 
@@ -495,7 +494,7 @@ public class WarMojoTest extends AbstractWarMojoTest {
         File xmlSource = createXMLConfigDir(testId, new String[] {"web.xml"});
 
         project.setArtifact(warArtifact);
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         setVariableValueToObject(mojo, "outputDirectory", outputDir);
         setVariableValueToObject(mojo, "warName", warName);
         mojo.setWebXml(new File(xmlSource, "web.xml"));
@@ -523,7 +522,7 @@ public class WarMojoTest extends AbstractWarMojoTest {
         File xmlSource = createXMLConfigDir(testId, new String[] {"web.xml"});
 
         project.setArtifact(warArtifact);
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         setVariableValueToObject(mojo, "outputDirectory", outputDir);
         setVariableValueToObject(mojo, "warName", warName);
         mojo.setWebXml(new File(xmlSource, "web.xml"));

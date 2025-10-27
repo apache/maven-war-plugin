@@ -43,6 +43,7 @@ import java.io.StringReader;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugins.war.stub.MavenProjectBasicStub;
 import org.apache.maven.plugins.war.stub.ResourceStub;
 import org.codehaus.plexus.util.FileUtils;
@@ -96,14 +97,16 @@ public class WarExplodedMojoFilteringTest extends AbstractWarExplodedMojoTest {
         FileUtils.fileWrite(sampleResourceWDir.getAbsolutePath(), content);
         FileUtils.fileWrite(sampleResource.getAbsolutePath(), content);
 
-        System.setProperty("system.property", "system-property-value");
+        lookup(MavenSession.class).getSystemProperties().setProperty("system.property", "system-property-value");
 
         // configure mojo
         project.addProperty("is_this_simple", "i_think_so");
         resources[0].setDirectory(webAppResource.getAbsolutePath());
         resources[0].setFiltering(true);
-        this.configureMojo(mojo, filterList, classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         setVariableValueToObject(mojo, "webResources", resources);
+        setVariableValueToObject(mojo, "filters", filterList);
+
         mojo.execute();
 
         // validate operation
@@ -151,8 +154,8 @@ public class WarExplodedMojoFilteringTest extends AbstractWarExplodedMojoTest {
                 reader.readLine());
 
         // update property, and generate again
-        System.setProperty("system.property", "new-system-property-value");
-        this.configureMojo(mojo, filterList, classesDir, webAppSource, webAppDirectory, project);
+        lookup(MavenSession.class).getSystemProperties().setProperty("system.property", "new-system-property-value");
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
 
         mojo.execute();
 

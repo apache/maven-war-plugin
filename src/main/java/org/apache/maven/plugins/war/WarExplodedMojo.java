@@ -21,6 +21,7 @@ package org.apache.maven.plugins.war;
 import javax.inject.Inject;
 
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -44,8 +45,9 @@ public class WarExplodedMojo extends AbstractWarMojo {
             ArtifactHandlerManager artifactHandlerManager,
             ArchiverManager archiverManager,
             MavenFileFilter mavenFileFilter,
-            MavenResourcesFiltering mavenResourcesFiltering) {
-        super(artifactHandlerManager, archiverManager, mavenFileFilter, mavenResourcesFiltering);
+            MavenResourcesFiltering mavenResourcesFiltering,
+            MavenSession session) {
+        super(artifactHandlerManager, archiverManager, mavenFileFilter, mavenResourcesFiltering, session);
     }
 
     @Override

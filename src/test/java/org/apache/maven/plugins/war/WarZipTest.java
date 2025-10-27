@@ -19,7 +19,6 @@
 package org.apache.maven.plugins.war;
 
 import java.io.File;
-import java.util.LinkedList;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
@@ -69,7 +68,7 @@ public class WarZipTest extends AbstractWarMojoTest {
         File xmlSource = createXMLConfigDir(testId, new String[] {"web.xml"});
         project.setArtifact(warArtifact);
 
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         setVariableValueToObject(mojo, "outputDirectory", outputDir);
         setVariableValueToObject(mojo, "warName", warName);
         setVariableValueToObject(mojo, "workDirectory", new File(getTestDirectory(), "work"));
