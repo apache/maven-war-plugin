@@ -279,12 +279,6 @@ public abstract class AbstractWarMojo extends AbstractMojo {
     private List<String> nonFilteredFileExtensions;
 
     /**
-     * @since 2.1-alpha-2
-     */
-    @Parameter(defaultValue = "${session}", readonly = true, required = true)
-    private MavenSession session;
-
-    /**
      * To filter deployment descriptors. <b>Disabled by default.</b>
      *
      * @since 2.1-alpha-2
@@ -379,15 +373,19 @@ public abstract class AbstractWarMojo extends AbstractMojo {
 
     private final MavenResourcesFiltering mavenResourcesFiltering;
 
+    private final MavenSession session;
+
     protected AbstractWarMojo(
             ArtifactHandlerManager artifactHandlerManager,
             ArchiverManager archiverManager,
             MavenFileFilter mavenFileFilter,
-            MavenResourcesFiltering mavenResourcesFiltering) {
+            MavenResourcesFiltering mavenResourcesFiltering,
+            MavenSession session) {
         this.artifactHandlerManager = artifactHandlerManager;
         this.archiverManager = archiverManager;
         this.mavenFileFilter = mavenFileFilter;
         this.mavenResourcesFiltering = mavenResourcesFiltering;
+        this.session = session;
         try {
             this.jarArchiver = (JarArchiver) archiverManager.getArchiver("jar");
         } catch (NoSuchArchiverException e) {

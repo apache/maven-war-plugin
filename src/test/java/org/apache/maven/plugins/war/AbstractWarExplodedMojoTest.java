@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.maven.plugin.testing.stubs.ArtifactStub;
@@ -94,7 +93,7 @@ public abstract class AbstractWarExplodedMojoTest extends AbstractWarMojoTest {
             }
         }
 
-        configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         setVariableValueToObject(mojo, "workDirectory", workDirectory);
 
         return webAppDirectory;

@@ -32,6 +32,7 @@ import org.apache.maven.archiver.MavenArchiver;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -136,8 +137,9 @@ public class WarMojo extends AbstractWarMojo {
             ArchiverManager archiverManager,
             MavenFileFilter mavenFileFilter,
             MavenResourcesFiltering mavenResourcesFiltering,
-            MavenProjectHelper projectHelper) {
-        super(artifactHandlerManager, archiverManager, mavenFileFilter, mavenResourcesFiltering);
+            MavenProjectHelper projectHelper,
+            MavenSession session) {
+        super(artifactHandlerManager, archiverManager, mavenFileFilter, mavenResourcesFiltering, session);
         this.projectHelper = projectHelper;
     }
 

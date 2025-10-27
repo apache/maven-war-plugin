@@ -20,7 +20,6 @@ package org.apache.maven.plugins.war;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.LinkedList;
 import java.util.Locale;
 
 import org.apache.maven.artifact.handler.ArtifactHandler;
@@ -75,7 +74,7 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
 
         // configure mojo
         resources[0].setDirectory(webAppResource.getAbsolutePath());
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         setVariableValueToObject(mojo, "webResources", resources);
         mojo.execute();
 
@@ -117,7 +116,7 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
         // configure mojo
         resources[0].setDirectory(webAppResource.getAbsolutePath());
         resources[0].setTargetPath("targetPath");
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         setVariableValueToObject(mojo, "webResources", resources);
         mojo.execute();
 
@@ -153,7 +152,7 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
         File webAppDirectory = new File(getTestDirectory(), testId);
 
         // configure mojo
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         mojo.setWebXml(new File(xmlSource, "web.xml"));
         mojo.execute();
 
@@ -189,7 +188,7 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
         File webAppDirectory = new File(getTestDirectory(), testId);
 
         // configure mojo
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         mojo.setContainerConfigXML(new File(xmlSource, "config.xml"));
         mojo.execute();
 
@@ -234,7 +233,7 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
 
         // configure mojo
         project.addArtifact(warArtifact);
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         setVariableValueToObject(mojo, "workDirectory", workDirectory);
         mojo.execute();
 
@@ -279,7 +278,7 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
 
         // configure mojo
         project.addArtifact(warArtifact);
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         setVariableValueToObject(mojo, "workDirectory", workDirectory);
         mojo.execute();
 
@@ -296,7 +295,7 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
         expectedFile.setLastModified(time);
 
         project.addArtifact(warArtifact);
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         setVariableValueToObject(mojo, "workDirectory", workDirectory);
         mojo.execute();
 
@@ -324,7 +323,7 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
 
         // configure mojo
         project.addArtifact(ejbArtifact);
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         mojo.execute();
 
         // validate operation
@@ -358,7 +357,7 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
 
         // configure mojo
         project.addArtifact(jarArtifact);
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         mojo.execute();
 
         // validate operation
@@ -394,7 +393,7 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
 
         // configure mojo
         project.addArtifact(ejbArtifact);
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         mojo.execute();
 
         // validate operation
@@ -430,7 +429,7 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
 
         // configure mojo
         project.addArtifact(tldArtifact);
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         mojo.execute();
 
         // validate operation
@@ -466,7 +465,7 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
 
         // configure mojo
         project.addArtifact(parartifact);
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         mojo.execute();
 
         // validate operation
@@ -504,7 +503,7 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
 
         // configure mojo
         project.addArtifact(aarArtifact);
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         mojo.execute();
 
         // validate operation
@@ -542,7 +541,7 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
 
         // configure mojo
         project.addArtifact(marArtifact);
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         mojo.execute();
 
         // validate operation
@@ -580,7 +579,7 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
 
         // configure mojo
         project.addArtifact(xarArtifact);
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         mojo.execute();
 
         // validate operation
@@ -621,7 +620,7 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
         ejbArtifactDup.setGroupId("org.dup.ejb");
         project.addArtifact(ejbArtifact);
         project.addArtifact(ejbArtifactDup);
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         mojo.execute();
 
         // validate operation
@@ -671,7 +670,7 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
         project.addArtifact(ejbArtifact);
         project.addArtifact(ejbArtifactDup);
 
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         mojo.execute();
 
         // validate operation
@@ -705,7 +704,7 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
         File classesDir = createClassesDir(testId, false);
 
         // configure mojo
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         mojo.execute();
 
         // validate operation
@@ -736,7 +735,7 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
         File webAppDirectory = new File(getTestDirectory(), testId);
 
         // configure mojo
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         setVariableValueToObject(mojo, "warSourceIncludes", "**/*sit.jsp");
         setVariableValueToObject(mojo, "warSourceExcludes", "**/last*.*");
         mojo.execute();
@@ -779,7 +778,7 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
 
         // configure mojo
         project.addArtifact(includeexcludeWarArtifact);
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         setVariableValueToObject(mojo, "dependentWarIncludes", "**/*Include.jsp,**/*.xml");
         setVariableValueToObject(mojo, "dependentWarExcludes", "**/*Exclude*,**/MANIFEST.MF");
         setVariableValueToObject(mojo, "workDirectory", workDirectory);
@@ -822,7 +821,7 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
         File webAppDirectory = new File(getTestDirectory(), testId);
 
         // configure mojo
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
 
         // destination file is already created manually containing an "error" string
         // source is newer than the destination file
@@ -873,7 +872,7 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
         // configure mojo
         project.addArtifact(jarArtifact);
         mojo.setOutputFileNameMapping("@{artifactId}@.@{extension}@");
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         mojo.execute();
 
         // validate operation
@@ -915,7 +914,7 @@ public class WarExplodedMojoTest extends AbstractWarExplodedMojoTest {
         project.addArtifact(ejbArtifact);
         project.addArtifact(ejbArtifactDup);
         mojo.setOutputFileNameMapping("@{artifactId}@.@{extension}@");
-        this.configureMojo(mojo, new LinkedList<>(), classesDir, webAppSource, webAppDirectory, project);
+        this.configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         mojo.execute();
 
         // validate operation

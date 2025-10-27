@@ -21,7 +21,6 @@ package org.apache.maven.plugins.war;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.maven.execution.DefaultMavenExecutionRequest;
 import org.apache.maven.execution.MavenExecutionRequest;
@@ -30,7 +29,6 @@ import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.apache.maven.plugin.testing.stubs.ArtifactStub;
 import org.apache.maven.plugins.war.stub.MavenProjectBasicStub;
 import org.apache.maven.plugins.war.stub.WarOverlayStub;
-import org.apache.maven.shared.filtering.MavenFileFilter;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
@@ -47,27 +45,8 @@ public abstract class AbstractWarMojoTest extends AbstractMojoTestCase {
 
     protected abstract File getTestDirectory() throws Exception;
 
-    /**
-     * initialize required parameters
-     *
-     * @param mojo The mojo to be tested.
-     * @param filters The list of filters.
-     * @param classesDir The classes' directory.
-     * @param webAppSource The webAppSource.
-     * @param webAppDir The webAppDir folder.
-     * @param project The Maven project.
-     * @throws Exception in case of errors
-     */
-    protected void configureMojo(
-            AbstractWarMojo mojo,
-            List<String> filters,
-            File classesDir,
-            File webAppSource,
-            File webAppDir,
-            MavenProjectBasicStub project)
-            throws Exception {
-        setVariableValueToObject(mojo, "filters", filters);
-        setVariableValueToObject(mojo, "mavenFileFilter", lookup(MavenFileFilter.class.getName()));
+    protected void setUp() throws Exception {
+        super.setUp();
 
         MavenExecutionRequest request = new DefaultMavenExecutionRequest()
                 .setSystemProperties(System.getProperties())
@@ -75,7 +54,21 @@ public abstract class AbstractWarMojoTest extends AbstractMojoTestCase {
 
         MavenSession mavenSession =
                 new MavenSession((PlexusContainer) null, (RepositorySystemSession) null, request, null);
-        setVariableValueToObject(mojo, "session", mavenSession);
+        getContainer().addComponent(mavenSession, MavenSession.class.getName());
+    }
+    /**
+     * initialize required parameters
+     *
+     * @param mojo The mojo to be tested.
+     * @param classesDir The classes' directory.
+     * @param webAppSource The webAppSource.
+     * @param webAppDir The webAppDir folder.
+     * @param project The Maven project.
+     * @throws Exception in case of errors
+     */
+    protected void configureMojo(
+            AbstractWarMojo mojo, File classesDir, File webAppSource, File webAppDir, MavenProjectBasicStub project)
+            throws Exception {
         setVariableValueToObject(mojo, "outdatedCheckPath", "WEB-INF/lib/");
         mojo.setClassesDirectory(classesDir);
         mojo.setWarSourceDirectory(webAppSource);
