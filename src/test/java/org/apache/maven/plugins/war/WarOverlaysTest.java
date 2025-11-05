@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.maven.api.plugin.testing.InjectMojo;
@@ -317,43 +318,69 @@ public class WarOverlaysTest {
         // current project ignored. Should be on top of the list
         assertScenariOne(testId, webAppDirectory);
     }
-//
-//    /**
-//     * Tests that specifying the overlay explicitely has the same behavior as the default (i.e. order, etc).
-//     *
-//     * The default project is explicitely specified so this should match the default.
-//     *
-//     * @throws Exception if an error occurs
-//     */
-//    @Test
-//    public void testScenarioOneWithFullSettings() throws Exception {
-//        // setup test data
-//        final String testId = "scenario-one-full-settings";
-//
-//        // Add an overlay
-//        final ArtifactStub overlay1 = buildWarOverlayStub("overlay-full-1");
-//        final ArtifactStub overlay2 = buildWarOverlayStub("overlay-full-2");
-//        final ArtifactStub overlay3 = buildWarOverlayStub("overlay-full-3");
-//
-//        final File webAppDirectory = setUpMojo(testId, new ArtifactStub[] {overlay1, overlay2, overlay3}, new String[] {
-//            "org/sample/company/test.jsp", "jsp/b.jsp"
-//        });
-//
-//        // Add the tags
-//        final List<Overlay> overlays = new ArrayList<>();
-//
-//        // Add the default project explicitely
-//        overlays.add(mojo.getCurrentProjectOverlay());
-//
-//        // Other overlays
-//        overlays.add(new DefaultOverlay(overlay1));
-//        overlays.add(new DefaultOverlay(overlay2));
-//        overlays.add(new DefaultOverlay(overlay3));
-//        mojo.setOverlays(overlays);
-//
-//        // current project ignored. Should be on top of the list
-//        assertScenariOne(testId, webAppDirectory);
-//    }
+
+    /**
+     * Tests that specifying the overlay explicitely has the same behavior as the default (i.e. order, etc).
+     *
+     * The default project is explicitely specified so this should match the default.
+     *
+     * @throws Exception if an error occurs
+     */
+    @InjectMojo(goal="exploded", pom ="src/test/resources/unit/waroverlays/default.xml")
+    @MojoParameter(name = "workDirectory", value = "target/test-classes/unit/waroverlays/war/work-scenario-one-full-settings")
+    @Test
+    public void testScenarioOneWithFullSettings(WarExplodedMojo mojo) throws Exception {
+        // setup test data
+        final String testId = "scenario-one-full-settings";
+
+        // Add an overlay
+        final ArtifactStub overlay1 = buildWarOverlayStub("overlay-full-1");
+        final ArtifactStub overlay2 = buildWarOverlayStub("overlay-full-2");
+        final ArtifactStub overlay3 = buildWarOverlayStub("overlay-full-3");
+
+        ArtifactStub[] artifactStubs = new ArtifactStub[] {overlay1, overlay2, overlay3};
+        String[] sourceFiles = new String[] {
+            "org/sample/company/test.jsp", "jsp/b.jsp"
+        };
+        final MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
+        final File webAppDirectory = new File(getTestDirectory(), testId);
+
+        // Create the webapp sources
+        File webAppSource = createWebAppSource(testId, false);
+        for (String sourceFile : sourceFiles) {
+            File sample = new File(webAppSource, sourceFile);
+            createFile(sample);
+        }
+
+        final File classesDir = createClassesDir(testId, true);
+
+        for (ArtifactStub artifactStub : artifactStubs) {
+            project.addArtifact(artifactStub);
+        }
+
+        mojo.setClassesDirectory(classesDir);
+        mojo.setWarSourceDirectory(webAppSource);
+        mojo.setWebappDirectory(webAppDirectory);
+        mojo.setProject(project);
+
+
+        // Add the tags
+        final List<Overlay> overlays = new ArrayList<>();
+
+        // Add the default project explicitely
+        overlays.add(mojo.getCurrentProjectOverlay());
+
+        // Other overlays
+        overlays.add(new DefaultOverlay(overlay1));
+        overlays.add(new DefaultOverlay(overlay2));
+        overlays.add(new DefaultOverlay(overlay3));
+        mojo.setOverlays(overlays);
+
+        mojo.execute();
+
+        // current project ignored. Should be on top of the list
+        assertScenariOne(testId, webAppDirectory);
+    }
 
     /**
      * Runs the mojo and asserts a scenerio with 3 overlays and no includes/excludes settings.
@@ -411,230 +438,211 @@ public class WarOverlaysTest {
         }
     }
 
-//    @Test
-//    public void testOverlaysIncludesExcludesWithMultipleDefinitions() throws Exception {
-//        // setup test data
-//        final String testId = "overlays-includes-excludes-multiple-defs";
-//
-//        // Add an overlay
-//        final ArtifactStub overlay1 = buildWarOverlayStub("overlay-full-1");
-//        final ArtifactStub overlay2 = buildWarOverlayStub("overlay-full-2");
-//        final ArtifactStub overlay3 = buildWarOverlayStub("overlay-full-3");
-//
-//        ArtifactStub[] artifactStubs = new ArtifactStub[] {overlay1, overlay2, overlay3};
-//        String[] sourceFiles = new String[] {
-//            "org/sample/company/test.jsp", "jsp/b.jsp"
-//        };
-//        final MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
-//        final File webAppDirectory1 = new File(getTestDirectory(), testId);
-//
-//        // Create the webapp sources
-//        File webAppSource;
-//        if (sourceFiles == null) {
-//            webAppSource = createWebAppSource(testId);
-//        } else {
-//            webAppSource = createWebAppSource(testId, false);
-//            for (String sourceFile : sourceFiles) {
-//                File sample = new File(webAppSource, sourceFile);
-//                createFile(sample);
-//            }
-//        }
-//
-//        final File classesDir = createClassesDir(testId, true);
-//        final File workDirectory = new File(getTestDirectory(), "/war/work-" + testId);
-//        createDir(workDirectory);
-//
-//        if (artifactStubs != null) {
-//            for (ArtifactStub artifactStub : artifactStubs) {
-//                project.addArtifact(artifactStub);
-//            }
-//        }
-//
-//        mojo.setClassesDirectory(classesDir);
-//        mojo.setWarSourceDirectory(webAppSource);
-//        mojo.setWebappDirectory(webAppDirectory1);
-//        mojo.setProject((MavenProjectBasicStub) project);
-//        setVariableValueToObject(mojo, "workDirectory", workDirectory);
-//
-//        final File webAppDirectory = webAppDirectory1;
-//
-//        Overlay over1 = new DefaultOverlay(overlay3);
-//        over1.setExcludes("**/a.*,**/c.*,**/*.xml");
-//
-//        Overlay over2 = new DefaultOverlay(overlay1);
-//        over2.setIncludes("jsp/d/*");
-//        over2.setExcludes("jsp/d/a.jsp");
-//
-//        Overlay over3 = new DefaultOverlay(overlay3);
-//        over3.setIncludes("**/*.jsp");
-//
-//        Overlay over4 = new DefaultOverlay(overlay2);
-//
-//        mojo.setOverlays(new LinkedList<>());
-//        mojo.addOverlay(over1);
-//        mojo.addOverlay(over2);
-//        mojo.addOverlay(over3);
-//        mojo.addOverlay(mojo.getCurrentProjectOverlay());
-//        mojo.addOverlay(over4);
-//
-//        final List<File> assertedFiles = new ArrayList<>();
-//        try {
-//            mojo.execute();
-//            assertedFiles.addAll(assertWebXml(webAppDirectory));
-//            assertedFiles.addAll(assertCustomContent(
-//                    webAppDirectory,
-//                    new String[] {
-//                        "jsp/a.jsp",
-//                        "jsp/b.jsp",
-//                        "jsp/c.jsp",
-//                        "jsp/d/a.jsp",
-//                        "jsp/d/b.jsp",
-//                        "jsp/d/c.jsp",
-//                        "org/sample/company/test.jsp",
-//                        "WEB-INF/classes/a.clazz",
-//                        "WEB-INF/classes/b.clazz",
-//                        "WEB-INF/classes/c.clazz",
-//                        "WEB-INF/lib/a.jar",
-//                        "WEB-INF/lib/b.jar",
-//                        "WEB-INF/lib/c.jar"
-//                    },
-//                    "overlay file not found"));
-//
-//            assertOverlayedFile(webAppDirectory, "overlay-full-3", "jsp/a.jsp");
-//            assertOverlayedFile(webAppDirectory, "overlay-full-3", "jsp/b.jsp");
-//            assertOverlayedFile(webAppDirectory, "overlay-full-3", "jsp/c.jsp");
-//            assertOverlayedFile(webAppDirectory, "overlay-full-3", "jsp/d/a.jsp");
-//            assertOverlayedFile(webAppDirectory, "overlay-full-3", "jsp/d/b.jsp");
-//            assertOverlayedFile(webAppDirectory, "overlay-full-1", "jsp/d/c.jsp");
-//            assertDefaultFileContent(testId, webAppDirectory, "org/sample/company/test.jsp");
-//            assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/web.xml");
-//            assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/classes/a.clazz");
-//            assertOverlayedFile(webAppDirectory, "overlay-full-3", "WEB-INF/classes/b.clazz");
-//            assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/classes/c.clazz");
-//            assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/lib/a.jar");
-//            assertOverlayedFile(webAppDirectory, "overlay-full-3", "WEB-INF/lib/b.jar");
-//            assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/lib/c.jar");
-//
-//            // Ok now check that there is no more files/directories
-//            final FileFilter filter = new FileFilterImpl(webAppDirectory, new String[] {MANIFEST_PATH});
-//            assertWebAppContent(webAppDirectory, assertedFiles, filter);
-//        } finally {
-//            cleanDirectory(webAppDirectory);
-//        }
-//    }
-//
-//    @Test
-//    public void testOverlaysIncludesExcludesWithMultipleDefinitions2() throws Exception {
-//        // setup test data
-//        final String testId = "overlays-includes-excludes-multiple-defs2";
-//
-//        // Add an overlay
-//        final ArtifactStub overlay1 = buildWarOverlayStub("overlay-full-1");
-//        final ArtifactStub overlay2 = buildWarOverlayStub("overlay-full-2");
-//        final ArtifactStub overlay3 = buildWarOverlayStub("overlay-full-3");
-//
-//        ArtifactStub[] artifactStubs = new ArtifactStub[] {overlay1, overlay2, overlay3};
-//        String[] sourceFiles = new String[] {
-//            "org/sample/company/test.jsp", "jsp/b.jsp"
-//        };
-//        final MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
-//        final File webAppDirectory1 = new File(getTestDirectory(), testId);
-//
-//        // Create the webapp sources
-//        File webAppSource;
-//        if (sourceFiles == null) {
-//            webAppSource = createWebAppSource(testId);
-//        } else {
-//            webAppSource = createWebAppSource(testId, false);
-//            for (String sourceFile : sourceFiles) {
-//                File sample = new File(webAppSource, sourceFile);
-//                createFile(sample);
-//            }
-//        }
-//
-//        final File classesDir = createClassesDir(testId, true);
-//        final File workDirectory = new File(getTestDirectory(), "/war/work-" + testId);
-//        createDir(workDirectory);
-//
-//        if (artifactStubs != null) {
-//            for (ArtifactStub artifactStub : artifactStubs) {
-//                project.addArtifact(artifactStub);
-//            }
-//        }
-//
-//        mojo.setClassesDirectory(classesDir);
-//        mojo.setWarSourceDirectory(webAppSource);
-//        mojo.setWebappDirectory(webAppDirectory1);
-//        mojo.setProject((MavenProjectBasicStub) project);
-//        setVariableValueToObject(mojo, "workDirectory", workDirectory);
-//
-//        final File webAppDirectory = webAppDirectory1;
-//
-//        Overlay over1 = new DefaultOverlay(overlay3);
-//        over1.setExcludes("**/a.*,**/c.*,**/*.xml,jsp/b.jsp");
-//
-//        Overlay over2 = new DefaultOverlay(overlay1);
-//        over2.setIncludes("jsp/d/*");
-//        over2.setExcludes("jsp/d/a.jsp");
-//
-//        Overlay over3 = new DefaultOverlay(overlay3);
-//        over3.setIncludes("**/*.jsp");
-//        over3.setExcludes("jsp/b.jsp");
-//
-//        Overlay over4 = new DefaultOverlay(overlay2);
-//
-//        mojo.setOverlays(new LinkedList<>());
-//        mojo.addOverlay(over1);
-//        mojo.addOverlay(over2);
-//        mojo.addOverlay(over3);
-//        mojo.addOverlay(mojo.getCurrentProjectOverlay());
-//        mojo.addOverlay(over4);
-//
-//        final List<File> assertedFiles = new ArrayList<>();
-//        try {
-//            mojo.execute();
-//            assertedFiles.addAll(assertWebXml(webAppDirectory));
-//            assertedFiles.addAll(assertCustomContent(
-//                    webAppDirectory,
-//                    new String[] {
-//                        "jsp/a.jsp",
-//                        "jsp/b.jsp",
-//                        "jsp/c.jsp",
-//                        "jsp/d/a.jsp",
-//                        "jsp/d/b.jsp",
-//                        "jsp/d/c.jsp",
-//                        "org/sample/company/test.jsp",
-//                        "WEB-INF/classes/a.clazz",
-//                        "WEB-INF/classes/b.clazz",
-//                        "WEB-INF/classes/c.clazz",
-//                        "WEB-INF/lib/a.jar",
-//                        "WEB-INF/lib/b.jar",
-//                        "WEB-INF/lib/c.jar"
-//                    },
-//                    "overlay file not found"));
-//
-//            assertOverlayedFile(webAppDirectory, "overlay-full-3", "jsp/a.jsp");
-//            assertDefaultFileContent(testId, webAppDirectory, "jsp/b.jsp");
-//            assertOverlayedFile(webAppDirectory, "overlay-full-3", "jsp/c.jsp");
-//            assertOverlayedFile(webAppDirectory, "overlay-full-3", "jsp/d/a.jsp");
-//            assertOverlayedFile(webAppDirectory, "overlay-full-3", "jsp/d/b.jsp");
-//            assertOverlayedFile(webAppDirectory, "overlay-full-1", "jsp/d/c.jsp");
-//            assertDefaultFileContent(testId, webAppDirectory, "org/sample/company/test.jsp");
-//            assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/web.xml");
-//            assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/classes/a.clazz");
-//            assertOverlayedFile(webAppDirectory, "overlay-full-3", "WEB-INF/classes/b.clazz");
-//            assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/classes/c.clazz");
-//            assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/lib/a.jar");
-//            assertOverlayedFile(webAppDirectory, "overlay-full-3", "WEB-INF/lib/b.jar");
-//            assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/lib/c.jar");
-//
-//            // Ok now check that there is no more files/directories
-//            final FileFilter filter = new FileFilterImpl(webAppDirectory, new String[] {MANIFEST_PATH});
-//            assertWebAppContent(webAppDirectory, assertedFiles, filter);
-//        } finally {
-//            cleanDirectory(webAppDirectory);
-//        }
-//    }
+    @InjectMojo(goal="exploded", pom ="src/test/resources/unit/waroverlays/default.xml")
+    @MojoParameter(name = "workDirectory", value = "target/test-classes/unit/waroverlays/war/work-overlays-includes-excludes-multiple-defs")
+    @Test
+    public void testOverlaysIncludesExcludesWithMultipleDefinitions(WarExplodedMojo mojo) throws Exception {
+        // setup test data
+        final String testId = "overlays-includes-excludes-multiple-defs";
+
+        // Add an overlay
+        final ArtifactStub overlay1 = buildWarOverlayStub("overlay-full-1");
+        final ArtifactStub overlay2 = buildWarOverlayStub("overlay-full-2");
+        final ArtifactStub overlay3 = buildWarOverlayStub("overlay-full-3");
+
+        ArtifactStub[] artifactStubs = new ArtifactStub[] {overlay1, overlay2, overlay3};
+        String[] sourceFiles = new String[] {
+            "org/sample/company/test.jsp", "jsp/b.jsp"
+        };
+        final MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
+        final File webAppDirectory = new File(getTestDirectory(), testId);
+
+        // Create the webapp sources
+        File webAppSource = createWebAppSource(testId, false);
+        for (String sourceFile : sourceFiles) {
+            File sample = new File(webAppSource, sourceFile);
+            createFile(sample);
+        }
+
+        final File classesDir = createClassesDir(testId, true);
+
+        for (ArtifactStub artifactStub : artifactStubs) {
+            project.addArtifact(artifactStub);
+        }
+
+        mojo.setClassesDirectory(classesDir);
+        mojo.setWarSourceDirectory(webAppSource);
+        mojo.setWebappDirectory(webAppDirectory);
+        mojo.setProject(project);
+
+
+        Overlay over1 = new DefaultOverlay(overlay3);
+        over1.setExcludes("**/a.*,**/c.*,**/*.xml");
+
+        Overlay over2 = new DefaultOverlay(overlay1);
+        over2.setIncludes("jsp/d/*");
+        over2.setExcludes("jsp/d/a.jsp");
+
+        Overlay over3 = new DefaultOverlay(overlay3);
+        over3.setIncludes("**/*.jsp");
+
+        Overlay over4 = new DefaultOverlay(overlay2);
+
+        mojo.setOverlays(new LinkedList<>());
+        mojo.addOverlay(over1);
+        mojo.addOverlay(over2);
+        mojo.addOverlay(over3);
+        mojo.addOverlay(mojo.getCurrentProjectOverlay());
+        mojo.addOverlay(over4);
+
+        final List<File> assertedFiles = new ArrayList<>();
+        try {
+            mojo.execute();
+            assertedFiles.addAll(assertWebXml(webAppDirectory));
+            assertedFiles.addAll(assertCustomContent(
+                    webAppDirectory,
+                    new String[] {
+                        "jsp/a.jsp",
+                        "jsp/b.jsp",
+                        "jsp/c.jsp",
+                        "jsp/d/a.jsp",
+                        "jsp/d/b.jsp",
+                        "jsp/d/c.jsp",
+                        "org/sample/company/test.jsp",
+                        "WEB-INF/classes/a.clazz",
+                        "WEB-INF/classes/b.clazz",
+                        "WEB-INF/classes/c.clazz",
+                        "WEB-INF/lib/a.jar",
+                        "WEB-INF/lib/b.jar",
+                        "WEB-INF/lib/c.jar"
+                    },
+                    "overlay file not found"));
+
+            assertOverlayedFile(webAppDirectory, "overlay-full-3", "jsp/a.jsp");
+            assertOverlayedFile(webAppDirectory, "overlay-full-3", "jsp/b.jsp");
+            assertOverlayedFile(webAppDirectory, "overlay-full-3", "jsp/c.jsp");
+            assertOverlayedFile(webAppDirectory, "overlay-full-3", "jsp/d/a.jsp");
+            assertOverlayedFile(webAppDirectory, "overlay-full-3", "jsp/d/b.jsp");
+            assertOverlayedFile(webAppDirectory, "overlay-full-1", "jsp/d/c.jsp");
+            assertDefaultFileContent(testId, webAppDirectory, "org/sample/company/test.jsp");
+            assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/web.xml");
+            assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/classes/a.clazz");
+            assertOverlayedFile(webAppDirectory, "overlay-full-3", "WEB-INF/classes/b.clazz");
+            assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/classes/c.clazz");
+            assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/lib/a.jar");
+            assertOverlayedFile(webAppDirectory, "overlay-full-3", "WEB-INF/lib/b.jar");
+            assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/lib/c.jar");
+
+            // Ok now check that there is no more files/directories
+            final FileFilter filter = new FileFilterImpl(webAppDirectory, new String[] {MANIFEST_PATH});
+            assertWebAppContent(webAppDirectory, assertedFiles, filter);
+        } finally {
+            cleanDirectory(webAppDirectory);
+        }
+    }
+
+    @InjectMojo(goal="exploded", pom ="src/test/resources/unit/waroverlays/default.xml")
+    @MojoParameter(name = "workDirectory", value = "target/test-classes/unit/waroverlays/war/work-overlays-includes-excludes-multiple-defs2")
+    @Test
+    public void testOverlaysIncludesExcludesWithMultipleDefinitions2(WarExplodedMojo mojo) throws Exception {
+        // setup test data
+        final String testId = "overlays-includes-excludes-multiple-defs2";
+
+        // Add an overlay
+        final ArtifactStub overlay1 = buildWarOverlayStub("overlay-full-1");
+        final ArtifactStub overlay2 = buildWarOverlayStub("overlay-full-2");
+        final ArtifactStub overlay3 = buildWarOverlayStub("overlay-full-3");
+
+        ArtifactStub[] artifactStubs = new ArtifactStub[] {overlay1, overlay2, overlay3};
+        String[] sourceFiles = new String[] {
+            "org/sample/company/test.jsp", "jsp/b.jsp"
+        };
+        final MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
+        final File webAppDirectory = new File(getTestDirectory(), testId);
+
+        // Create the webapp sources
+        File webAppSource = createWebAppSource(testId, false);
+        for (String sourceFile : sourceFiles) {
+            File sample = new File(webAppSource, sourceFile);
+            createFile(sample);
+        }
+
+        final File classesDir = createClassesDir(testId, true);
+
+        for (ArtifactStub artifactStub : artifactStubs) {
+            project.addArtifact(artifactStub);
+        }
+
+        mojo.setClassesDirectory(classesDir);
+        mojo.setWarSourceDirectory(webAppSource);
+        mojo.setWebappDirectory(webAppDirectory);
+        mojo.setProject(project);
+
+        Overlay over1 = new DefaultOverlay(overlay3);
+        over1.setExcludes("**/a.*,**/c.*,**/*.xml,jsp/b.jsp");
+
+        Overlay over2 = new DefaultOverlay(overlay1);
+        over2.setIncludes("jsp/d/*");
+        over2.setExcludes("jsp/d/a.jsp");
+
+        Overlay over3 = new DefaultOverlay(overlay3);
+        over3.setIncludes("**/*.jsp");
+        over3.setExcludes("jsp/b.jsp");
+
+        Overlay over4 = new DefaultOverlay(overlay2);
+
+        mojo.setOverlays(new LinkedList<>());
+        mojo.addOverlay(over1);
+        mojo.addOverlay(over2);
+        mojo.addOverlay(over3);
+        mojo.addOverlay(mojo.getCurrentProjectOverlay());
+        mojo.addOverlay(over4);
+
+        final List<File> assertedFiles = new ArrayList<>();
+        try {
+            mojo.execute();
+            assertedFiles.addAll(assertWebXml(webAppDirectory));
+            assertedFiles.addAll(assertCustomContent(
+                    webAppDirectory,
+                    new String[] {
+                        "jsp/a.jsp",
+                        "jsp/b.jsp",
+                        "jsp/c.jsp",
+                        "jsp/d/a.jsp",
+                        "jsp/d/b.jsp",
+                        "jsp/d/c.jsp",
+                        "org/sample/company/test.jsp",
+                        "WEB-INF/classes/a.clazz",
+                        "WEB-INF/classes/b.clazz",
+                        "WEB-INF/classes/c.clazz",
+                        "WEB-INF/lib/a.jar",
+                        "WEB-INF/lib/b.jar",
+                        "WEB-INF/lib/c.jar"
+                    },
+                    "overlay file not found"));
+
+            assertOverlayedFile(webAppDirectory, "overlay-full-3", "jsp/a.jsp");
+            assertDefaultFileContent(testId, webAppDirectory, "jsp/b.jsp");
+            assertOverlayedFile(webAppDirectory, "overlay-full-3", "jsp/c.jsp");
+            assertOverlayedFile(webAppDirectory, "overlay-full-3", "jsp/d/a.jsp");
+            assertOverlayedFile(webAppDirectory, "overlay-full-3", "jsp/d/b.jsp");
+            assertOverlayedFile(webAppDirectory, "overlay-full-1", "jsp/d/c.jsp");
+            assertDefaultFileContent(testId, webAppDirectory, "org/sample/company/test.jsp");
+            assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/web.xml");
+            assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/classes/a.clazz");
+            assertOverlayedFile(webAppDirectory, "overlay-full-3", "WEB-INF/classes/b.clazz");
+            assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/classes/c.clazz");
+            assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/lib/a.jar");
+            assertOverlayedFile(webAppDirectory, "overlay-full-3", "WEB-INF/lib/b.jar");
+            assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/lib/c.jar");
+
+            // Ok now check that there is no more files/directories
+            final FileFilter filter = new FileFilterImpl(webAppDirectory, new String[] {MANIFEST_PATH});
+            assertWebAppContent(webAppDirectory, assertedFiles, filter);
+        } finally {
+            cleanDirectory(webAppDirectory);
+        }
+    }
 
     // Helpers
 
