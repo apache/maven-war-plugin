@@ -20,6 +20,7 @@ package org.apache.maven.plugins.war;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,18 +29,33 @@ import java.util.jar.JarFile;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
+import org.apache.maven.execution.DefaultMavenExecutionRequest;
+import org.apache.maven.execution.MavenExecutionRequest;
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.testing.AbstractMojoTestCase;
+import org.apache.maven.plugin.testing.stubs.ArtifactStub;
 import org.apache.maven.plugins.war.stub.JarArtifactStub;
 import org.apache.maven.plugins.war.stub.MavenProject4CopyConstructor;
 import org.apache.maven.plugins.war.stub.MavenProjectArtifactsStub;
+import org.apache.maven.plugins.war.stub.MavenProjectBasicStub;
 import org.apache.maven.plugins.war.stub.ProjectHelperStub;
 import org.apache.maven.plugins.war.stub.WarArtifact4CCStub;
+import org.apache.maven.plugins.war.stub.WarOverlayStub;
+import org.codehaus.plexus.PlexusContainer;
+import org.codehaus.plexus.archiver.ArchiverException;
+import org.codehaus.plexus.archiver.jar.JarArchiver;
+import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
+import org.eclipse.aether.RepositorySystemSession;
 
 /**
  * comprehensive test on buildExplodedWebApp is done on WarExplodedMojoTest
  */
-public class WarMojoTest extends AbstractWarMojoTest {
+public class WarMojoTest extends AbstractMojoTestCase {
+    protected static final File OVERLAYS_TEMP_DIR = new File(getBasedir(), "target/test-overlays/");
+    protected static final File OVERLAYS_ROOT_DIR = new File(getBasedir(), "target/test-classes/overlays/");
+    protected static final String MANIFEST_PATH = "META-INF" + File.separator + "MANIFEST.MF";
     WarMojo mojo;
 
     private static File pomFile =
@@ -51,6 +67,14 @@ public class WarMojoTest extends AbstractWarMojoTest {
 
     public void setUp() throws Exception {
         super.setUp();
+
+        MavenExecutionRequest request = new DefaultMavenExecutionRequest()
+                .setSystemProperties(System.getProperties())
+                .setStartTime(new Date());
+
+        MavenSession mavenSession =
+                new MavenSession((PlexusContainer) null, (RepositorySystemSession) null, request, null);
+        getContainer().addComponent(mavenSession, MavenSession.class.getName());
         mojo = (WarMojo) lookupMojo("war", pomFile);
     }
 
@@ -579,6 +603,244 @@ public class WarMojoTest extends AbstractWarMojoTest {
                 }
             }
             return jarContent;
+        }
+    }
+
+    /**
+     * initialize required parameters
+     *
+     * @param mojo The mojo to be tested.
+     * @param classesDir The classes' directory.
+     * @param webAppSource The webAppSource.
+     * @param webAppDir The webAppDir folder.
+     * @param project The Maven project.
+     * @throws Exception in case of errors
+     */
+    protected void configureMojo(
+            AbstractWarMojo mojo, File classesDir, File webAppSource, File webAppDir, MavenProjectBasicStub project)
+            throws Exception {
+        setVariableValueToObject(mojo, "outdatedCheckPath", "WEB-INF/lib/");
+        mojo.setClassesDirectory(classesDir);
+        mojo.setWarSourceDirectory(webAppSource);
+        mojo.setWebappDirectory(webAppDir);
+        mojo.setProject(project);
+    }
+
+    /**
+     * create an isolated xml dir
+     *
+     * @param id The id.
+     * @param xmlFiles array of xml files.
+     * @return The created file.
+     * @throws Exception in case of errors.
+     */
+    protected File createXMLConfigDir(String id, String[] xmlFiles) throws Exception {
+        File xmlConfigDir = new File(getTestDirectory(), "/" + id + "-test-data/xml-config");
+        File xmlFile;
+
+        createDir(xmlConfigDir);
+
+        if (xmlFiles != null) {
+            for (String o : xmlFiles) {
+                xmlFile = new File(xmlConfigDir, o);
+                createFile(xmlFile);
+            }
+        }
+
+        return xmlConfigDir;
+    }
+
+    /**
+     * Returns the webapp source directory for the specified id.
+     *
+     * @param id the id of the test
+     * @return the source directory for that test
+     * @throws Exception if an exception occurs
+     */
+    protected File getWebAppSource(String id) throws Exception {
+        return new File(getTestDirectory(), "/" + id + "-test-data/source");
+    }
+
+    /**
+     * create an isolated web source with a sample jsp file
+     *
+     * @param id The id.
+     * @param createSamples Create example files yes or no.
+     * @return The created file.
+     * @throws Exception in case of errors.
+     */
+    protected File createWebAppSource(String id, boolean createSamples) throws Exception {
+        File webAppSource = getWebAppSource(id);
+        if (createSamples) {
+            File simpleJSP = new File(webAppSource, "pansit.jsp");
+            File jspFile = new File(webAppSource, "org/web/app/last-exile.jsp");
+
+            createFile(simpleJSP);
+            createFile(jspFile);
+        }
+        return webAppSource;
+    }
+
+    protected File createWebAppSource(String id) throws Exception {
+        return createWebAppSource(id, true);
+    }
+
+    /**
+     * create a class directory with or without a sample class
+     *
+     * @param id The id.
+     * @param empty true to create a class files false otherwise.
+     * @return The created class file.
+     * @throws Exception in case of errors.
+     */
+    protected File createClassesDir(String id, boolean empty) throws Exception {
+        File classesDir = new File(getTestDirectory() + "/" + id + "-test-data/classes/");
+
+        createDir(classesDir);
+
+        if (!empty) {
+            createFile(new File(classesDir + "/sample-servlet.clazz"));
+        }
+
+        return classesDir;
+    }
+
+    protected void createDir(File dir) {
+        if (!dir.exists()) {
+            assertTrue("can not create test dir: " + dir.toString(), dir.mkdirs());
+        }
+    }
+
+    protected void createFile(File testFile, String body) throws Exception {
+        createDir(testFile.getParentFile());
+        FileUtils.fileWrite(testFile.toString(), body);
+
+        assertTrue("could not create file: " + testFile, testFile.exists());
+    }
+
+    protected void createFile(File testFile) throws Exception {
+        createFile(testFile, testFile.toString());
+    }
+
+    /**
+     * Generates test war.
+     * Generates war with such a structure:
+     * <ul>
+     * <li>jsp
+     * <ul>
+     * <li>d
+     * <ul>
+     * <li>a.jsp</li>
+     * <li>b.jsp</li>
+     * <li>c.jsp</li>
+     * </ul>
+     * </li>
+     * <li>a.jsp</li>
+     * <li>b.jsp</li>
+     * <li>c.jsp</li>
+     * </ul>
+     * </li>
+     * <li>WEB-INF
+     * <ul>
+     * <li>classes
+     * <ul>
+     * <li>a.clazz</li>
+     * <li>b.clazz</li>
+     * <li>c.clazz</li>
+     * </ul>
+     * </li>
+     * <li>lib
+     * <ul>
+     * <li>a.jar</li>
+     * <li>b.jar</li>
+     * <li>c.jar</li>
+     * </ul>
+     * </li>
+     * <li>web.xml</li>
+     * </ul>
+     * </li>
+     * </ul>
+     * Each of the files will contain: id+'-'+path
+     *
+     * @param id the id of the overlay containing the full structure
+     * @return the war file
+     * @throws Exception if an error occurs
+     */
+    protected File generateFullOverlayWar(String id) throws Exception {
+        final File destFile = new File(OVERLAYS_TEMP_DIR, id + ".war");
+        if (destFile.exists()) {
+            return destFile;
+        }
+
+        // Archive was not yet created for that id so let's create it
+        final File rootDir = new File(OVERLAYS_ROOT_DIR, id);
+        rootDir.mkdirs();
+        String[] filePaths = new String[] {
+            "jsp/d/a.jsp",
+            "jsp/d/b.jsp",
+            "jsp/d/c.jsp",
+            "jsp/a.jsp",
+            "jsp/b.jsp",
+            "jsp/c.jsp",
+            "WEB-INF/classes/a.clazz",
+            "WEB-INF/classes/b.clazz",
+            "WEB-INF/classes/c.clazz",
+            "WEB-INF/lib/a.jar",
+            "WEB-INF/lib/b.jar",
+            "WEB-INF/lib/c.jar",
+            "WEB-INF/web.xml"
+        };
+
+        for (String filePath : filePaths) {
+            createFile(new File(rootDir, filePath), id + "-" + filePath);
+        }
+
+        createArchive(rootDir, destFile);
+        return destFile;
+    }
+
+    /**
+     * Builds a test overlay.
+     *
+     * @param id the id of the overlay (see test/resources/overlays)
+     * @return a test war artifact with the content of the given test overlay
+     */
+    protected ArtifactStub buildWarOverlayStub(String id) {
+        // Create war file
+        final File destFile = new File(OVERLAYS_TEMP_DIR, id + ".war");
+        if (!destFile.exists()) {
+            createArchive(new File(OVERLAYS_ROOT_DIR, id), destFile);
+        }
+
+        return new WarOverlayStub(getBasedir(), id, destFile);
+    }
+
+    protected File getOverlayFile(String id, String filePath) {
+        final File overlayDir = new File(OVERLAYS_ROOT_DIR, id);
+        final File file = new File(overlayDir, filePath);
+
+        // Make sure the file exists
+        assertTrue(
+                "Overlay file " + filePath + " does not exist for overlay " + id + " at " + file.getAbsolutePath(),
+                file.exists());
+        return file;
+    }
+
+    protected void createArchive(final File directory, final File destinationFile) {
+        try {
+            JarArchiver archiver = new JarArchiver();
+
+            archiver.setDestFile(destinationFile);
+            archiver.addDirectory(directory);
+
+            archiver.createArchive();
+
+        } catch (ArchiverException e) {
+            e.printStackTrace();
+            fail("Failed to create overlay archive " + e.getMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail("Unexpected exception " + e.getMessage());
         }
     }
 }
