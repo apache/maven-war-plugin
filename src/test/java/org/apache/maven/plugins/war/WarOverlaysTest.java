@@ -30,6 +30,7 @@ import org.apache.maven.api.plugin.testing.InjectMojo;
 import org.apache.maven.api.plugin.testing.MojoParameter;
 import org.apache.maven.api.plugin.testing.MojoTest;
 import org.apache.maven.plugin.testing.stubs.ArtifactStub;
+import org.apache.maven.plugins.war.overlay.DefaultOverlay;
 import org.apache.maven.plugins.war.stub.MavenProjectArtifactsStub;
 import org.apache.maven.plugins.war.stub.MavenProjectBasicStub;
 import org.apache.maven.plugins.war.stub.WarOverlayStub;
@@ -258,38 +259,64 @@ public class WarOverlaysTest {
 
         assertScenariOne(testId, webAppDirectory);
     }
-//
-//    /**
-//     * Tests that specifying the overlay explicitely has the same behavior as the default (i.e. order, etc).
-//     *
-//     * The default project is not specified in this case so it is processed first by default
-//     *
-//     * @throws Exception if an error occurs
-//     */
-//    @Test
-//    public void testScenarioOneWithOverlaySettings() throws Exception {
-//        // setup test data
-//        final String testId = "scenario-one-overlay-settings";
-//
-//        // Add an overlay
-//        final ArtifactStub overlay1 = buildWarOverlayStub("overlay-full-1");
-//        final ArtifactStub overlay2 = buildWarOverlayStub("overlay-full-2");
-//        final ArtifactStub overlay3 = buildWarOverlayStub("overlay-full-3");
-//
-//        final File webAppDirectory = setUpMojo(testId, new ArtifactStub[] {overlay1, overlay2, overlay3}, new String[] {
-//            "org/sample/company/test.jsp", "jsp/b.jsp"
-//        });
-//
-//        // Add the tags
-//        final List<Overlay> overlays = new ArrayList<>();
-//        overlays.add(new DefaultOverlay(overlay1));
-//        overlays.add(new DefaultOverlay(overlay2));
-//        overlays.add(new DefaultOverlay(overlay3));
-//        mojo.setOverlays(overlays);
-//
-//        // current project ignored. Should be on top of the list
-//        assertScenariOne(testId, webAppDirectory);
-//    }
+
+    /**
+     * Tests that specifying the overlay explicitely has the same behavior as the default (i.e. order, etc).
+     *
+     * The default project is not specified in this case so it is processed first by default
+     *
+     * @throws Exception if an error occurs
+     */
+    @InjectMojo(goal="exploded", pom ="src/test/resources/unit/waroverlays/default.xml")
+    @MojoParameter(name = "workDirectory", value = "target/test-classes/unit/waroverlays/war/work-scenario-one-overlay-settings")
+    @Test
+    public void testScenarioOneWithOverlaySettings(WarExplodedMojo mojo) throws Exception {
+        // setup test data
+        final String testId = "scenario-one-overlay-settings";
+
+        // Add an overlay
+        final ArtifactStub overlay1 = buildWarOverlayStub("overlay-full-1");
+        final ArtifactStub overlay2 = buildWarOverlayStub("overlay-full-2");
+        final ArtifactStub overlay3 = buildWarOverlayStub("overlay-full-3");
+
+        ArtifactStub[] artifactStubs = new ArtifactStub[] {overlay1, overlay2, overlay3};
+        String[] sourceFiles = new String[] {
+            "org/sample/company/test.jsp", "jsp/b.jsp"
+        };
+        final MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
+        final File webAppDirectory = new File(getTestDirectory(), testId);
+
+        // Create the webapp sources
+        File webAppSource;
+        webAppSource = createWebAppSource(testId, false);
+        for (String sourceFile : sourceFiles) {
+            File sample = new File(webAppSource, sourceFile);
+            createFile(sample);
+        }
+
+        final File classesDir = createClassesDir(testId, true);
+
+        for (ArtifactStub artifactStub : artifactStubs) {
+            project.addArtifact(artifactStub);
+        }
+
+        mojo.setClassesDirectory(classesDir);
+        mojo.setWarSourceDirectory(webAppSource);
+        mojo.setWebappDirectory(webAppDirectory);
+        mojo.setProject(project);
+
+        // Add the tags
+        final List<Overlay> overlays = new ArrayList<>();
+        overlays.add(new DefaultOverlay(overlay1));
+        overlays.add(new DefaultOverlay(overlay2));
+        overlays.add(new DefaultOverlay(overlay3));
+        mojo.setOverlays(overlays);
+
+        mojo.execute();
+
+        // current project ignored. Should be on top of the list
+        assertScenariOne(testId, webAppDirectory);
+    }
 //
 //    /**
 //     * Tests that specifying the overlay explicitely has the same behavior as the default (i.e. order, etc).
