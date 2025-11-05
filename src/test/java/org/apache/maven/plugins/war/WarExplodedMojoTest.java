@@ -43,6 +43,7 @@ import org.apache.maven.plugins.war.stub.ResourceStub;
 import org.apache.maven.plugins.war.stub.TLDArtifactStub;
 import org.apache.maven.plugins.war.stub.WarArtifactStub;
 import org.apache.maven.plugins.war.stub.XarArtifactStub;
+import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -68,7 +69,6 @@ public class WarExplodedMojoTest {
     public void testSimpleExplodedWar(WarExplodedMojo mojo) throws Exception {
         // setup test data
         String testId = "SimpleExplodedWar";
-        MavenProjectBasicStub project = new MavenProjectBasicStub();
         File webAppSource = createWebAppSource(testId);
         File classesDir = createClassesDir(testId, false);
         File webAppResource = new File(getTestDirectory(), testId + "-resources");
@@ -76,11 +76,7 @@ public class WarExplodedMojoTest {
         File sampleResource = new File(webAppResource, "pix/panis_na.jpg");
         ResourceStub[] resources = createWebResources(sampleResource, webAppResource);
 
-        mojo.setClassesDirectory(classesDir);
-        mojo.setWarSourceDirectory(webAppSource);
-        mojo.setWebappDirectory(webAppDirectory);
-        mojo.setProject(project);
-        mojo.setWebResources(resources);
+        configureMojo(mojo, classesDir, webAppSource, webAppDirectory, resources);
         mojo.execute();
 
         // validate operation
@@ -102,19 +98,11 @@ public class WarExplodedMojoTest {
         expectedWebResourceFile.delete();
     }
 
-    private ResourceStub[] createWebResources(File sampleResource, File webAppResource) throws Exception {
-        ResourceStub[] resources = new ResourceStub[] {new ResourceStub()};
-        createFile(sampleResource);
-        resources[0].setDirectory(webAppResource.getAbsolutePath());
-        return resources;
-    }
-
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/warexplodedmojo/plugin-config.xml")
     @Test
     public void testSimpleExplodedWarWTargetPath(WarExplodedMojo mojo) throws Exception {
         // setup test data
         String testId = "SimpleExplodedWar";
-        MavenProjectBasicStub project = new MavenProjectBasicStub();
         File webAppSource = createWebAppSource(testId);
         File classesDir = createClassesDir(testId, false);
         File webAppResource = new File(getTestDirectory(), "resources");
@@ -123,11 +111,7 @@ public class WarExplodedMojoTest {
         ResourceStub[] resources = createWebResources(sampleResource, webAppResource);
         resources[0].setTargetPath("targetPath");
 
-        mojo.setClassesDirectory(classesDir);
-        mojo.setWarSourceDirectory(webAppSource);
-        mojo.setWebappDirectory(webAppDirectory);
-        mojo.setProject(project);
-        mojo.setWebResources(resources);
+        configureMojo(mojo, classesDir, webAppSource, webAppDirectory, resources);
         mojo.execute();
 
         // validate operation
@@ -149,22 +133,30 @@ public class WarExplodedMojoTest {
         expectedWebResourceFile.delete();
     }
 
+    private void configureMojo(WarExplodedMojo mojo, File classesDir, File webAppSource, File webAppDirectory, ResourceStub[] resources) throws Exception {
+        configureMojo(mojo, classesDir, webAppSource, webAppDirectory);
+        mojo.setWebResources(resources);
+    }
+
+    private ResourceStub[] createWebResources(File sampleResource, File webAppResource) throws Exception {
+        ResourceStub[] resources = new ResourceStub[] {new ResourceStub()};
+        createFile(sampleResource);
+        resources[0].setDirectory(webAppResource.getAbsolutePath());
+        return resources;
+    }
+
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/warexplodedmojo/plugin-config.xml")
     @Test
     public void testExplodedWarWithCustomWebXML(WarExplodedMojo mojo) throws Exception {
         // setup test data
         String testId = "ExplodedWarWithCustomWebXML";
-        MavenProjectBasicStub project = new MavenProjectBasicStub();
         File webAppSource = createWebAppSource(testId);
         File classesDir = createClassesDir(testId, true);
         File xmlSource = createXMLConfigDir(testId, new String[] {"web.xml"});
         File webAppDirectory = new File(getTestDirectory(), testId);
 
         // configure mojo
-        mojo.setClassesDirectory(classesDir);
-        mojo.setWarSourceDirectory(webAppSource);
-        mojo.setWebappDirectory(webAppDirectory);
-        mojo.setProject(project);
+        configureMojo(mojo, classesDir, webAppSource, webAppDirectory);
         mojo.setWebXml(new File(xmlSource, "web.xml"));
         mojo.execute();
 
@@ -192,17 +184,13 @@ public class WarExplodedMojoTest {
     public void testExplodedWarWithContainerConfigXML(WarExplodedMojo mojo) throws Exception {
         // setup test data
         String testId = "ExplodedWarWithContainerConfigXML";
-        MavenProjectBasicStub project = new MavenProjectBasicStub();
         File classesDir = createClassesDir(testId, true);
         File webAppSource = createWebAppSource(testId);
         File xmlSource = createXMLConfigDir(testId, new String[] {"config.xml"});
         File webAppDirectory = new File(getTestDirectory(), testId);
 
         // configure mojo
-        mojo.setClassesDirectory(classesDir);
-        mojo.setWarSourceDirectory(webAppSource);
-        mojo.setWebappDirectory(webAppDirectory);
-        mojo.setProject(project);
+        configureMojo(mojo, classesDir, webAppSource, webAppDirectory);
         mojo.setContainerConfigXML(new File(xmlSource, "config.xml"));
         mojo.execute();
 
@@ -243,12 +231,7 @@ public class WarExplodedMojoTest {
 
         // configure mojo
         WarArtifactStub warArtifact = new WarArtifactStub(getBasedir());
-        MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
-        project.addArtifact(warArtifact);
-        mojo.setClassesDirectory(classesDir);
-        mojo.setWarSourceDirectory(webAppSource);
-        mojo.setWebappDirectory(webAppDirectory);
-        mojo.setProject(project);
+        configureMojo(mojo, warArtifact, classesDir, webAppSource, webAppDirectory);
         mojo.execute();
 
         // validate operation - META-INF is automatically excluded so remove the file from the list
@@ -293,10 +276,7 @@ public class WarExplodedMojoTest {
         WarArtifactStub warArtifact = new WarArtifactStub(getBasedir());
         MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         project.addArtifact(warArtifact);
-        mojo.setClassesDirectory(classesDir);
-        mojo.setWarSourceDirectory(webAppSource);
-        mojo.setWebappDirectory(webAppDirectory);
-        mojo.setProject(project);
+        configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         mojo.execute();
 
         // validate operation
@@ -312,10 +292,7 @@ public class WarExplodedMojoTest {
         expectedFile.setLastModified(time);
 
         project.addArtifact(warArtifact);
-        mojo.setClassesDirectory(classesDir);
-        mojo.setWarSourceDirectory(webAppSource);
-        mojo.setWebappDirectory(webAppDirectory);
-        mojo.setProject(project);
+        configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         mojo.execute();
 
         assertTrue(expectedFile.exists(), "file not found: " + expectedFile);
@@ -336,12 +313,7 @@ public class WarExplodedMojoTest {
         EJBArtifactStub ejbArtifact = new EJBArtifactStub(getBasedir());
 
         // configure mojo
-        MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
-        project.addArtifact(ejbArtifact);
-        mojo.setClassesDirectory(classesDir);
-        mojo.setWarSourceDirectory(webAppSource);
-        mojo.setWebappDirectory(webAppDirectory);
-        mojo.setProject(project);
+        configureMojo(mojo, ejbArtifact, classesDir, webAppSource, webAppDirectory);
         mojo.execute();
 
         // validate operation
@@ -372,12 +344,7 @@ public class WarExplodedMojoTest {
         ArtifactStub jarArtifact = new JarArtifactStub(getBasedir(), artifactHandler);
 
         // configure mojo
-        MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
-        project.addArtifact(jarArtifact);
-        mojo.setClassesDirectory(classesDir);
-        mojo.setWarSourceDirectory(webAppSource);
-        mojo.setWebappDirectory(webAppDirectory);
-        mojo.setProject(project);
+        configureMojo(mojo, jarArtifact, classesDir, webAppSource, webAppDirectory);
         mojo.execute();
 
         // validate operation
@@ -410,12 +377,7 @@ public class WarExplodedMojoTest {
         EJBClientArtifactStub ejbArtifact = new EJBClientArtifactStub(getBasedir());
 
         // configure mojo
-        MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
-        project.addArtifact(ejbArtifact);
-        mojo.setClassesDirectory(classesDir);
-        mojo.setWarSourceDirectory(webAppSource);
-        mojo.setWebappDirectory(webAppDirectory);
-        mojo.setProject(project);
+        configureMojo(mojo,ejbArtifact, classesDir, webAppSource, webAppDirectory);
         mojo.execute();
 
         // validate operation
@@ -448,12 +410,7 @@ public class WarExplodedMojoTest {
         TLDArtifactStub tldArtifact = new TLDArtifactStub(getBasedir());
 
         // configure mojo
-        MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
-        project.addArtifact(tldArtifact);
-        mojo.setClassesDirectory(classesDir);
-        mojo.setWarSourceDirectory(webAppSource);
-        mojo.setWebappDirectory(webAppDirectory);
-        mojo.setProject(project);
+        configureMojo(mojo,tldArtifact, classesDir, webAppSource, webAppDirectory);
         mojo.execute();
 
         // validate operation
@@ -483,12 +440,7 @@ public class WarExplodedMojoTest {
         PARArtifactStub parartifact = new PARArtifactStub(getBasedir());
 
         // configure mojo
-        MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
-        project.addArtifact(parartifact);
-        mojo.setClassesDirectory(classesDir);
-        mojo.setWarSourceDirectory(webAppSource);
-        mojo.setWebappDirectory(webAppDirectory);
-        mojo.setProject(project);
+        configureMojo(mojo, parartifact, classesDir, webAppSource, webAppDirectory);
         mojo.execute();
 
         // validate operation
@@ -520,11 +472,7 @@ public class WarExplodedMojoTest {
         ArtifactStub aarArtifact = new AarArtifactStub(getBasedir(), artifactHandler);
 
         // configure mojo
-        project.addArtifact(aarArtifact);
-        mojo.setClassesDirectory(classesDir);
-        mojo.setWarSourceDirectory(webAppSource);
-        mojo.setWebappDirectory(webAppDirectory);
-        mojo.setProject(project);
+        configureMojo(mojo, aarArtifact, classesDir, webAppSource, webAppDirectory);
         mojo.execute();
 
         // validate operation
@@ -549,18 +497,13 @@ public class WarExplodedMojoTest {
     public void testExplodedWarWithMar(WarExplodedMojo mojo) throws Exception {
         // setup test data
         String testId = "ExplodedWarWithMar";
-        MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         File webAppDirectory = new File(getTestDirectory(), testId);
         File webAppSource = createWebAppSource(testId);
         File classesDir = createClassesDir(testId, true);
         ArtifactStub marArtifact = new MarArtifactStub(getBasedir(), artifactHandler);
 
         // configure mojo
-        project.addArtifact(marArtifact);
-        mojo.setClassesDirectory(classesDir);
-        mojo.setWarSourceDirectory(webAppSource);
-        mojo.setWebappDirectory(webAppDirectory);
-        mojo.setProject(project);
+        configureMojo(mojo,marArtifact, classesDir, webAppSource, webAppDirectory);
         mojo.execute();
 
         // validate operation
@@ -585,18 +528,13 @@ public class WarExplodedMojoTest {
     public void testExplodedWarWithXar(WarExplodedMojo mojo) throws Exception {
         // setup test data
         String testId = "ExplodedWarWithXar";
-        MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         File webAppDirectory = new File(getTestDirectory(), testId);
         File webAppSource = createWebAppSource(testId);
         File classesDir = createClassesDir(testId, true);
         ArtifactStub xarArtifact = new XarArtifactStub(getBasedir(), artifactHandler);
 
         // configure mojo
-        project.addArtifact(xarArtifact);
-        mojo.setClassesDirectory(classesDir);
-        mojo.setWarSourceDirectory(webAppSource);
-        mojo.setWebappDirectory(webAppDirectory);
-        mojo.setProject(project);
+        configureMojo(mojo, xarArtifact,classesDir, webAppSource, webAppDirectory);
         mojo.execute();
 
         // validate operation
@@ -633,10 +571,7 @@ public class WarExplodedMojoTest {
         MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         project.addArtifact(ejbArtifact);
         project.addArtifact(ejbArtifactDup);
-        mojo.setClassesDirectory(classesDir);
-        mojo.setWarSourceDirectory(webAppSource);
-        mojo.setWebappDirectory(webAppDirectory);
-        mojo.setProject(project);
+        configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         mojo.execute();
 
         // validate operation
@@ -680,10 +615,7 @@ public class WarExplodedMojoTest {
         project.addArtifact(ejbArtifact);
         project.addArtifact(ejbArtifactDup);
 
-        mojo.setClassesDirectory(classesDir);
-        mojo.setWarSourceDirectory(webAppSource);
-        mojo.setWebappDirectory(webAppDirectory);
-        mojo.setProject(project);
+        configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         mojo.execute();
 
         // validate operation
@@ -718,11 +650,7 @@ public class WarExplodedMojoTest {
         File classesDir = createClassesDir(testId, false);
 
         // configure mojo
-        MavenProjectBasicStub project = new MavenProjectBasicStub();
-        mojo.setProject(project);
-        mojo.setClassesDirectory(classesDir);
-        mojo.setWarSourceDirectory(webAppSource);
-        mojo.setWebappDirectory(webAppDirectory);
+        configureMojo(mojo, classesDir, webAppSource, webAppDirectory);
         mojo.execute();
 
         // validate operation
@@ -753,11 +681,7 @@ public class WarExplodedMojoTest {
         File webAppDirectory = new File(getTestDirectory(), testId);
 
         // configure mojo
-        MavenProjectBasicStub project = new MavenProjectBasicStub();
-        mojo.setProject(project);
-        mojo.setClassesDirectory(classesDir);
-        mojo.setWarSourceDirectory(webAppSource);
-        mojo.setWebappDirectory(webAppDirectory);
+        configureMojo(mojo, classesDir, webAppSource, webAppDirectory);
         mojo.execute();
 
         // validate operation
@@ -795,12 +719,7 @@ public class WarExplodedMojoTest {
 
         IncludeExcludeWarArtifactStub includeexcludeWarArtifact = new IncludeExcludeWarArtifactStub(getBasedir());
         // configure mojo
-        MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
-        mojo.setProject(project);
-        project.addArtifact(includeexcludeWarArtifact);
-        mojo.setClassesDirectory(classesDir);
-        mojo.setWarSourceDirectory(webAppSource);
-        mojo.setWebappDirectory(webAppDirectory);
+        configureMojo(mojo, includeexcludeWarArtifact, classesDir, webAppSource, webAppDirectory);
         mojo.execute();
 
         // validate operation
@@ -838,11 +757,7 @@ public class WarExplodedMojoTest {
         File webAppDirectory = new File(getTestDirectory(), testId);
 
         // configure mojo
-        MavenProjectBasicStub project = new MavenProjectBasicStub();
-        mojo.setProject(project);
-        mojo.setClassesDirectory(classesDir);
-        mojo.setWarSourceDirectory(webAppSource);
-        mojo.setWebappDirectory(webAppDirectory);
+        configureMojo(mojo, classesDir, webAppSource, webAppDirectory);
 
         // destination file is already created manually containing an "error" string
         // source is newer than the destination file
@@ -880,19 +795,14 @@ public class WarExplodedMojoTest {
     public void testExplodedWarWithOutputFileNameMapping(WarExplodedMojo mojo) throws Exception {
         // setup test data
         String testId = "ExplodedWarWithFileNameMapping";
-        MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         File webAppDirectory = new File(getTestDirectory(), testId);
         File webAppSource = createWebAppSource(testId);
         File classesDir = createClassesDir(testId, true);
         ArtifactStub jarArtifact = new JarArtifactStub(getBasedir(), artifactHandler);
 
         // configure mojo
-        project.addArtifact(jarArtifact);
         mojo.setOutputFileNameMapping("@{artifactId}@.@{extension}@");
-        mojo.setClassesDirectory(classesDir);
-        mojo.setWarSourceDirectory(webAppSource);
-        mojo.setWebappDirectory(webAppDirectory);
-        mojo.setProject(project);
+        configureMojo(mojo, jarArtifact, classesDir, webAppSource, webAppDirectory);
         mojo.execute();
 
         // validate operation
@@ -930,10 +840,7 @@ public class WarExplodedMojoTest {
         project.addArtifact(ejbArtifact);
         project.addArtifact(ejbArtifactDup);
         mojo.setOutputFileNameMapping("@{artifactId}@.@{extension}@");
-        mojo.setClassesDirectory(classesDir);
-        mojo.setWarSourceDirectory(webAppSource);
-        mojo.setWebappDirectory(webAppDirectory);
-        mojo.setProject(project);
+        configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         mojo.execute();
 
         // validate operation
@@ -954,6 +861,25 @@ public class WarExplodedMojoTest {
         expectedEJBArtifact.delete();
         expectedEJBDupArtifact.delete();
     }
+
+    private void configureMojo(WarExplodedMojo mojo, File classesDir, File webAppSource, File webAppDirectory) throws Exception {
+        MavenProjectBasicStub project = new MavenProjectBasicStub();
+        configureMojo(mojo,classesDir,webAppSource,webAppDirectory, project);
+    }
+
+    private void configureMojo(WarExplodedMojo mojo, ArtifactStub artifact, File classesDir, File webAppSource, File webAppDirectory) throws Exception {
+        MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
+        project.addArtifact(artifact);
+        configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
+    }
+
+    private void configureMojo(WarExplodedMojo mojo, File classesDir, File webAppSource, File webAppDirectory, MavenProject project) {
+        mojo.setClassesDirectory(classesDir);
+        mojo.setWarSourceDirectory(webAppSource);
+        mojo.setWebappDirectory(webAppDirectory);
+        mojo.setProject(project);
+    }
+
 
     /**
      * create an isolated xml dir
