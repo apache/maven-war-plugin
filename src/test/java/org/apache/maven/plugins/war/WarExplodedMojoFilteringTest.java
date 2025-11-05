@@ -37,6 +37,15 @@ package org.apache.maven.plugins.war;
  * under the License.
  */
 
+import javax.inject.Inject;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
 import org.apache.maven.api.di.Provides;
 import org.apache.maven.api.plugin.testing.InjectMojo;
 import org.apache.maven.api.plugin.testing.MojoTest;
@@ -45,14 +54,6 @@ import org.apache.maven.plugins.war.stub.MavenProjectBasicStub;
 import org.apache.maven.plugins.war.stub.ResourceStub;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.jupiter.api.Test;
-
-import javax.inject.Inject;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
 
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -79,11 +80,12 @@ public class WarExplodedMojoFilteringTest {
     @Provides
     List<String> filters() {
         List<String> filtersList = new ArrayList<>();
-        filtersList.add("test-filter"); //only for demo, it is temporary
+        filtersList.add("test-filter"); // only for demo, it is temporary
         return filtersList;
     }
 
-    @InjectMojo(goal="exploded", pom = "src/test/resources/unit/warexplodedmojo/plugin-config.xml")
+    @SuppressWarnings("checkstyle:MethodLength")
+    @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/warexplodedmojo/plugin-config.xml")
     @Test
     public void testExplodedWarWithResourceFiltering(WarExplodedMojo mojo) throws Exception {
         // setup test data
@@ -137,9 +139,7 @@ public class WarExplodedMojoFilteringTest {
         assertTrue(expectedWebSourceFile.exists(), "source files not found: " + expectedWebSourceFile);
         assertTrue(expectedWebSource2File.exists(), "source files not found: " + expectedWebSource2File);
         assertTrue(expectedResourceFile.exists(), "resource file not found:" + expectedResourceFile);
-        assertTrue(
-                expectedResourceWDirFile.exists(),
-                "resource file with dir not found:" + expectedResourceWDirFile);
+        assertTrue(expectedResourceWDirFile.exists(), "resource file with dir not found:" + expectedResourceWDirFile);
 
         // validate filtered file
         content = FileUtils.fileRead(expectedResourceWDirFile);
@@ -264,8 +264,12 @@ public class WarExplodedMojoFilteringTest {
         expectedResourceWDirFile.delete();
     }
 
-
-    private void configureMojo(WarExplodedMojo mojo, File classesDir, File webAppSource, File webAppDirectory, MavenProjectBasicStub project) {
+    private void configureMojo(
+            WarExplodedMojo mojo,
+            File classesDir,
+            File webAppSource,
+            File webAppDirectory,
+            MavenProjectBasicStub project) {
         mojo.setClassesDirectory(classesDir);
         mojo.setWarSourceDirectory(webAppSource);
         mojo.setWebappDirectory(webAppDirectory);
@@ -343,5 +347,4 @@ public class WarExplodedMojoFilteringTest {
     protected void createFile(File testFile) throws Exception {
         createFile(testFile, testFile.toString());
     }
-
 }

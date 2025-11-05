@@ -133,7 +133,9 @@ public class WarExplodedMojoTest {
         expectedWebResourceFile.delete();
     }
 
-    private void configureMojo(WarExplodedMojo mojo, File classesDir, File webAppSource, File webAppDirectory, ResourceStub[] resources) throws Exception {
+    private void configureMojo(
+            WarExplodedMojo mojo, File classesDir, File webAppSource, File webAppDirectory, ResourceStub[] resources)
+            throws Exception {
         configureMojo(mojo, classesDir, webAppSource, webAppDirectory);
         mojo.setWebResources(resources);
     }
@@ -377,7 +379,7 @@ public class WarExplodedMojoTest {
         EJBClientArtifactStub ejbArtifact = new EJBClientArtifactStub(getBasedir());
 
         // configure mojo
-        configureMojo(mojo,ejbArtifact, classesDir, webAppSource, webAppDirectory);
+        configureMojo(mojo, ejbArtifact, classesDir, webAppSource, webAppDirectory);
         mojo.execute();
 
         // validate operation
@@ -410,7 +412,7 @@ public class WarExplodedMojoTest {
         TLDArtifactStub tldArtifact = new TLDArtifactStub(getBasedir());
 
         // configure mojo
-        configureMojo(mojo,tldArtifact, classesDir, webAppSource, webAppDirectory);
+        configureMojo(mojo, tldArtifact, classesDir, webAppSource, webAppDirectory);
         mojo.execute();
 
         // validate operation
@@ -465,7 +467,6 @@ public class WarExplodedMojoTest {
     public void testExplodedWarWithAar(WarExplodedMojo mojo) throws Exception {
         // setup test data
         String testId = "ExplodedWarWithAar";
-        MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         File webAppDirectory = new File(getTestDirectory(), testId);
         File webAppSource = createWebAppSource(testId);
         File classesDir = createClassesDir(testId, true);
@@ -503,7 +504,7 @@ public class WarExplodedMojoTest {
         ArtifactStub marArtifact = new MarArtifactStub(getBasedir(), artifactHandler);
 
         // configure mojo
-        configureMojo(mojo,marArtifact, classesDir, webAppSource, webAppDirectory);
+        configureMojo(mojo, marArtifact, classesDir, webAppSource, webAppDirectory);
         mojo.execute();
 
         // validate operation
@@ -534,7 +535,7 @@ public class WarExplodedMojoTest {
         ArtifactStub xarArtifact = new XarArtifactStub(getBasedir(), artifactHandler);
 
         // configure mojo
-        configureMojo(mojo, xarArtifact,classesDir, webAppSource, webAppDirectory);
+        configureMojo(mojo, xarArtifact, classesDir, webAppSource, webAppDirectory);
         mojo.execute();
 
         // validate operation
@@ -862,24 +863,27 @@ public class WarExplodedMojoTest {
         expectedEJBDupArtifact.delete();
     }
 
-    private void configureMojo(WarExplodedMojo mojo, File classesDir, File webAppSource, File webAppDirectory) throws Exception {
+    private void configureMojo(WarExplodedMojo mojo, File classesDir, File webAppSource, File webAppDirectory)
+            throws Exception {
         MavenProjectBasicStub project = new MavenProjectBasicStub();
-        configureMojo(mojo,classesDir,webAppSource,webAppDirectory, project);
+        configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
     }
 
-    private void configureMojo(WarExplodedMojo mojo, ArtifactStub artifact, File classesDir, File webAppSource, File webAppDirectory) throws Exception {
+    private void configureMojo(
+            WarExplodedMojo mojo, ArtifactStub artifact, File classesDir, File webAppSource, File webAppDirectory)
+            throws Exception {
         MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         project.addArtifact(artifact);
         configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
     }
 
-    private void configureMojo(WarExplodedMojo mojo, File classesDir, File webAppSource, File webAppDirectory, MavenProject project) {
+    private void configureMojo(
+            WarExplodedMojo mojo, File classesDir, File webAppSource, File webAppDirectory, MavenProject project) {
         mojo.setClassesDirectory(classesDir);
         mojo.setWarSourceDirectory(webAppSource);
         mojo.setWebappDirectory(webAppDirectory);
         mojo.setProject(project);
     }
-
 
     /**
      * create an isolated xml dir
