@@ -18,14 +18,14 @@
  */
 package org.apache.maven.plugins.war;
 
+import java.io.File;
+
 import org.apache.maven.api.plugin.testing.InjectMojo;
 import org.apache.maven.api.plugin.testing.MojoTest;
 import org.apache.maven.plugins.war.stub.MavenProjectBasicStub;
 import org.apache.maven.plugins.war.stub.ResourceStub;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.jupiter.api.Test;
-
-import java.io.File;
 
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -37,8 +37,7 @@ public class WarInPlaceMojoTest {
         return new File(getBasedir(), "target/test-classes/unit/warexplodedinplacemojo/test-dir");
     }
 
-
-    @InjectMojo(goal="inplace", pom = "src/test/resources/unit/warexplodedinplacemojo/plugin-config.xml" )
+    @InjectMojo(goal = "inplace", pom = "src/test/resources/unit/warexplodedinplacemojo/plugin-config.xml")
     @Test
     public void testSimpleExplodedInplaceWar(WarInPlaceMojo mojo) throws Exception {
         // setup test data
@@ -74,8 +73,6 @@ public class WarInPlaceMojoTest {
         assertTrue(expectedWEBINFDir.exists(), "WEB-INF not found");
         assertTrue(expectedMETAINFDir.exists(), "META-INF not found");
     }
-
-
 
     /**
      * Returns the webapp source directory for the specified id.
