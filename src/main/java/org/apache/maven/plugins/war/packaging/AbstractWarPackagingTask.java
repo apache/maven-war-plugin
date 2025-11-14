@@ -148,10 +148,23 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
      */
     // CHECKSTYLE_OFF: LineLength
     protected void copyFile(String sourceId, final WarPackagingContext context, final File file, String targetFilename)
+            throws IOException {
+        copyFile(sourceId, context, file, targetFilename, targetFilename);
+    }
+
+    /**
+     * Adds originalFilename for exclusion checks.
+     */
+    void copyFile(
+            String sourceId,
+            final WarPackagingContext context,
+            final File file,
+            String targetFilename,
+            String originalFilename)
             throws IOException
                 // CHECKSTYLE_ON: LineLength
             {
-        if (isExcluded(targetFilename, context.getPackagingIncludes(), context.getPackagingExcludes())) {
+        if (isExcluded(originalFilename, context.getPackagingIncludes(), context.getPackagingExcludes())) {
             context.getLog().debug("Skipping excluded file: " + targetFilename);
             return;
         }

@@ -306,7 +306,7 @@ public class WarProjectPackagingTask extends AbstractWarPackagingTask {
             if (resource.isFiltering() && !context.isNonFilteredExtension(fileName)) {
                 copyFilteredFile(id, context, new File(resource.getDirectory(), fileName), targetFileName);
             } else {
-                copyFile(id, context, new File(resource.getDirectory(), fileName), targetFileName);
+                copyFile(id, context, new File(resource.getDirectory(), fileName), targetFileName, fileName);
             }
         }
     }
