@@ -23,44 +23,18 @@ import java.io.IOException;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugin.logging.SystemStreamLog;
 
 /**
  * @author Haikal Saadh
  */
 public class CopyUserManifestTask extends AbstractWarPackagingTask {
 
-    /** Instance logger. */
-    private Log log;
-
-    /**
-     * Returns the logger.
-     *
-     * return logger.
-     */
-    public Log getLog() {
-        if (log == null) {
-            log = new SystemStreamLog();
-        }
-        return log;
-    }
-
-    /**
-     * The logger.
-     *
-     * @param log the logger to set
-     */
-    public void setLog(Log log) {
-        this.log = log;
-    }
-
     public void performPackaging(WarPackagingContext context) throws MojoExecutionException, MojoFailureException {
         File userManifest = context.getArchive().getManifestFile();
         if (userManifest != null) {
 
             try {
-                getLog().info("Copying manifest...");
+                context.getLog().info("Copying manifest...");
                 File metainfDir = new File(context.getWebappDirectory(), META_INF_PATH);
                 copyFile(context, userManifest, new File(metainfDir, "MANIFEST.MF"), "META-INF/MANIFEST.MF", true);
 
