@@ -331,6 +331,6 @@ public class Overlay {
                 result.add(token.trim());
             }
         }
-        return result.toArray(new String[result.size()]);
+        return result.toArray(new String[0]);
     }
 }
