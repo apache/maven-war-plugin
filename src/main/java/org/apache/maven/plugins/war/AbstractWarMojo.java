@@ -207,13 +207,13 @@ public abstract class AbstractWarMojo extends AbstractMojo {
      * The comma separated list of tokens to include when copying the content of the warSourceDirectory.
      */
     @Parameter(defaultValue = "**")
-    private String warSourceIncludes;
+    private String warSourceIncludes = "**";
 
     /**
      * The comma separated list of tokens to exclude when copying the content of the warSourceDirectory.
      */
     @Parameter
-    private String warSourceExcludes;
+    private String warSourceExcludes = "";
 
     /**
      * The comma separated list of tokens to include when doing a WAR overlay. Default is
