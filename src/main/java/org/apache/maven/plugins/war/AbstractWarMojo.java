@@ -63,9 +63,7 @@ import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
  * Contains common jobs for WAR mojos.
  */
 public abstract class AbstractWarMojo extends AbstractMojo {
-    private static final String META_INF = "META-INF";
 
-    private static final String WEB_INF = "WEB-INF";
     /**
      * Whether to fail the build if the <code>web.xml</code> file is missing. Set to <code>false</code> if you
      * want your WAR built without a <code>web.xml</code> file. This may be useful if you are building an overlay that
@@ -417,12 +415,12 @@ public abstract class AbstractWarMojo extends AbstractMojo {
 
         // if webXML is specified, omit the one in the source directory
         if (webXml != null && StringUtils.isNotEmpty(webXml.getName())) {
-            excludeList.add("**/" + WEB_INF + "/web.xml");
+            excludeList.add("**/WEB-INF/web.xml");
         }
 
         // if contextXML is specified, omit the one in the source directory
         if (containerConfigXML != null && StringUtils.isNotEmpty(containerConfigXML.getName())) {
-            excludeList.add("**/" + META_INF + "/" + containerConfigXML.getName());
+            excludeList.add("**/META-INF/" + containerConfigXML.getName());
         }
 
         return excludeList.toArray(new String[excludeList.size()]);
