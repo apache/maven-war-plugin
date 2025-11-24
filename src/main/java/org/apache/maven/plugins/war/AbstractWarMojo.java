@@ -64,7 +64,7 @@ import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
  */
 public abstract class AbstractWarMojo extends AbstractMojo {
 
-  /**
+    /**
      * Whether to fail the build if the <code>web.xml</code> file is missing. Set to <code>false</code> if you
      * want your WAR built without a <code>web.xml</code> file. This may be useful if you are building an overlay that
      * has no web.xml file.
