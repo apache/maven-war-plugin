@@ -415,12 +415,12 @@ public abstract class AbstractWarMojo extends AbstractMojo {
 
         // if webXML is specified, omit the one in the source directory
         if (webXml != null && StringUtils.isNotEmpty(webXml.getName())) {
-            excludeList.add("**/" + "WEB-INF" + "/web.xml");
+            excludeList.add("**/WEB-INF/web.xml");
         }
 
         // if contextXML is specified, omit the one in the source directory
         if (containerConfigXML != null && StringUtils.isNotEmpty(containerConfigXML.getName())) {
-            excludeList.add("**/" + "META-INF" + "/" + containerConfigXML.getName());
+            excludeList.add("**/META-INF/" + containerConfigXML.getName());
         }
 
         return excludeList.toArray(new String[excludeList.size()]);
