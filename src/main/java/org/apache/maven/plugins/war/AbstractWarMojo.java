@@ -25,12 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
+import java.util.*;
 
 import org.apache.maven.archiver.MavenArchiveConfiguration;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
@@ -220,14 +215,14 @@ public abstract class AbstractWarMojo extends AbstractMojo {
      * {@link org.apache.maven.plugins.war.Overlay#DEFAULT_INCLUDES}
      */
     @Parameter
-    private String dependentWarIncludes = StringUtils.join(Overlay.DEFAULT_INCLUDES, ",");
+    private String dependentWarIncludes = String.join(",", Overlay.DEFAULT_INCLUDES);
 
     /**
      * The comma separated list of tokens to exclude when doing a WAR overlay. Default is
      * {@link org.apache.maven.plugins.war.Overlay#DEFAULT_EXCLUDES}
      */
     @Parameter
-    private String dependentWarExcludes = StringUtils.join(Overlay.DEFAULT_EXCLUDES, ",");
+    private String dependentWarExcludes = String.join(",", Overlay.DEFAULT_EXCLUDES);
 
     /**
      * The comma separated list of tokens to exclude from the WAR before packaging. This option may be used to implement
@@ -434,7 +429,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
      * @return an array of tokens to include
      */
     protected String[] getIncludes() {
-        return StringUtils.split(StringUtils.defaultString(warSourceIncludes), ",");
+        return StringUtils.split(Objects.toString(warSourceIncludes), ",");
     }
 
     /**
@@ -443,7 +438,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
      * @return an array of tokens to exclude
      */
     protected String[] getDependentWarExcludes() {
-        return StringUtils.split(StringUtils.defaultString(dependentWarExcludes), ",");
+        return StringUtils.split(Objects.toString(dependentWarExcludes), ",");
     }
 
     /**
@@ -452,7 +447,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
      * @return an array of tokens to include
      */
     protected String[] getDependentWarIncludes() {
-        return StringUtils.split(StringUtils.defaultString(dependentWarIncludes), ",");
+        return StringUtils.split(Objects.toString(dependentWarIncludes), ",");
     }
 
     /**
