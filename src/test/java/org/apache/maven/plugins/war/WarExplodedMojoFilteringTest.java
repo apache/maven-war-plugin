@@ -107,7 +107,12 @@ public class WarExplodedMojoFilteringTest extends AbstractWarExplodedMojoTest {
         setVariableValueToObject(mojo, "webResources", resources);
         setVariableValueToObject(mojo, "filters", filterList);
 
-        mojo.execute();
+        try {
+            mojo.execute();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw ex;
+        }
 
         // validate operation
         File expectedWebSourceFile = new File(webAppDirectory, "pansit.jsp");

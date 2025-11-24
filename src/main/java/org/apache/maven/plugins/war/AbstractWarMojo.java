@@ -31,7 +31,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Objects;
 
 import org.apache.maven.archiver.MavenArchiveConfiguration;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
@@ -435,7 +434,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
      * @return an array of tokens to include
      */
     protected String[] getIncludes() {
-        return StringUtils.split(Objects.toString(warSourceIncludes), ",");
+        return StringUtils.split(warSourceIncludes, ",");
     }
 
     /**
@@ -444,7 +443,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
      * @return an array of tokens to exclude
      */
     protected String[] getDependentWarExcludes() {
-        return StringUtils.split(Objects.toString(dependentWarExcludes), ",");
+        return StringUtils.split(dependentWarExcludes, ",");
     }
 
     /**
@@ -453,7 +452,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
      * @return an array of tokens to include
      */
     protected String[] getDependentWarIncludes() {
-        return StringUtils.split(Objects.toString(dependentWarIncludes), ",");
+        return StringUtils.split(dependentWarIncludes, ",");
     }
 
     /**
