@@ -325,14 +325,12 @@ public class Overlay {
 
     private String[] parse(String s) {
         final List<String> result = new ArrayList<>();
-        if (s == null) {
-            return result.toArray(new String[result.size()]);
-        } else {
+        if (s != null) {
             String[] tokens = s.split(",");
             for (String token : tokens) {
                 result.add(token.trim());
             }
-            return result.toArray(new String[result.size()]);
         }
+        return result.toArray(new String[result.size()]);
     }
 }
