@@ -59,11 +59,11 @@ class OverlayManagerTest {
 
         final List<Overlay> overlays = new ArrayList<>();
 
-        final Overlay overlay = currentProjectOverlay;
-        OverlayManager manager = new OverlayManager(overlays, project, DEFAULT_INCLUDES, DEFAULT_EXCLUDES, overlay);
+        OverlayManager manager =
+                new OverlayManager(overlays, project, DEFAULT_INCLUDES, DEFAULT_EXCLUDES, currentProjectOverlay);
         assertNotNull(manager.getOverlays());
         assertEquals(2, manager.getOverlays().size());
-        assertEquals(overlay, manager.getOverlays().get(0));
+        assertEquals(currentProjectOverlay, manager.getOverlays().get(0));
         assertEquals(new DefaultOverlay(first), manager.getOverlays().get(1));
     }
 

@@ -433,7 +433,7 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
         }
 
         String classifier = artifact.getClassifier();
-        if ((classifier != null) && !("".equals(classifier.trim()))) {
+        if (classifier != null && !(classifier.trim().isEmpty())) {
             return MappingUtils.evaluateFileNameMapping(MappingUtils.DEFAULT_FILE_NAME_MAPPING_CLASSIFIER, artifact);
         } else {
             return MappingUtils.evaluateFileNameMapping(MappingUtils.DEFAULT_FILE_NAME_MAPPING, artifact);
