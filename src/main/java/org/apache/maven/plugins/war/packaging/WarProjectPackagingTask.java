@@ -205,7 +205,7 @@ public class WarProjectPackagingTask extends AbstractWarPackagingTask {
             throws MojoFailureException, MojoExecutionException {
         try {
             if (webXml != null && StringUtils.isNotEmpty(webXml.getName())) {
-                if (!webXml.exists() && (failOnMissingWebXml == null || Boolean.TRUE.equals(failOnMissingWebXml))) {
+                if (!webXml.exists() && (failOnMissingWebXml == null || failOnMissingWebXml)) {
                     throw new MojoFailureException("The specified web.xml file '" + webXml + "' does not exist");
                 }
 
@@ -262,7 +262,7 @@ public class WarProjectPackagingTask extends AbstractWarPackagingTask {
                 }
             }
         } catch (IOException e) {
-            if (failOnMissingWebXml == null || Boolean.TRUE.equals(failOnMissingWebXml)) {
+            if (failOnMissingWebXml == null || failOnMissingWebXml) {
                 throw new MojoExecutionException("Failed to copy deployment descriptor", e);
             }
         } catch (MavenFilteringException e) {

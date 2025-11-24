@@ -20,7 +20,6 @@ package org.apache.maven.plugins.war.stub;
 
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
-import org.apache.maven.artifact.versioning.VersionRange;
 
 /**
  * stub for copy constructor
@@ -29,10 +28,6 @@ import org.apache.maven.artifact.versioning.VersionRange;
 public class WarArtifact4CCStub extends WarArtifactStub {
     public WarArtifact4CCStub(String basedir) {
         super(basedir);
-    }
-
-    public VersionRange getVersionRange() {
-        return VersionRange.createFromVersion(getVersion());
     }
 
     public String getGroupId() {
