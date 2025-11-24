@@ -28,8 +28,8 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.war.Overlay;
 import org.apache.maven.plugins.war.util.PathSet;
 import org.apache.maven.shared.filtering.MavenFilteringException;
+import org.apache.maven.shared.utils.StringUtils;
 import org.codehaus.plexus.util.DirectoryScanner;
-import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Handles the project own resources, that is:

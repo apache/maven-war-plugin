@@ -410,7 +410,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
     protected String[] getExcludes() {
         List<String> excludeList = new ArrayList<>();
         if (warSourceExcludes != null && !warSourceExcludes.isEmpty()) {
-            excludeList.addAll(Arrays.asList(StringUtils.split(warSourceExcludes, ",")));
+            excludeList.addAll(Arrays.asList(warSourceExcludes.split(",")));
         }
 
         // if webXML is specified, omit the one in the source directory
@@ -432,7 +432,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
      * @return an array of tokens to include
      */
     protected String[] getIncludes() {
-        return StringUtils.split(warSourceIncludes, ",");
+        return warSourceIncludes.split(",");
     }
 
     /**
@@ -441,7 +441,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
      * @return an array of tokens to exclude
      */
     protected String[] getDependentWarExcludes() {
-        return StringUtils.split(dependentWarExcludes, ",");
+        return dependentWarExcludes.split(",");
     }
 
     /**
@@ -450,7 +450,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
      * @return an array of tokens to include
      */
     protected String[] getDependentWarIncludes() {
-        return StringUtils.split(dependentWarIncludes, ",");
+        return dependentWarIncludes.split(",");
     }
 
     /**
@@ -1066,7 +1066,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
         if (packagingExcludes == null || packagingExcludes.isEmpty()) {
             return new String[0];
         } else {
-            return org.codehaus.plexus.util.StringUtils.split(packagingExcludes, ",");
+            return packagingExcludes.split(",");
         }
     }
 
@@ -1084,7 +1084,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
         if (packagingIncludes == null || packagingIncludes.isEmpty()) {
             return new String[] {"**"};
         } else {
-            return org.codehaus.plexus.util.StringUtils.split(packagingIncludes, ",");
+            return packagingIncludes.split(",");
         }
     }
 
