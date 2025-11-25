@@ -423,7 +423,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
             excludeList.add("**/META-INF/" + containerConfigXML.getName());
         }
 
-        return excludeList.toArray(new String[excludeList.size()]);
+        return excludeList.toArray(new String[0]);
     }
 
     /**
