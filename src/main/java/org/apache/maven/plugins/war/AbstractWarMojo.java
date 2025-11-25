@@ -205,27 +205,27 @@ public abstract class AbstractWarMojo extends AbstractMojo {
      * The comma separated list of tokens to include when copying the content of the warSourceDirectory.
      */
     @Parameter(defaultValue = "**")
-    private String warSourceIncludes;
+    private String warSourceIncludes = "**";
 
     /**
      * The comma separated list of tokens to exclude when copying the content of the warSourceDirectory.
      */
     @Parameter
-    private String warSourceExcludes;
+    private String warSourceExcludes = "";
 
     /**
      * The comma separated list of tokens to include when doing a WAR overlay. Default is
      * {@link org.apache.maven.plugins.war.Overlay#DEFAULT_INCLUDES}
      */
     @Parameter
-    private String dependentWarIncludes = StringUtils.join(Overlay.DEFAULT_INCLUDES, ",");
+    private String dependentWarIncludes = String.join(",", Overlay.DEFAULT_INCLUDES);
 
     /**
      * The comma separated list of tokens to exclude when doing a WAR overlay. Default is
      * {@link org.apache.maven.plugins.war.Overlay#DEFAULT_EXCLUDES}
      */
     @Parameter
-    private String dependentWarExcludes = StringUtils.join(Overlay.DEFAULT_EXCLUDES, ",");
+    private String dependentWarExcludes = String.join(",", Overlay.DEFAULT_EXCLUDES);
 
     /**
      * The comma separated list of tokens to exclude from the WAR before packaging. This option may be used to implement
@@ -410,7 +410,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
     protected String[] getExcludes() {
         List<String> excludeList = new ArrayList<>();
         if (warSourceExcludes != null && !warSourceExcludes.isEmpty()) {
-            excludeList.addAll(Arrays.asList(StringUtils.split(warSourceExcludes, ",")));
+            excludeList.addAll(Arrays.asList(warSourceExcludes.split(",")));
         }
 
         // if webXML is specified, omit the one in the source directory
@@ -432,7 +432,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
      * @return an array of tokens to include
      */
     protected String[] getIncludes() {
-        return StringUtils.split(StringUtils.defaultString(warSourceIncludes), ",");
+        return warSourceIncludes.split(",");
     }
 
     /**
@@ -441,7 +441,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
      * @return an array of tokens to exclude
      */
     protected String[] getDependentWarExcludes() {
-        return StringUtils.split(StringUtils.defaultString(dependentWarExcludes), ",");
+        return dependentWarExcludes.split(",");
     }
 
     /**
@@ -450,7 +450,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
      * @return an array of tokens to include
      */
     protected String[] getDependentWarIncludes() {
-        return StringUtils.split(StringUtils.defaultString(dependentWarIncludes), ",");
+        return dependentWarIncludes.split(",");
     }
 
     /**
@@ -1066,7 +1066,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
         if (packagingExcludes == null || packagingExcludes.isEmpty()) {
             return new String[0];
         } else {
-            return org.codehaus.plexus.util.StringUtils.split(packagingExcludes, ",");
+            return packagingExcludes.split(",");
         }
     }
 
@@ -1084,7 +1084,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
         if (packagingIncludes == null || packagingIncludes.isEmpty()) {
             return new String[] {"**"};
         } else {
-            return org.codehaus.plexus.util.StringUtils.split(packagingIncludes, ",");
+            return packagingIncludes.split(",");
         }
     }
 

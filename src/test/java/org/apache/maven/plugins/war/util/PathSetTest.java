@@ -24,7 +24,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.codehaus.plexus.util.StringUtils;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -103,9 +102,9 @@ public class PathSetTest {
             i++;
             assertTrue(ps.contains(pathstr));
             assertTrue(ps.contains("/" + pathstr));
-            assertTrue(ps.contains("/" + StringUtils.replace(pathstr, '/', '\\')));
-            assertFalse(ps.contains("/" + StringUtils.replace(pathstr, '/', '\\') + "/a"));
-            assertFalse(ps.contains("/a/" + StringUtils.replace(pathstr, '/', '\\')));
+            assertTrue(ps.contains("/" + pathstr.replace('/', '\\')));
+            assertFalse(ps.contains("/" + pathstr.replace('/', '\\') + "/a"));
+            assertFalse(ps.contains("/a/" + pathstr.replace('/', '\\')));
         }
         assertEquals(2, i, "Wrong count of iterations");
 
@@ -117,9 +116,9 @@ public class PathSetTest {
             assertFalse(pathstr.startsWith("ab/c//"));
             assertTrue(ps.contains(pathstr));
             assertTrue(ps.contains("/" + pathstr));
-            assertTrue(ps.contains("/" + StringUtils.replace(pathstr, '/', '\\')));
-            assertFalse(ps.contains("/" + StringUtils.replace(pathstr, '/', '\\') + "/a"));
-            assertFalse(ps.contains("/ab/" + StringUtils.replace(pathstr, '/', '\\')));
+            assertTrue(ps.contains("/" + pathstr.replace('/', '\\')));
+            assertFalse(ps.contains("/" + pathstr.replace('/', '\\') + "/a"));
+            assertFalse(ps.contains("/ab/" + pathstr.replace('/', '\\')));
         }
         assertEquals(2, i, "Wrong count of iterations");
     }

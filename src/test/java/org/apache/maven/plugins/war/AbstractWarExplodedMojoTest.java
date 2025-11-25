@@ -39,7 +39,7 @@ public abstract class AbstractWarExplodedMojoTest extends AbstractWarMojoTest {
 
     public void setUp() throws Exception {
         super.setUp();
-        mojo = (WarExplodedMojo) lookupMojo("exploded", getPomFile());
+        mojo = lookupMojo("exploded", getPomFile());
     }
 
     /**
