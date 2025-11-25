@@ -322,8 +322,7 @@ public class WarProjectPackagingTask extends AbstractWarPackagingTask {
         DirectoryScanner scanner = new DirectoryScanner();
         scanner.setBasedir(resource.getDirectory());
         if (resource.getIncludes() != null && !resource.getIncludes().isEmpty()) {
-            scanner.setIncludes(resource.getIncludes()
-                    .toArray(new String[0]));
+            scanner.setIncludes(resource.getIncludes().toArray(new String[0]));
         } else {
             scanner.setIncludes(DEFAULT_INCLUDES);
         }
