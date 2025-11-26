@@ -27,8 +27,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.maven.api.di.Provides;
 import org.apache.maven.api.plugin.testing.InjectMojo;
+import org.apache.maven.api.plugin.testing.MojoExtension;
 import org.apache.maven.api.plugin.testing.MojoParameter;
 import org.apache.maven.api.plugin.testing.MojoTest;
 import org.apache.maven.plugin.testing.stubs.ArtifactStub;
@@ -60,13 +60,7 @@ public class WarOverlaysTest {
     private static final File OVERLAYS_ROOT_DIR = new File(getBasedir(), "target/test-classes/overlays/");
     private static final String MANIFEST_PATH = "META-INF" + File.separator + "MANIFEST.MF";
 
-    @Inject
-    private MavenProject project;
 
-    @Provides
-    MavenProject project() throws Exception {
-        return new MavenProjectArtifactsStub();
-    }
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -87,6 +81,7 @@ public class WarOverlaysTest {
     @MojoParameter(name = "webXml", value ="target/test-classes/unit/waroverlays/no-overlay-test-data/xml-config/web.xml" )
     @Test
     public void testNoOverlay(WarExplodedMojo mojo) throws Exception {
+        mojo.setProject(new MavenProjectArtifactsStub());
         mojo.execute();
 
         // Validate content of the webapp
@@ -96,22 +91,26 @@ public class WarOverlaysTest {
 
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/waroverlays/default.xml")
     @MojoParameter(name = "workDirectory", value = "target/test-classes/unit/waroverlays/war/work-default-overlay")
+    @MojoParameter(name = "classesDirectory", value = "target/test-classes/unit/waroverlays/default-overlay-test-data/classes")
+    @MojoParameter(name = "warSourceDirectory", value ="target/test-classes/unit/waroverlays/default-overlay-test-data/source/" )
+    @MojoParameter(name = "webappDirectory", value ="target/test-classes/unit/waroverlays/default-overlay" )
     @Test
     public void testDefaultOverlay(WarExplodedMojo mojo) throws Exception {
-        // setup test data
-        final String testId = "default-overlay";
-        final File classesDir = createClassesDir(testId, true);
-        final File webAppDirectory = new File(getTestDirectory(), testId);
-        File webAppSource = createWebAppSource(testId);
+        // Create war file
+        final File destFile = new File(OVERLAYS_TEMP_DIR, "overlay-one" + ".war");
+        if (!destFile.exists()) {
+            createArchive(new File(OVERLAYS_ROOT_DIR, "overlay-one"), destFile);
+        }
 
-        final ArtifactStub overlay = buildWarOverlayStub("overlay-one");
+        final ArtifactStub overlay = new WarOverlayStub(MojoExtension.getBasedir(), "overlay-one", destFile);
         final MavenProjectArtifactsStub project = createProjectWithOverlays(overlay);
 
-        configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
+        mojo.setProject(project);
 
         mojo.execute();
 
         final List<File> assertedFiles = new ArrayList<>();
+        File webAppDirectory = (File) getVariableValueFromObject(mojo, "webappDirectory");
         assertedFiles.addAll(assertDefaultContent(webAppDirectory));
         assertedFiles.addAll(assertWebXml(webAppDirectory));
         assertedFiles.addAll(assertCustomContent(
