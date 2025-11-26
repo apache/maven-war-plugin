@@ -168,19 +168,11 @@ public class WarOverlaysTest {
     @MojoParameter(
             name = "workDirectory",
             value = "target/test-classes/unit/waroverlays/war/work-scenario-one-default-settings")
+    @MojoParameter(name = "classesDirectory", value = "target/test-classes/unit/waroverlays/scenario-one-default-settings-test-data/classes")
+    @MojoParameter(name = "warSourceDirectory", value ="target/test-classes/unit/waroverlays/scenario-one-default-settings-test-data/source/" )
+    @MojoParameter(name = "webappDirectory", value ="target/test-classes/unit/waroverlays/scenario-one-default-settings" )
     @Test
     public void testScenarioOneWithDefaulSettings(WarExplodedMojo mojo) throws Exception {
-        // setup test data
-        final String testId = "scenario-one-default-settings";
-        final File classesDir = createClassesDir(testId, true);
-        final File webAppDirectory = new File(getTestDirectory(), testId);
-        File webAppSource = createWebAppSource(testId, false);
-        String[] sourceFiles = new String[] {"org/sample/company/test.jsp", "jsp/b.jsp"};
-        for (String sourceFile : sourceFiles) {
-            File sample = new File(webAppSource, sourceFile);
-            createFile(sample);
-        }
-
         // Add an overlay
         final ArtifactStub overlay1 = buildWarOverlayStub("overlay-full-1");
         final ArtifactStub overlay2 = buildWarOverlayStub("overlay-full-2");
@@ -188,11 +180,12 @@ public class WarOverlaysTest {
 
         final MavenProjectArtifactsStub project = createProjectWithOverlays(overlay1, overlay2, overlay3);
 
-        configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
+        mojo.setProject(project);
 
         mojo.execute();
 
-        assertScenariOne(testId, webAppDirectory);
+        File webAppDirectory = (File) getVariableValueFromObject(mojo, "webappDirectory");
+        assertScenariOne("scenario-one-default-settings", webAppDirectory);
     }
 
     /**
@@ -225,6 +218,7 @@ public class WarOverlaysTest {
         final ArtifactStub overlay3 = buildWarOverlayStub("overlay-full-3");
 
         final MavenProjectArtifactsStub project = createProjectWithOverlays(overlay1, overlay2, overlay3);
+        mojo.setProject(project);
 
         // Add the tags
         final List<Overlay> overlays = new ArrayList<>();
@@ -233,7 +227,6 @@ public class WarOverlaysTest {
         overlays.add(new DefaultOverlay(overlay3));
         mojo.setOverlays(overlays);
 
-        configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
 
         mojo.execute();
 
