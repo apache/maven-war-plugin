@@ -35,14 +35,11 @@ import org.apache.maven.plugin.testing.stubs.ArtifactStub;
 import org.apache.maven.plugins.war.overlay.DefaultOverlay;
 import org.apache.maven.plugins.war.stub.MavenProjectArtifactsStub;
 import org.apache.maven.plugins.war.stub.WarOverlayStub;
-import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import javax.inject.Inject;
 
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
 import static org.apache.maven.api.plugin.testing.MojoExtension.getVariableValueFromObject;
@@ -127,22 +124,20 @@ public class WarOverlaysTest {
 
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/waroverlays/default.xml")
     @MojoParameter(name = "workDirectory", value = "target/test-classes/unit/waroverlays/war/work-default-overlays")
+    @MojoParameter(name = "classesDirectory", value = "target/test-classes/unit/waroverlays/default-overlays-test-data/classes")
+    @MojoParameter(name = "warSourceDirectory", value ="target/test-classes/unit/waroverlays/default-overlays-test-data/source/" )
+    @MojoParameter(name = "webappDirectory", value ="target/test-classes/unit/waroverlays/default-overlays" )
     @Test
     public void testDefaultOverlays(WarExplodedMojo mojo) throws Exception {
-        // setup test data
-        final String testId = "default-overlays";
-        final File webAppDirectory = new File(getTestDirectory(), testId);
-        File webAppSource = createWebAppSource(testId);
-        final File classesDir = createClassesDir(testId, true);
-
-        final ArtifactStub overlay = buildWarOverlayStub("overlay-one");
+          final ArtifactStub overlay = buildWarOverlayStub("overlay-one");
         final ArtifactStub overlay2 = buildWarOverlayStub("overlay-two");
         final MavenProjectArtifactsStub project = createProjectWithOverlays(overlay, overlay2);
 
-        configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
+        mojo.setProject(project);
 
         mojo.execute();
 
+        File webAppDirectory = (File) getVariableValueFromObject(mojo, "webappDirectory");
         final List<File> assertedFiles = new ArrayList<>();
         assertedFiles.addAll(assertDefaultContent(webAppDirectory));
         assertedFiles.addAll(assertWebXml(webAppDirectory));
