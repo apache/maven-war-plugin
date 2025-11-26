@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.maven.api.di.Provides;
 import org.apache.maven.api.plugin.testing.InjectMojo;
 import org.apache.maven.api.plugin.testing.MojoParameter;
 import org.apache.maven.api.plugin.testing.MojoTest;
@@ -34,13 +35,17 @@ import org.apache.maven.plugin.testing.stubs.ArtifactStub;
 import org.apache.maven.plugins.war.overlay.DefaultOverlay;
 import org.apache.maven.plugins.war.stub.MavenProjectArtifactsStub;
 import org.apache.maven.plugins.war.stub.WarOverlayStub;
+import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import javax.inject.Inject;
+
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
+import static org.apache.maven.api.plugin.testing.MojoExtension.getVariableValueFromObject;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -51,15 +56,23 @@ import static org.junit.jupiter.api.Assertions.fail;
 @MojoTest
 public class WarOverlaysTest {
 
-    private static final File OVERLAYS_TEMP_DIR = new File(getBasedir(), "target/test-overlays/");
+    private static final File OVERLAYS_TEMP_DIR = new File(getBasedir(), "target/test-classes/unit/waroverlays/test-overlays/");
     private static final File OVERLAYS_ROOT_DIR = new File(getBasedir(), "target/test-classes/overlays/");
     private static final String MANIFEST_PATH = "META-INF" + File.separator + "MANIFEST.MF";
 
+    @Inject
+    private MavenProject project;
+
+    @Provides
+    MavenProject project() throws Exception {
+        return new MavenProjectArtifactsStub();
+    }
+
     @BeforeEach
     public void setUp() throws Exception {
-        generateFullOverlayWar("overlay-full-1");
-        generateFullOverlayWar("overlay-full-2");
-        generateFullOverlayWar("overlay-full-3");
+//        generateFullOverlayWar("overlay-full-1");
+//        generateFullOverlayWar("overlay-full-2");
+//        generateFullOverlayWar("overlay-full-3");
     }
 
     private File getTestDirectory() {
@@ -68,22 +81,17 @@ public class WarOverlaysTest {
 
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/waroverlays/default.xml")
     @MojoParameter(name = "workDirectory", value = "target/test-classes/unit/waroverlays/war/work-no-overlay")
+    @MojoParameter(name = "classesDirectory", value = "target/test-classes/unit/waroverlays/no-overlay-test-data/classes")
+    @MojoParameter(name = "warSourceDirectory", value ="target/test-classes/unit/waroverlays/no-overlay-test-data/source/" )
+    @MojoParameter(name = "webappDirectory", value ="target/test-classes/unit/waroverlays/no-overlay" )
+    @MojoParameter(name = "webXml", value ="target/test-classes/unit/waroverlays/no-overlay-test-data/xml-config/web.xml" )
     @Test
     public void testNoOverlay(WarExplodedMojo mojo) throws Exception {
-        // setup test data
-        final String testId = "no-overlay";
-        final File xmlSource = createXMLConfigDir(testId, new String[] {"web.xml"});
-        final File webAppDirectory = new File(getTestDirectory(), testId);
-        final File classesDir = createClassesDir(testId, true);
-        File webAppSource = createWebAppSource(testId);
-
-        configureMojo(mojo, classesDir, webAppSource, webAppDirectory, xmlSource);
-
         mojo.execute();
 
         // Validate content of the webapp
-        assertDefaultContent(webAppDirectory);
-        assertWebXml(webAppDirectory);
+        assertDefaultContent((File) getVariableValueFromObject(mojo, "webappDirectory"));
+        assertWebXml((File) getVariableValueFromObject(mojo, "webappDirectory"));
     }
 
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/waroverlays/default.xml")
@@ -669,6 +677,30 @@ public class WarOverlaysTest {
     }
 
     /**
+     * create an isolated xml dir
+     *
+     * @param id The id.
+     * @param xmlFiles array of xml files.
+     * @return The created file.
+     * @throws Exception in case of errors.
+     */
+    private File createXMLConfigDir(String id, String[] xmlFiles) throws Exception {
+        File xmlConfigDir = new File(getTestDirectory(), "/" + id + "-test-data/xml-config");
+        File xmlFile;
+
+        createDir(xmlConfigDir);
+
+        if (xmlFiles != null) {
+            for (String o : xmlFiles) {
+                xmlFile = new File(xmlConfigDir, o);
+                createFile(xmlFile);
+            }
+        }
+
+        return xmlConfigDir;
+    }
+
+    /**
      * Builds the list of files and directories from the specified dir.
      *
      * Note that the filter is not used the usual way. If the filter does not accept the current file, it's not added
@@ -692,30 +724,6 @@ public class WarOverlaysTest {
                 buildFilesList(file, filter, content);
             }
         }
-    }
-
-    /**
-     * create an isolated xml dir
-     *
-     * @param id The id.
-     * @param xmlFiles array of xml files.
-     * @return The created file.
-     * @throws Exception in case of errors.
-     */
-    private File createXMLConfigDir(String id, String[] xmlFiles) throws Exception {
-        File xmlConfigDir = new File(getTestDirectory(), "/" + id + "-test-data/xml-config");
-        File xmlFile;
-
-        createDir(xmlConfigDir);
-
-        if (xmlFiles != null) {
-            for (String o : xmlFiles) {
-                xmlFile = new File(xmlConfigDir, o);
-                createFile(xmlFile);
-            }
-        }
-
-        return xmlConfigDir;
     }
 
     /**
