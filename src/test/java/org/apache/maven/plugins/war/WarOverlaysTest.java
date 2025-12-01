@@ -199,6 +199,9 @@ public class WarOverlaysTest {
     @MojoParameter(
             name = "workDirectory",
             value = "target/test-classes/unit/waroverlays/war/work-scenario-one-overlay-settings")
+    @MojoParameter(name = "classesDirectory", value = "target/test-classes/unit/waroverlays/scenario-one-overlay-settings-test-data/classes")
+    @MojoParameter(name = "warSourceDirectory", value ="target/test-classes/unit/waroverlays/scenario-one-overlay-settings-test-data/source/" )
+    @MojoParameter(name = "webappDirectory", value ="target/test-classes/unit/waroverlays/scenario-one-overlay-settings" )
     @Test
     public void testScenarioOneWithOverlaySettings(WarExplodedMojo mojo) throws Exception {
         // setup test data
@@ -230,7 +233,7 @@ public class WarOverlaysTest {
 
         mojo.execute();
 
-        assertScenariOne(testId, webAppDirectory);
+        assertScenariOne("scenario-one-overlay-settings", webAppDirectory);
     }
 
     /**
