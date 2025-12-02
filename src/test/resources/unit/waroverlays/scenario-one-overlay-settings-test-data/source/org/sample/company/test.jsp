@@ -1,0 +1,1 @@
+/home/sparsick/dev/workspace/maven-war-plugin/target/test-classes/unit/waroverlays/scenario-one-overlay-settings-test-data/source/org/sample/company/test.jsp

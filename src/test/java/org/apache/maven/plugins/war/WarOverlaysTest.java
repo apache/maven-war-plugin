@@ -53,17 +53,16 @@ import static org.junit.jupiter.api.Assertions.fail;
 @MojoTest
 public class WarOverlaysTest {
 
-    private static final File OVERLAYS_TEMP_DIR = new File(getBasedir(), "target/test-classes/unit/waroverlays/test-overlays/");
+    private static final File OVERLAYS_TEMP_DIR =
+            new File(getBasedir(), "target/test-classes/unit/waroverlays/test-overlays/");
     private static final File OVERLAYS_ROOT_DIR = new File(getBasedir(), "target/test-classes/overlays/");
     private static final String MANIFEST_PATH = "META-INF" + File.separator + "MANIFEST.MF";
 
-
-
     @BeforeEach
     public void setUp() throws Exception {
-//        generateFullOverlayWar("overlay-full-1");
-//        generateFullOverlayWar("overlay-full-2");
-//        generateFullOverlayWar("overlay-full-3");
+        //        generateFullOverlayWar("overlay-full-1");
+        //        generateFullOverlayWar("overlay-full-2");
+        //        generateFullOverlayWar("overlay-full-3");
     }
 
     private File getTestDirectory() {
@@ -72,10 +71,16 @@ public class WarOverlaysTest {
 
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/waroverlays/default.xml")
     @MojoParameter(name = "workDirectory", value = "target/test-classes/unit/waroverlays/war/work-no-overlay")
-    @MojoParameter(name = "classesDirectory", value = "target/test-classes/unit/waroverlays/no-overlay-test-data/classes")
-    @MojoParameter(name = "warSourceDirectory", value ="target/test-classes/unit/waroverlays/no-overlay-test-data/source/" )
-    @MojoParameter(name = "webappDirectory", value ="target/test-classes/unit/waroverlays/no-overlay" )
-    @MojoParameter(name = "webXml", value ="target/test-classes/unit/waroverlays/no-overlay-test-data/xml-config/web.xml" )
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/waroverlays/no-overlay-test-data/classes")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/waroverlays/no-overlay-test-data/source/")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/waroverlays/no-overlay")
+    @MojoParameter(
+            name = "webXml",
+            value = "target/test-classes/unit/waroverlays/no-overlay-test-data/xml-config/web.xml")
     @Test
     public void testNoOverlay(WarExplodedMojo mojo) throws Exception {
         mojo.setProject(new MavenProjectArtifactsStub());
@@ -88,9 +93,13 @@ public class WarOverlaysTest {
 
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/waroverlays/default.xml")
     @MojoParameter(name = "workDirectory", value = "target/test-classes/unit/waroverlays/war/work-default-overlay")
-    @MojoParameter(name = "classesDirectory", value = "target/test-classes/unit/waroverlays/default-overlay-test-data/classes")
-    @MojoParameter(name = "warSourceDirectory", value ="target/test-classes/unit/waroverlays/default-overlay-test-data/source/" )
-    @MojoParameter(name = "webappDirectory", value ="target/test-classes/unit/waroverlays/default-overlay" )
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/waroverlays/default-overlay-test-data/classes")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/waroverlays/default-overlay-test-data/source/")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/waroverlays/default-overlay")
     @Test
     public void testDefaultOverlay(WarExplodedMojo mojo) throws Exception {
         // Create war file
@@ -124,12 +133,16 @@ public class WarOverlaysTest {
 
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/waroverlays/default.xml")
     @MojoParameter(name = "workDirectory", value = "target/test-classes/unit/waroverlays/war/work-default-overlays")
-    @MojoParameter(name = "classesDirectory", value = "target/test-classes/unit/waroverlays/default-overlays-test-data/classes")
-    @MojoParameter(name = "warSourceDirectory", value ="target/test-classes/unit/waroverlays/default-overlays-test-data/source/" )
-    @MojoParameter(name = "webappDirectory", value ="target/test-classes/unit/waroverlays/default-overlays" )
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/waroverlays/default-overlays-test-data/classes")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/waroverlays/default-overlays-test-data/source/")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/waroverlays/default-overlays")
     @Test
     public void testDefaultOverlays(WarExplodedMojo mojo) throws Exception {
-          final ArtifactStub overlay = buildWarOverlayStub("overlay-one");
+        final ArtifactStub overlay = buildWarOverlayStub("overlay-one");
         final ArtifactStub overlay2 = buildWarOverlayStub("overlay-two");
         final MavenProjectArtifactsStub project = createProjectWithOverlays(overlay, overlay2);
 
@@ -168,9 +181,15 @@ public class WarOverlaysTest {
     @MojoParameter(
             name = "workDirectory",
             value = "target/test-classes/unit/waroverlays/war/work-scenario-one-default-settings")
-    @MojoParameter(name = "classesDirectory", value = "target/test-classes/unit/waroverlays/scenario-one-default-settings-test-data/classes")
-    @MojoParameter(name = "warSourceDirectory", value ="target/test-classes/unit/waroverlays/scenario-one-default-settings-test-data/source/" )
-    @MojoParameter(name = "webappDirectory", value ="target/test-classes/unit/waroverlays/scenario-one-default-settings" )
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/waroverlays/scenario-one-default-settings-test-data/classes")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/waroverlays/scenario-one-default-settings-test-data/source/")
+    @MojoParameter(
+            name = "webappDirectory",
+            value = "target/test-classes/unit/waroverlays/scenario-one-default-settings")
     @Test
     public void testScenarioOneWithDefaulSettings(WarExplodedMojo mojo) throws Exception {
         // Add an overlay
@@ -199,22 +218,17 @@ public class WarOverlaysTest {
     @MojoParameter(
             name = "workDirectory",
             value = "target/test-classes/unit/waroverlays/war/work-scenario-one-overlay-settings")
-    @MojoParameter(name = "classesDirectory", value = "target/test-classes/unit/waroverlays/scenario-one-overlay-settings-test-data/classes")
-    @MojoParameter(name = "warSourceDirectory", value ="target/test-classes/unit/waroverlays/scenario-one-overlay-settings-test-data/source/" )
-    @MojoParameter(name = "webappDirectory", value ="target/test-classes/unit/waroverlays/scenario-one-overlay-settings" )
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/waroverlays/scenario-one-overlay-settings-test-data/classes")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/waroverlays/scenario-one-overlay-settings-test-data/source/")
+    @MojoParameter(
+            name = "webappDirectory",
+            value = "target/test-classes/unit/waroverlays/scenario-one-overlay-settings")
     @Test
     public void testScenarioOneWithOverlaySettings(WarExplodedMojo mojo) throws Exception {
-        // setup test data
-        final String testId = "scenario-one-overlay-settings";
-        final File classesDir = createClassesDir(testId, true);
-        final File webAppDirectory = new File(getTestDirectory(), testId);
-        File webAppSource = createWebAppSource(testId, false);
-        String[] sourceFiles = new String[] {"org/sample/company/test.jsp", "jsp/b.jsp"};
-        for (String sourceFile : sourceFiles) {
-            File sample = new File(webAppSource, sourceFile);
-            createFile(sample);
-        }
-
         // Add an overlay
         final ArtifactStub overlay1 = buildWarOverlayStub("overlay-full-1");
         final ArtifactStub overlay2 = buildWarOverlayStub("overlay-full-2");
@@ -230,9 +244,9 @@ public class WarOverlaysTest {
         overlays.add(new DefaultOverlay(overlay3));
         mojo.setOverlays(overlays);
 
-
         mojo.execute();
 
+        File webAppDirectory = (File) getVariableValueFromObject(mojo, "webappDirectory");
         assertScenariOne("scenario-one-overlay-settings", webAppDirectory);
     }
 
@@ -247,6 +261,15 @@ public class WarOverlaysTest {
     @MojoParameter(
             name = "workDirectory",
             value = "target/test-classes/unit/waroverlays/war/work-scenario-one-full-settings")
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/waroverlays/scenario-one-overlay-settings-test-data/classes")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/waroverlays/scenario-one-overlay-settings-test-data/source/")
+    @MojoParameter(
+            name = "webappDirectory",
+            value = "target/test-classes/unit/waroverlays/scenario-one-overlay-settings")
     @Test
     public void testScenarioOneWithFullSettings(WarExplodedMojo mojo) throws Exception {
         // setup test data
