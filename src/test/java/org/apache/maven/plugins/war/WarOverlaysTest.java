@@ -439,12 +439,10 @@ public class WarOverlaysTest {
             value = "target/test-classes/unit/waroverlays/war/work-overlays-includes-excludes-multiple-defs2")
     @MojoParameter(
             name = "classesDirectory",
-            value =
-                    "target/test-classes/unit/waroverlays/overlays-includes-excludes-multiple-defs2-test-data/classes")
+            value = "target/test-classes/unit/waroverlays/overlays-includes-excludes-multiple-defs2-test-data/classes")
     @MojoParameter(
             name = "warSourceDirectory",
-            value =
-                    "target/test-classes/unit/waroverlays/overlays-includes-excludes-multiple-defs2-test-data/source/")
+            value = "target/test-classes/unit/waroverlays/overlays-includes-excludes-multiple-defs2-test-data/source/")
     @MojoParameter(
             name = "webappDirectory",
             value = "target/test-classes/unit/waroverlays/overlays-includes-excludes-multiple-defs2")
