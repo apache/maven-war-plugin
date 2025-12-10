@@ -267,9 +267,7 @@ public class WarOverlaysTest {
     @MojoParameter(
             name = "warSourceDirectory",
             value = "target/test-classes/unit/waroverlays/scenario-one-full-settings-test-data/source/")
-    @MojoParameter(
-            name = "webappDirectory",
-            value = "target/test-classes/unit/waroverlays/scenario-one-full-settings")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/waroverlays/scenario-one-full-settings")
     @Test
     public void testScenarioOneWithFullSettings(WarExplodedMojo mojo) throws Exception {
         // Add an overlay
@@ -371,7 +369,6 @@ public class WarOverlaysTest {
         final MavenProjectArtifactsStub project = createProjectWithOverlays(overlay1, overlay2, overlay3);
         mojo.setProject(project);
 
-
         Overlay over1 = new DefaultOverlay(overlay3);
         over1.setExcludes("**/a.*,**/c.*,**/*.xml");
 
@@ -390,7 +387,6 @@ public class WarOverlaysTest {
         mojo.addOverlay(over3);
         mojo.addOverlay(mojo.getCurrentProjectOverlay());
         mojo.addOverlay(over4);
-
 
         mojo.execute();
 
@@ -422,7 +418,8 @@ public class WarOverlaysTest {
         assertOverlayedFile(webAppDirectory, "overlay-full-3", "jsp/d/a.jsp");
         assertOverlayedFile(webAppDirectory, "overlay-full-3", "jsp/d/b.jsp");
         assertOverlayedFile(webAppDirectory, "overlay-full-1", "jsp/d/c.jsp");
-        assertDefaultFileContent("overlays-includes-excludes-multiple-defs", webAppDirectory, "org/sample/company/test.jsp");
+        assertDefaultFileContent(
+                "overlays-includes-excludes-multiple-defs", webAppDirectory, "org/sample/company/test.jsp");
         assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/web.xml");
         assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/classes/a.clazz");
         assertOverlayedFile(webAppDirectory, "overlay-full-3", "WEB-INF/classes/b.clazz");
@@ -442,10 +439,12 @@ public class WarOverlaysTest {
             value = "target/test-classes/unit/waroverlays/war/work-overlays-includes-excludes-multiple-defs2")
     @MojoParameter(
             name = "classesDirectory",
-            value = "target/test-classes/unit/waroverlays/overlays-overlays-includes-excludes-multiple-defs2-test-data/classes")
+            value =
+                    "target/test-classes/unit/waroverlays/overlays-includes-excludes-multiple-defs2-test-data/classes")
     @MojoParameter(
             name = "warSourceDirectory",
-            value = "target/test-classes/unit/waroverlays/overlays-overlays-includes-excludes-multiple-defs2-test-data/source/")
+            value =
+                    "target/test-classes/unit/waroverlays/overlays-includes-excludes-multiple-defs2-test-data/source/")
     @MojoParameter(
             name = "webappDirectory",
             value = "target/test-classes/unit/waroverlays/overlays-includes-excludes-multiple-defs2")
@@ -509,7 +508,8 @@ public class WarOverlaysTest {
         assertOverlayedFile(webAppDirectory, "overlay-full-3", "jsp/d/a.jsp");
         assertOverlayedFile(webAppDirectory, "overlay-full-3", "jsp/d/b.jsp");
         assertOverlayedFile(webAppDirectory, "overlay-full-1", "jsp/d/c.jsp");
-        assertDefaultFileContent("overlays-includes-excludes-multiple-defs2", webAppDirectory, "org/sample/company/test.jsp");
+        assertDefaultFileContent(
+                "overlays-includes-excludes-multiple-defs2", webAppDirectory, "org/sample/company/test.jsp");
         assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/web.xml");
         assertOverlayedFile(webAppDirectory, "overlay-full-2", "WEB-INF/classes/a.clazz");
         assertOverlayedFile(webAppDirectory, "overlay-full-3", "WEB-INF/classes/b.clazz");
