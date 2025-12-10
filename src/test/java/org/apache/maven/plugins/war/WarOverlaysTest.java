@@ -525,29 +525,6 @@ public class WarOverlaysTest {
 
     // Helpers
 
-    private void configureMojo(
-            WarExplodedMojo mojo,
-            File classesDir,
-            File webAppSource,
-            File webAppDirectory,
-            MavenProjectArtifactsStub project) {
-        mojo.setClassesDirectory(classesDir);
-        mojo.setWarSourceDirectory(webAppSource);
-        mojo.setWebappDirectory(webAppDirectory);
-        mojo.setProject(project);
-    }
-
-    private void configureMojo(
-            WarExplodedMojo mojo, File classesDir, File webAppSource, File webAppDirectory, File xmlSource)
-            throws Exception {
-        final MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
-        mojo.setProject(project);
-        mojo.setClassesDirectory(classesDir);
-        mojo.setWarSourceDirectory(webAppSource);
-        mojo.setWebappDirectory(webAppDirectory);
-        mojo.setWebXml(new File(xmlSource, "web.xml"));
-    }
-
     private MavenProjectArtifactsStub createProjectWithOverlays(ArtifactStub... artifactStubs) throws Exception {
         final MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         for (ArtifactStub artifactStub : artifactStubs) {

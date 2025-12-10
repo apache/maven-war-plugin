@@ -37,6 +37,13 @@ package org.apache.maven.plugins.war;
  * under the License.
  */
 
+import javax.inject.Inject;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.StringReader;
+import java.util.Properties;
+
 import org.apache.maven.api.di.Provides;
 import org.apache.maven.api.plugin.testing.Basedir;
 import org.apache.maven.api.plugin.testing.InjectMojo;
@@ -49,12 +56,6 @@ import org.apache.maven.plugins.war.stub.ResourceStub;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.jupiter.api.Test;
-
-import javax.inject.Inject;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.StringReader;
-import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -75,19 +76,24 @@ public class WarExplodedMojoFilteringTest {
 
     @Provides
     MavenProject project() throws Exception {
-                MavenProjectBasicStub project = new MavenProjectBasicStub();
+        MavenProjectBasicStub project = new MavenProjectBasicStub();
         project.addProperty("is_this_simple", "i_think_so");
-        return  project;
+        return project;
     }
-
 
     @SuppressWarnings("checkstyle:MethodLength")
     @InjectMojo(goal = "exploded", pom = "plugin-config.xml")
     @Basedir("src/test/resources/unit/warexplodedmojo/")
-    @MojoParameter(name = "classesDirectory", value ="target/test-classes/unit/warexplodedmojo/ExplodedWarWithResourceFiltering-test-data/classes/" )
-    @MojoParameter(name = "warSourceDirectory", value ="target/test-classes/unit/warexplodedmojo/ExplodedWarWithResourceFiltering-test-data/source/" )
-    @MojoParameter(name = "webappDirectory", value ="target/test-classes/unit/warexplodedmojo/ExplodedWarWithResourceFiltering" )
-    @MojoParameter(name = "outdatedCheckPath", value ="WEB-INF/lib/" )
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithResourceFiltering-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithResourceFiltering-test-data/source/")
+    @MojoParameter(
+            name = "webappDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithResourceFiltering")
+    @MojoParameter(name = "outdatedCheckPath", value = "WEB-INF/lib/")
     @Test
     public void testExplodedWarWithResourceFiltering(WarExplodedMojo mojo) throws Exception {
         Properties systemProperties = System.getProperties();
@@ -95,7 +101,8 @@ public class WarExplodedMojoFilteringTest {
         when(mavenSession.getSystemProperties()).thenReturn(systemProperties);
 
         ResourceStub[] resources = new ResourceStub[] {new ResourceStub()};
-        resources[0].setDirectory(MojoExtension.getBasedir() + "/ExplodedWarWithResourceFiltering-test-data/resources/");
+        resources[0].setDirectory(
+                MojoExtension.getBasedir() + "/ExplodedWarWithResourceFiltering-test-data/resources/");
         resources[0].setFiltering(true);
         mojo.setWebResources(resources);
         mojo.execute();
@@ -182,11 +189,20 @@ public class WarExplodedMojoFilteringTest {
     @SuppressWarnings("checkstyle:MethodLength")
     @InjectMojo(goal = "exploded", pom = "plugin-config.xml")
     @Basedir("src/test/resources/unit/warexplodedmojo/")
-    @MojoParameter(name = "classesDirectory", value ="target/test-classes/unit/warexplodedmojo/ExplodedWarWithResourceFileFiltering-test-data/classes/" )
-    @MojoParameter(name = "warSourceDirectory", value ="target/test-classes/unit/warexplodedmojo/ExplodedWarWithResourceFileFiltering-test-data/source/" )
-    @MojoParameter(name = "webappDirectory", value ="target/test-classes/unit/warexplodedmojo/ExplodedWarWithResourceFileFiltering" )
-    @MojoParameter(name = "outdatedCheckPath", value ="WEB-INF/lib/" )
-    @MojoParameter(name="filters", value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithResourceFileFiltering-test-data/filters/filter.properties")
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithResourceFileFiltering-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithResourceFileFiltering-test-data/source/")
+    @MojoParameter(
+            name = "webappDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithResourceFileFiltering")
+    @MojoParameter(name = "outdatedCheckPath", value = "WEB-INF/lib/")
+    @MojoParameter(
+            name = "filters",
+            value =
+                    "target/test-classes/unit/warexplodedmojo/ExplodedWarWithResourceFileFiltering-test-data/filters/filter.properties")
     @Test
     public void testExplodedWarWithResourceFileFiltering(WarExplodedMojo mojo) throws Exception {
         Properties systemProperties = System.getProperties();
@@ -194,7 +210,8 @@ public class WarExplodedMojoFilteringTest {
         when(mavenSession.getSystemProperties()).thenReturn(systemProperties);
 
         ResourceStub[] resources = new ResourceStub[] {new ResourceStub()};
-        resources[0].setDirectory(MojoExtension.getBasedir() + "/ExplodedWarWithResourceFileFiltering-test-data/resources/");
+        resources[0].setDirectory(
+                MojoExtension.getBasedir() + "/ExplodedWarWithResourceFileFiltering-test-data/resources/");
         resources[0].setFiltering(true);
         mojo.setWebResources(resources);
 
@@ -202,7 +219,6 @@ public class WarExplodedMojoFilteringTest {
 
         File expectedResourceWDirFile = new File(mojo.getWebappDirectory(), "custom-config/custom-setting.cfg");
         assertTrue(expectedResourceWDirFile.exists(), "resource file with dir not found:" + expectedResourceWDirFile);
-
 
         // validate filtered file
         String content = FileUtils.fileRead(expectedResourceWDirFile);
@@ -239,6 +255,4 @@ public class WarExplodedMojoFilteringTest {
         assertEquals("resource_key_1=this_is_filtered", reader.readLine(), "error in filtering using filter files");
         assertEquals("resource_key_2=this_is_filtered", reader.readLine(), "error in filtering using filter files");
     }
-
-
 }
