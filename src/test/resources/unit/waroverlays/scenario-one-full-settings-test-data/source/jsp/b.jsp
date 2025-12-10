@@ -1,1 +1,1 @@
-/home/sparsick/dev/workspace/maven-war-plugin/target/test-classes/unit/waroverlays/scenario-one-full-settings-test-data/source/jsp/b.jsp
+jsp/b.jsp

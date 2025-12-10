@@ -564,8 +564,8 @@ public class WarOverlaysTest {
      */
     private void assertDefaultFileContent(String testId, File webAppDirectory, String filePath) throws Exception {
         final File webAppFile = new File(webAppDirectory, filePath);
-        final File sourceFile = new File(getWebAppSource(testId), filePath);
-        final String expectedContent = sourceFile.toString();
+        //        final File sourceFile = new File(getWebAppSource(testId), filePath);
+        final String expectedContent = filePath;
         assertEquals(expectedContent, FileUtils.fileRead(webAppFile), "Wrong content for file " + filePath);
     }
 
