@@ -23,9 +23,9 @@ import java.io.File;
 import org.apache.maven.api.plugin.testing.InjectMojo;
 import org.apache.maven.api.plugin.testing.MojoParameter;
 import org.apache.maven.api.plugin.testing.MojoTest;
+import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.apache.maven.plugins.war.stub.MavenProjectBasicStub;
 import org.apache.maven.plugins.war.stub.ResourceStub;
-import org.codehaus.plexus.util.FileUtils;
 import org.junit.jupiter.api.Test;
 
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
@@ -33,10 +33,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @MojoTest
 public class WarInPlaceMojoTest {
-
-    private File getTestDirectory() throws Exception {
-        return new File(getBasedir(), "target/test-classes/unit/warexplodedinplacemojo/test-dir");
-    }
 
     @InjectMojo(goal = "inplace", pom = "src/test/resources/unit/warexplodedinplacemojo/plugin-config.xml")
     @MojoParameter(
@@ -71,75 +67,4 @@ public class WarInPlaceMojoTest {
         assertTrue(expectedMETAINFDir.exists(), "META-INF not found");
     }
 
-    /**
-     * Returns the webapp source directory for the specified id.
-     *
-     * @param id the id of the test
-     * @return the source directory for that test
-     * @throws Exception if an exception occurs
-     */
-    private File getWebAppSource(String id) throws Exception {
-        return new File(getTestDirectory(), "/" + id + "-test-data/source");
-    }
-
-    /**
-     * create an isolated web source with a sample jsp file
-     *
-     * @param id The id.
-     * @param createSamples Create example files yes or no.
-     * @return The created file.
-     * @throws Exception in case of errors.
-     */
-    private File createWebAppSource(String id, boolean createSamples) throws Exception {
-        File webAppSource = getWebAppSource(id);
-        if (createSamples) {
-            File simpleJSP = new File(webAppSource, "pansit.jsp");
-            File jspFile = new File(webAppSource, "org/web/app/last-exile.jsp");
-
-            createFile(simpleJSP);
-            createFile(jspFile);
-        }
-        return webAppSource;
-    }
-
-    private File createWebAppSource(String id) throws Exception {
-        return createWebAppSource(id, true);
-    }
-
-    /**
-     * create a class directory with or without a sample class
-     *
-     * @param id The id.
-     * @param empty true to create a class files false otherwise.
-     * @return The created class file.
-     * @throws Exception in case of errors.
-     */
-    private File createClassesDir(String id, boolean empty) throws Exception {
-        File classesDir = new File(getTestDirectory() + "/" + id + "-test-data/classes/");
-
-        createDir(classesDir);
-
-        if (!empty) {
-            createFile(new File(classesDir + "/sample-servlet.clazz"));
-        }
-
-        return classesDir;
-    }
-
-    private void createDir(File dir) {
-        if (!dir.exists()) {
-            assertTrue(dir.mkdirs(), "can not create test dir: " + dir);
-        }
-    }
-
-    private void createFile(File testFile, String body) throws Exception {
-        createDir(testFile.getParentFile());
-        FileUtils.fileWrite(testFile.toString(), body);
-
-        assertTrue(testFile.exists(), "could not create file: " + testFile);
-    }
-
-    private void createFile(File testFile) throws Exception {
-        createFile(testFile, testFile.toString());
-    }
 }
