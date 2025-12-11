@@ -753,6 +753,13 @@ public class WarExplodedMojoTest {
     }
 
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/warexplodedmojo/plugin-config.xml")
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithWarDependencyIncludeExclude-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithWarDependencyIncludeExclude-test-data/source/")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithWarDependencyIncludeExclude")
     @MojoParameter(name = "dependentWarIncludes", value = "**/*Include.jsp,**/*.xml")
     @MojoParameter(name = "dependentWarExcludes", value = "**/*Exclude*,**/MANIFEST.MF")
     @MojoParameter(
@@ -761,18 +768,15 @@ public class WarExplodedMojoTest {
                     "target/test-classes/unit/warexplodedmojo/test-dir/war/work-ExplodedWarWithWarDependencyIncludeExclude")
     @Test
     public void testExplodedWarWithWarDependencyIncludeExclude(WarExplodedMojo mojo) throws Exception {
-        // setup test data
-        String testId = "ExplodedWarWithWarDependencyIncludeExclude";
-        File webAppDirectory = new File(getTestDirectory(), testId);
-        File webAppSource = createWebAppSource(testId);
-        File classesDir = createClassesDir(testId, true);
-
-        IncludeExcludeWarArtifactStub includeexcludeWarArtifact = new IncludeExcludeWarArtifactStub(getBasedir());
         // configure mojo
-        configureMojo(mojo, includeexcludeWarArtifact, classesDir, webAppSource, webAppDirectory);
+        MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
+        IncludeExcludeWarArtifactStub includeexcludeWarArtifact = new IncludeExcludeWarArtifactStub(getBasedir());
+        project.addArtifact(includeexcludeWarArtifact);
+        mojo.setProject(project);
         mojo.execute();
 
         // validate operation
+        File webAppDirectory = mojo.getWebappDirectory();
         File expectedWebSourceFile = new File(webAppDirectory, "pansit.jsp");
         File expectedWebSource2File = new File(webAppDirectory, "org/web/app/last-exile.jsp");
         File expectedManifestFile = new File(webAppDirectory, "META-INF/MANIFEST.MF");
