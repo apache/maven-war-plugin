@@ -455,20 +455,24 @@ public class WarExplodedMojoTest {
     }
 
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/warexplodedmojo/plugin-config.xml")
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithPAR-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithPAR-test-data/source/")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithPAR")
     @Test
     public void testExplodedWarWithPAR(WarExplodedMojo mojo) throws Exception {
-        // setup test data
-        String testId = "ExplodedWarWithPAR";
-        File webAppDirectory = new File(getTestDirectory(), testId);
-        File webAppSource = createWebAppSource(testId);
-        File classesDir = createClassesDir(testId, true);
-        PARArtifactStub parartifact = new PARArtifactStub(getBasedir());
-
         // configure mojo
-        configureMojo(mojo, parartifact, classesDir, webAppSource, webAppDirectory);
+        MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
+        PARArtifactStub parartifact = new PARArtifactStub(getBasedir());
+        project.addArtifact(parartifact);
+        mojo.setProject(project);
         mojo.execute();
 
         // validate operation
+        File webAppDirectory = mojo.getWebappDirectory();
         File expectedWebSourceFile = new File(webAppDirectory, "pansit.jsp");
         File expectedWebSource2File = new File(webAppDirectory, "org/web/app/last-exile.jsp");
         // final name form is <artifactId>-<version>.<type>
