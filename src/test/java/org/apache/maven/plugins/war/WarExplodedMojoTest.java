@@ -802,23 +802,25 @@ public class WarExplodedMojoTest {
     }
 
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/warexplodedmojo/plugin-config.xml")
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithSourceModificationCheck-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithSourceModificationCheck-test-data/source/")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithSourceModificationCheck")
     @Test
     public void testExplodedWarWithSourceModificationCheck(WarExplodedMojo mojo) throws Exception {
-        // setup test data
-        String testId = "ExplodedWarWithSourceModificationCheck";
-        File webAppSource = createWebAppSource(testId);
-        File classesDir = createClassesDir(testId, false);
-        File webAppDirectory = new File(getTestDirectory(), testId);
-
         // configure mojo
-        configureMojo(mojo, classesDir, webAppSource, webAppDirectory);
+        MavenProjectBasicStub project = new MavenProjectBasicStub();
+        mojo.setProject(project);
 
         // destination file is already created manually containing an "error" string
         // source is newer than the destination file
         mojo.execute();
 
         // validate operation
-
+        File webAppDirectory = mojo.getWebappDirectory();
         File expectedWEBINFDir = new File(webAppDirectory, "WEB-INF");
         File expectedMETAINFDir = new File(webAppDirectory, "META-INF");
         File expectedWebSourceFile = new File(webAppDirectory, "pansit.jsp");
