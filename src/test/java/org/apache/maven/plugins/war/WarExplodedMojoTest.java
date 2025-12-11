@@ -24,7 +24,6 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-import org.apache.maven.api.plugin.testing.Basedir;
 import org.apache.maven.api.plugin.testing.InjectMojo;
 import org.apache.maven.api.plugin.testing.MojoExtension;
 import org.apache.maven.api.plugin.testing.MojoParameter;
@@ -73,15 +72,14 @@ public class WarExplodedMojoTest {
     @MojoParameter(
             name = "warSourceDirectory",
             value = "target/test-classes/unit/warexplodedmojo/SimpleExplodedWar-test-data/source/")
-    @MojoParameter(
-            name = "webappDirectory",
-            value = "target/test-classes/unit/warexplodedmojo/SimpleExplodedWar")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedmojo/SimpleExplodedWar")
     @Test
     public void testSimpleExplodedWar(WarExplodedMojo mojo) throws Exception {
         MavenProjectBasicStub project = new MavenProjectBasicStub();
         mojo.setProject(project);
         ResourceStub[] resources = new ResourceStub[] {new ResourceStub()};
-        resources[0].setDirectory(MojoExtension.getBasedir() + "/target/test-classes/unit/warexplodedmojo/SimpleExplodedWar-test-data/resources/");
+        resources[0].setDirectory(MojoExtension.getBasedir()
+                + "/target/test-classes/unit/warexplodedmojo/SimpleExplodedWar-test-data/resources/");
         mojo.setWebResources(resources);
         mojo.execute();
 
@@ -106,22 +104,27 @@ public class WarExplodedMojoTest {
     }
 
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/warexplodedmojo/plugin-config.xml")
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/SimpleExplodedWar-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/SimpleExplodedWar-test-data/source/")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedmojo/SimpleExplodedWar")
     @Test
     public void testSimpleExplodedWarWTargetPath(WarExplodedMojo mojo) throws Exception {
-        // setup test data
-        String testId = "SimpleExplodedWar";
-        File webAppSource = createWebAppSource(testId);
-        File classesDir = createClassesDir(testId, false);
-        File webAppResource = new File(getTestDirectory(), "resources");
-        File webAppDirectory = new File(getTestDirectory(), testId);
-        File sampleResource = new File(webAppResource, "pix/panis_na.jpg");
-        ResourceStub[] resources = createWebResources(sampleResource, webAppResource);
+        ResourceStub[] resources = new ResourceStub[] {new ResourceStub()};
+        resources[0].setDirectory(MojoExtension.getBasedir()
+                + "/target/test-classes/unit/warexplodedmojo/SimpleExplodedWar-test-data/resources/");
         resources[0].setTargetPath("targetPath");
+        mojo.setWebResources(resources);
 
-        configureMojo(mojo, classesDir, webAppSource, webAppDirectory, resources);
+        MavenProjectBasicStub project = new MavenProjectBasicStub();
+        mojo.setProject(project);
         mojo.execute();
 
         // validate operation
+        File webAppDirectory = mojo.getWebappDirectory();
         File expectedWebSourceFile = new File(webAppDirectory, "pansit.jsp");
         File expectedWebSource2File = new File(webAppDirectory, "org/web/app/last-exile.jsp");
         File expectedWebResourceFile = new File(webAppDirectory, "targetPath/pix/panis_na.jpg");
