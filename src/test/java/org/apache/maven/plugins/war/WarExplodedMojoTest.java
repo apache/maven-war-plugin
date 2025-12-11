@@ -183,21 +183,25 @@ public class WarExplodedMojoTest {
     }
 
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/warexplodedmojo/plugin-config.xml")
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithContainerConfigXML-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithContainerConfigXML-test-data/source/")
+    @MojoParameter(
+            name = "containerConfigXML",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithContainerConfigXML-test-data/xml-config/config.xml")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithContainerConfigXML")
     @Test
     public void testExplodedWarWithContainerConfigXML(WarExplodedMojo mojo) throws Exception {
-        // setup test data
-        String testId = "ExplodedWarWithContainerConfigXML";
-        File classesDir = createClassesDir(testId, true);
-        File webAppSource = createWebAppSource(testId);
-        File xmlSource = createXMLConfigDir(testId, new String[] {"config.xml"});
-        File webAppDirectory = new File(getTestDirectory(), testId);
-
         // configure mojo
-        configureMojo(mojo, classesDir, webAppSource, webAppDirectory);
-        mojo.setContainerConfigXML(new File(xmlSource, "config.xml"));
+        MavenProjectBasicStub project = new MavenProjectBasicStub();
+        mojo.setProject(project);
         mojo.execute();
 
         // validate operation
+        File webAppDirectory = mojo.getWebappDirectory();
         File expectedWebSourceFile = new File(webAppDirectory, "pansit.jsp");
         File expectedWebSource2File = new File(webAppDirectory, "org/web/app/last-exile.jsp");
         File expectedContainerConfigXMLFile = new File(webAppDirectory, "META-INF/config.xml");
