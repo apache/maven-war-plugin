@@ -1,0 +1,1 @@
+/home/sparsick/dev/workspace/m-war-plugin-master/target/test-classes/unit/warexplodedmojo/test-dir/SimpleExplodedWar-test-data/source/pansit.jsp
