@@ -143,36 +143,27 @@ public class WarExplodedMojoTest {
         expectedWebResourceFile.delete();
     }
 
-    private void configureMojo(
-            WarExplodedMojo mojo, File classesDir, File webAppSource, File webAppDirectory, ResourceStub[] resources)
-            throws Exception {
-        configureMojo(mojo, classesDir, webAppSource, webAppDirectory);
-        mojo.setWebResources(resources);
-    }
-
-    private ResourceStub[] createWebResources(File sampleResource, File webAppResource) throws Exception {
-        ResourceStub[] resources = new ResourceStub[] {new ResourceStub()};
-        createFile(sampleResource);
-        resources[0].setDirectory(webAppResource.getAbsolutePath());
-        return resources;
-    }
-
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/warexplodedmojo/plugin-config.xml")
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithCustomWebXML-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithCustomWebXML-test-data/source/")
+    @MojoParameter(
+            name = "webXml",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithCustomWebXML-test-data/xml-config/web.xml")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithCustomWebXML")
     @Test
     public void testExplodedWarWithCustomWebXML(WarExplodedMojo mojo) throws Exception {
-        // setup test data
-        String testId = "ExplodedWarWithCustomWebXML";
-        File webAppSource = createWebAppSource(testId);
-        File classesDir = createClassesDir(testId, true);
-        File xmlSource = createXMLConfigDir(testId, new String[] {"web.xml"});
-        File webAppDirectory = new File(getTestDirectory(), testId);
 
         // configure mojo
-        configureMojo(mojo, classesDir, webAppSource, webAppDirectory);
-        mojo.setWebXml(new File(xmlSource, "web.xml"));
+        MavenProjectBasicStub project = new MavenProjectBasicStub();
+        mojo.setProject(project);
         mojo.execute();
 
         // validate operation
+        File webAppDirectory = mojo.getWebappDirectory();
         File expectedWebSourceFile = new File(webAppDirectory, "pansit.jsp");
         File expectedWebSource2File = new File(webAppDirectory, "org/web/app/last-exile.jsp");
         File expectedWEBXMLFile = new File(webAppDirectory, "WEB-INF/web.xml");
@@ -182,7 +173,7 @@ public class WarExplodedMojoTest {
         assertTrue(expectedWebSource2File.exists(), "source files not found: " + expectedWebSource2File);
         assertTrue(expectedWEBXMLFile.exists(), "WEB XML not found: " + expectedWEBXMLFile);
         assertTrue(expectedMETAINFDir.exists(), "META-INF not found");
-        assertEquals(mojo.getWebXml().toString(), FileUtils.fileRead(expectedWEBXMLFile), "WEB XML not correct");
+        assertEquals(mojo.getWebXml().getName(), FileUtils.fileRead(expectedWEBXMLFile), "WEB XML not correct");
 
         // housekeeping
         expectedWebSourceFile.delete();
