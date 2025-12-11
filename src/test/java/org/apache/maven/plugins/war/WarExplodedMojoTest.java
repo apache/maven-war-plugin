@@ -846,27 +846,25 @@ public class WarExplodedMojoTest {
     }
 
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/warexplodedmojo/plugin-config.xml")
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithFileNameMapping-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithFileNameMapping-test-data/source/")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithFileNameMapping")
+    @MojoParameter(name = "outputFileNameMapping", value = "@{artifactId}@.@{extension}@")
     @Test
-    @Disabled // TODO interpolation of extension does not work
     public void testExplodedWarWithOutputFileNameMapping(WarExplodedMojo mojo) throws Exception {
-        // setup test data
-        String testId = "ExplodedWarWithFileNameMapping";
-        File webAppDirectory = new File(getTestDirectory(), testId);
-        File webAppSource = createWebAppSource(testId);
-        File classesDir = createClassesDir(testId, true);
-        ArtifactStub jarArtifact = new JarArtifactStub(getBasedir(), artifactHandler);
-
         // configure mojo
-        mojo.setOutputFileNameMapping("@{artifactId}@.@{extension}@");
         MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
+        ArtifactStub jarArtifact = new JarArtifactStub(getBasedir(), new DefaultArtifactHandler("jar"));
         project.addArtifact(jarArtifact);
-        mojo.setClassesDirectory(classesDir);
-        mojo.setWarSourceDirectory(webAppSource);
-        mojo.setWebappDirectory(webAppDirectory);
         mojo.setProject(project);
         mojo.execute();
 
         // validate operation
+        File webAppDirectory = mojo.getWebappDirectory();
         File expectedWebSourceFile = new File(webAppDirectory, "pansit.jsp");
         File expectedWebSource2File = new File(webAppDirectory, "org/web/app/last-exile.jsp");
         // final name form is <artifactId>-<version>.<type>
