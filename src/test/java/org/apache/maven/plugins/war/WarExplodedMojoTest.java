@@ -226,22 +226,28 @@ public class WarExplodedMojoTest {
      */
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/warexplodedmojo/plugin-config.xml")
     @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithSimpleExternalWARFile-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithSimpleExternalWARFile-test-data/source/")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithSimpleExternalWARFile")
+    @MojoParameter(
             name = "workDirectory",
             value = "target/test-classes/unit/warexplodedmojo/test-dir/war/work-ExplodedWarWithSimpleExternalWARFile")
     @Test
     public void testExplodedWarWithSimpleExternalWARFile(WarExplodedMojo mojo) throws Exception {
-        // setup test data
-        String testId = "ExplodedWarWithSimpleExternalWARFile";
-        File webAppDirectory = new File(getTestDirectory(), testId);
-        File webAppSource = createWebAppSource(testId);
-        File classesDir = createClassesDir(testId, true);
-
         // configure mojo
         WarArtifactStub warArtifact = new WarArtifactStub(getBasedir());
-        configureMojo(mojo, warArtifact, classesDir, webAppSource, webAppDirectory);
+        File simpleWarFile = warArtifact.getFile();
+        assertTrue(simpleWarFile.exists(), "simple war not found: " + simpleWarFile.toString());
+        MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
+        project.addArtifact(warArtifact);
+        mojo.setProject(project);
         mojo.execute();
 
         // validate operation - META-INF is automatically excluded so remove the file from the list
+        File webAppDirectory = mojo.getWebappDirectory();
         File expectedWebSourceFile = new File(webAppDirectory, "pansit.jsp");
         File expectedWebSource2File = new File(webAppDirectory, "org/web/app/last-exile.jsp");
         File expectedWEBXMLFile = new File(webAppDirectory, "WEB-INF/web.xml");
