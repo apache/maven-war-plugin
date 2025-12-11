@@ -21,6 +21,7 @@ package org.apache.maven.plugins.war;
 import java.io.File;
 
 import org.apache.maven.api.plugin.testing.InjectMojo;
+import org.apache.maven.api.plugin.testing.MojoParameter;
 import org.apache.maven.api.plugin.testing.MojoTest;
 import org.apache.maven.plugins.war.stub.MavenProjectBasicStub;
 import org.apache.maven.plugins.war.stub.ResourceStub;
@@ -38,29 +39,25 @@ public class WarInPlaceMojoTest {
     }
 
     @InjectMojo(goal = "inplace", pom = "src/test/resources/unit/warexplodedinplacemojo/plugin-config.xml")
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warexplodedinplacemojo/SimpleExplodedInplaceWar-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warexplodedinplacemojo/SimpleExplodedInplaceWar-test-data/source/")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedinplacemojo/SimpleExplodedInplaceWar")
     @Test
     public void testSimpleExplodedInplaceWar(WarInPlaceMojo mojo) throws Exception {
-        // setup test data
-        String testId = "SimpleExplodedInplaceWar";
-        MavenProjectBasicStub project = new MavenProjectBasicStub();
-        File webAppSource = createWebAppSource(testId);
-        File classesDir = createClassesDir(testId, true);
-        File webAppResource = new File(getTestDirectory(), "resources");
-        File sampleResource = new File(webAppResource, "pix/panis_na.jpg");
-        createFile(sampleResource);
-
-        ResourceStub[] resources = new ResourceStub[] {new ResourceStub()};
-        resources[0].setDirectory(webAppResource.getAbsolutePath());
-
         // configure mojo
-        mojo.setClassesDirectory(classesDir);
-        mojo.setWarSourceDirectory(webAppSource);
-        mojo.setWebappDirectory(null);
-        mojo.setProject(project);
+        ResourceStub[] resources = new ResourceStub[] {new ResourceStub()};
+        resources[0].setDirectory(getBasedir() + "/target/test-classes/unit/warexplodedinplacemojo/SimpleExplodedInplaceWar-test-data/resources");
         mojo.setWebResources(resources);
+        MavenProjectBasicStub project = new MavenProjectBasicStub();
+        mojo.setProject(project);
         mojo.execute();
 
         // validate operation
+        File webAppSource = mojo.getWarSourceDirectory();
         File expectedWebSourceFile = new File(webAppSource, "pansit.jsp");
         File expectedWebSource2File = new File(webAppSource, "org/web/app/last-exile.jsp");
         File expectedWebResourceFile = new File(webAppSource, "pix/panis_na.jpg");
