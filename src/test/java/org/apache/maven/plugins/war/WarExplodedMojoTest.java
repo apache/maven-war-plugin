@@ -717,21 +717,24 @@ public class WarExplodedMojoTest {
     }
 
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/warexplodedmojo/plugin-config.xml")
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithSourceIncludeExclude-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithSourceIncludeExclude-test-data/source/")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithSourceIncludeExclude")
     @MojoParameter(name = "warSourceIncludes", value = "**/*sit.jsp")
     @MojoParameter(name = "warSourceExcludes", value = "**/last*.*")
     @Test
     public void testExplodedWarWithSourceIncludeExclude(WarExplodedMojo mojo) throws Exception {
-        // setup test data
-        String testId = "ExplodedWarWithSourceIncludeExclude";
-        File webAppSource = createWebAppSource(testId);
-        File classesDir = createClassesDir(testId, true);
-        File webAppDirectory = new File(getTestDirectory(), testId);
-
         // configure mojo
-        configureMojo(mojo, classesDir, webAppSource, webAppDirectory);
+        MavenProjectBasicStub project = new MavenProjectBasicStub();
+        mojo.setProject(project);
         mojo.execute();
 
         // validate operation
+        File webAppDirectory = mojo.getWebappDirectory();
         File expectedWebSourceFile = new File(webAppDirectory, "pansit.jsp");
         File expectedWebSource2File = new File(webAppDirectory, "org/web/app/last-exile.jsp");
         File expectedWEBXMLDir = new File(webAppDirectory, "WEB-INF");
