@@ -239,8 +239,6 @@ public class WarExplodedMojoTest {
     public void testExplodedWarWithSimpleExternalWARFile(WarExplodedMojo mojo) throws Exception {
         // configure mojo
         WarArtifactStub warArtifact = new WarArtifactStub(getBasedir());
-        File simpleWarFile = warArtifact.getFile();
-        assertTrue(simpleWarFile.exists(), "simple war not found: " + simpleWarFile.toString());
         MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         project.addArtifact(warArtifact);
         mojo.setProject(project);
@@ -272,44 +270,42 @@ public class WarExplodedMojoTest {
      */
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/warexplodedmojo/plugin-config.xml")
     @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarMergeWarLocalFileOverride-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarMergeWarLocalFileOverride-test-data/source/")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedmojo/ExplodedWarMergeWarLocalFileOverride")
+    @MojoParameter(
             name = "workDirectory",
             value =
-                    "target/test-classes/unit/warexplodedmojo/test-dir/war/work-testExplodedWarMergeWarLocalFileOverride")
+                    "target/test-classes/unit/warexplodedmojo/test-dir/war/work-ExplodedWarMergeWarLocalFileOverride")
     @Test
     public void testExplodedWarMergeWarLocalFileOverride(WarExplodedMojo mojo) throws Exception {
-        // setup test data
-        String testId = "testExplodedWarMergeWarLocalFileOverride";
-        File webAppDirectory = new File(getTestDirectory(), testId);
-        File webAppSource = getWebAppSource(testId);
-        File simpleJSP = new File(webAppSource, "org/sample/company/test.jsp");
-        createFile(simpleJSP);
-        File classesDir = createClassesDir(testId, true);
-
         // configure mojo
         WarArtifactStub warArtifact = new WarArtifactStub(getBasedir());
         MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         project.addArtifact(warArtifact);
-        configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
+        mojo.setProject(project);
         mojo.execute();
 
         // validate operation
+        File webAppDirectory = mojo.getWebappDirectory();
         File expectedFile = new File(webAppDirectory, "/org/sample/company/test.jsp");
 
         assertTrue(expectedFile.exists(), "file not found: " + expectedFile);
-        assertEquals(simpleJSP.toString(), FileUtils.fileRead(expectedFile), "file incorrect");
+        assertEquals("org/sample/company/test.jsp", FileUtils.fileRead(expectedFile), "file incorrect");
 
         // check when the merged war file is newer - so set an old time on the local file
+        File simpleJSP = new File(MojoExtension.getBasedir(), "target/test-classes/unit/warexplodedmojo/testExplodedWarMergeWarLocalFileOverride-test-data/source/org/sample/company/test.jsp");
         long time =
                 new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse("2005-1-1").getTime();
         simpleJSP.setLastModified(time);
-        expectedFile.setLastModified(time);
-
-        project.addArtifact(warArtifact);
-        configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
         mojo.execute();
 
+        expectedFile.setLastModified(time);
         assertTrue(expectedFile.exists(), "file not found: " + expectedFile);
-        assertEquals(simpleJSP.toString(), FileUtils.fileRead(expectedFile), "file incorrect");
+        assertEquals("org/sample/company/test.jsp", FileUtils.fileRead(expectedFile), "file incorrect");
 
         // housekeeping
         expectedFile.delete();
