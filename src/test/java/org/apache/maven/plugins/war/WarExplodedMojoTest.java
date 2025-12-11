@@ -142,7 +142,9 @@ public class WarExplodedMojoTest {
     @MojoParameter(
             name = "webXml",
             value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithCustomWebXML-test-data/xml-config/web.xml")
-    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithCustomWebXML")
+    @MojoParameter(
+            name = "webappDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithCustomWebXML")
     @Test
     public void testExplodedWarWithCustomWebXML(WarExplodedMojo mojo) throws Exception {
 
@@ -180,8 +182,11 @@ public class WarExplodedMojoTest {
             value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithContainerConfigXML-test-data/source/")
     @MojoParameter(
             name = "containerConfigXML",
-            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithContainerConfigXML-test-data/xml-config/config.xml")
-    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithContainerConfigXML")
+            value =
+                    "target/test-classes/unit/warexplodedmojo/ExplodedWarWithContainerConfigXML-test-data/xml-config/config.xml")
+    @MojoParameter(
+            name = "webappDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithContainerConfigXML")
     @Test
     public void testExplodedWarWithContainerConfigXML(WarExplodedMojo mojo) throws Exception {
         // configure mojo
@@ -220,7 +225,9 @@ public class WarExplodedMojoTest {
     @MojoParameter(
             name = "warSourceDirectory",
             value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithSimpleExternalWARFile-test-data/source/")
-    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithSimpleExternalWARFile")
+    @MojoParameter(
+            name = "webappDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithSimpleExternalWARFile")
     @MojoParameter(
             name = "workDirectory",
             value = "target/test-classes/unit/warexplodedmojo/test-dir/war/work-ExplodedWarWithSimpleExternalWARFile")
@@ -264,11 +271,12 @@ public class WarExplodedMojoTest {
     @MojoParameter(
             name = "warSourceDirectory",
             value = "target/test-classes/unit/warexplodedmojo/ExplodedWarMergeWarLocalFileOverride-test-data/source/")
-    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedmojo/ExplodedWarMergeWarLocalFileOverride")
+    @MojoParameter(
+            name = "webappDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarMergeWarLocalFileOverride")
     @MojoParameter(
             name = "workDirectory",
-            value =
-                    "target/test-classes/unit/warexplodedmojo/test-dir/war/work-ExplodedWarMergeWarLocalFileOverride")
+            value = "target/test-classes/unit/warexplodedmojo/test-dir/war/work-ExplodedWarMergeWarLocalFileOverride")
     @Test
     public void testExplodedWarMergeWarLocalFileOverride(WarExplodedMojo mojo) throws Exception {
         // configure mojo
@@ -286,7 +294,9 @@ public class WarExplodedMojoTest {
         assertEquals("org/sample/company/test.jsp", FileUtils.fileRead(expectedFile), "file incorrect");
 
         // check when the merged war file is newer - so set an old time on the local file
-        File simpleJSP = new File(MojoExtension.getBasedir(), "target/test-classes/unit/warexplodedmojo/testExplodedWarMergeWarLocalFileOverride-test-data/source/org/sample/company/test.jsp");
+        File simpleJSP = new File(
+                MojoExtension.getBasedir(),
+                "target/test-classes/unit/warexplodedmojo/testExplodedWarMergeWarLocalFileOverride-test-data/source/org/sample/company/test.jsp");
         long time =
                 new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse("2005-1-1").getTime();
         simpleJSP.setLastModified(time);
@@ -585,7 +595,9 @@ public class WarExplodedMojoTest {
     @MojoParameter(
             name = "warSourceDirectory",
             value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithDuplicateDependencies-test-data/source/")
-    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithDuplicateDependencies")
+    @MojoParameter(
+            name = "webappDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithDuplicateDependencies")
     @Test
     public void testExplodedWarWithDuplicateDependencies(WarExplodedMojo mojo) throws Exception {
         // configure mojo
@@ -629,7 +641,9 @@ public class WarExplodedMojoTest {
     @MojoParameter(
             name = "warSourceDirectory",
             value = "target/test-classes/unit/warexplodedmojo/ExplodedWarDuplicateWithClassifier-test-data/source/")
-    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedmojo/ExplodedWarDuplicateWithClassifier")
+    @MojoParameter(
+            name = "webappDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarDuplicateWithClassifier")
     @Test
     public void testExplodedWarDuplicateWithClassifier(WarExplodedMojo mojo) throws Exception {
         // configure mojo
@@ -706,7 +720,9 @@ public class WarExplodedMojoTest {
     @MojoParameter(
             name = "warSourceDirectory",
             value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithSourceIncludeExclude-test-data/source/")
-    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithSourceIncludeExclude")
+    @MojoParameter(
+            name = "webappDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithSourceIncludeExclude")
     @MojoParameter(name = "warSourceIncludes", value = "**/*sit.jsp")
     @MojoParameter(name = "warSourceExcludes", value = "**/last*.*")
     @Test
@@ -738,11 +754,15 @@ public class WarExplodedMojoTest {
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/warexplodedmojo/plugin-config.xml")
     @MojoParameter(
             name = "classesDirectory",
-            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithWarDependencyIncludeExclude-test-data/classes/")
+            value =
+                    "target/test-classes/unit/warexplodedmojo/ExplodedWarWithWarDependencyIncludeExclude-test-data/classes/")
     @MojoParameter(
             name = "warSourceDirectory",
-            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithWarDependencyIncludeExclude-test-data/source/")
-    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithWarDependencyIncludeExclude")
+            value =
+                    "target/test-classes/unit/warexplodedmojo/ExplodedWarWithWarDependencyIncludeExclude-test-data/source/")
+    @MojoParameter(
+            name = "webappDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithWarDependencyIncludeExclude")
     @MojoParameter(name = "dependentWarIncludes", value = "**/*Include.jsp,**/*.xml")
     @MojoParameter(name = "dependentWarExcludes", value = "**/*Exclude*,**/MANIFEST.MF")
     @MojoParameter(
@@ -787,11 +807,14 @@ public class WarExplodedMojoTest {
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/warexplodedmojo/plugin-config.xml")
     @MojoParameter(
             name = "classesDirectory",
-            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithSourceModificationCheck-test-data/classes/")
+            value =
+                    "target/test-classes/unit/warexplodedmojo/ExplodedWarWithSourceModificationCheck-test-data/classes/")
     @MojoParameter(
             name = "warSourceDirectory",
             value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithSourceModificationCheck-test-data/source/")
-    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithSourceModificationCheck")
+    @MojoParameter(
+            name = "webappDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithSourceModificationCheck")
     @Test
     public void testExplodedWarWithSourceModificationCheck(WarExplodedMojo mojo) throws Exception {
         // configure mojo
@@ -835,7 +858,9 @@ public class WarExplodedMojoTest {
     @MojoParameter(
             name = "warSourceDirectory",
             value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithFileNameMapping-test-data/source/")
-    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithFileNameMapping")
+    @MojoParameter(
+            name = "webappDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithFileNameMapping")
     @MojoParameter(name = "outputFileNameMapping", value = "@{artifactId}@.@{extension}@")
     @Test
     public void testExplodedWarWithOutputFileNameMapping(WarExplodedMojo mojo) throws Exception {
@@ -866,11 +891,15 @@ public class WarExplodedMojoTest {
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/warexplodedmojo/plugin-config.xml")
     @MojoParameter(
             name = "classesDirectory",
-            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithFileNameMappingAndDuplicateDependencies-test-data/classes/")
+            value =
+                    "target/test-classes/unit/warexplodedmojo/ExplodedWarWithFileNameMappingAndDuplicateDependencies-test-data/classes/")
     @MojoParameter(
             name = "warSourceDirectory",
-            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithFileNameMappingAndDuplicateDependencies-test-data/source/")
-    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithFileNameMappingAndDuplicateDependencies")
+            value =
+                    "target/test-classes/unit/warexplodedmojo/ExplodedWarWithFileNameMappingAndDuplicateDependencies-test-data/source/")
+    @MojoParameter(
+            name = "webappDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithFileNameMappingAndDuplicateDependencies")
     @MojoParameter(name = "outputFileNameMapping", value = "@{artifactId}@.@{extension}@")
     @Test
     public void testExplodedWarWithOutputFileNameMappingAndDuplicateDependencies(WarExplodedMojo mojo)
@@ -905,5 +934,4 @@ public class WarExplodedMojoTest {
         expectedEJBArtifact.delete();
         expectedEJBDupArtifact.delete();
     }
-
 }
