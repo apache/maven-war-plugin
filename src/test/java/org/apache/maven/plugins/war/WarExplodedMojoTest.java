@@ -640,28 +640,29 @@ public class WarExplodedMojoTest {
      * @throws Exception in case of an error.
      */
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/warexplodedmojo/plugin-config.xml")
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarDuplicateWithClassifier-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarDuplicateWithClassifier-test-data/source/")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedmojo/ExplodedWarDuplicateWithClassifier")
     @Test
     public void testExplodedWarDuplicateWithClassifier(WarExplodedMojo mojo) throws Exception {
-        // setup test data
-        String testId = "ExplodedWarDuplicateWithClassifier";
-        File webAppDirectory = new File(getTestDirectory(), testId);
-        File webAppSource = createWebAppSource(testId);
-        File classesDir = createClassesDir(testId, true);
+        // configure mojo
+        MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         EJBArtifactStub ejbArtifact = new EJBArtifactStub(getBasedir());
         ejbArtifact.setGroupId("org.sample.ejb");
         EJBArtifactStubWithClassifier ejbArtifactDup = new EJBArtifactStubWithClassifier(getBasedir());
         ejbArtifactDup.setGroupId("org.sample.ejb");
         ejbArtifactDup.setClassifier("classifier");
-
-        // configure mojo
-        MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         project.addArtifact(ejbArtifact);
         project.addArtifact(ejbArtifactDup);
-
-        configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
+        mojo.setProject(project);
         mojo.execute();
 
         // validate operation
+        File webAppDirectory = mojo.getWebappDirectory();
         File expectedWebSourceFile = new File(webAppDirectory, "pansit.jsp");
         File expectedWebSource2File = new File(webAppDirectory, "org/web/app/last-exile.jsp");
         // final name form is <artifactId>-<version>.<type>
@@ -684,19 +685,22 @@ public class WarExplodedMojoTest {
      * @throws Exception in case of an error.
      */
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/warexplodedmojo/plugin-config.xml")
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithClasses-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithClasses-test-data/source/")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithClasses")
     @Test
     public void testExplodedWarWithClasses(WarExplodedMojo mojo) throws Exception {
-        // setup test data
-        String testId = "ExplodedWarWithClasses";
-        File webAppDirectory = new File(getTestDirectory(), testId);
-        File webAppSource = createWebAppSource(testId);
-        File classesDir = createClassesDir(testId, false);
-
         // configure mojo
-        configureMojo(mojo, classesDir, webAppSource, webAppDirectory);
+        MavenProjectBasicStub project = new MavenProjectBasicStub();
+        mojo.setProject(project);
         mojo.execute();
 
         // validate operation
+        File webAppDirectory = mojo.getWebappDirectory();
         File expectedWebSourceFile = new File(webAppDirectory, "pansit.jsp");
         File expectedWebSource2File = new File(webAppDirectory, "org/web/app/last-exile.jsp");
         // final name form is <artifactId>-<version>.<type>
