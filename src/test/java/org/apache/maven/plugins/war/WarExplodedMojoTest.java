@@ -47,7 +47,6 @@ import org.apache.maven.plugins.war.stub.WarArtifactStub;
 import org.apache.maven.plugins.war.stub.XarArtifactStub;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.FileUtils;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
@@ -881,28 +880,30 @@ public class WarExplodedMojoTest {
     }
 
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/warexplodedmojo/plugin-config.xml")
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithFileNameMappingAndDuplicateDependencies-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithFileNameMappingAndDuplicateDependencies-test-data/source/")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithFileNameMappingAndDuplicateDependencies")
+    @MojoParameter(name = "outputFileNameMapping", value = "@{artifactId}@.@{extension}@")
     @Test
     public void testExplodedWarWithOutputFileNameMappingAndDuplicateDependencies(WarExplodedMojo mojo)
             throws Exception {
-        // setup test data
-        String testId = "ExplodedWarWithFileNameMappingAndDuplicateDependencies";
-        File webAppDirectory = new File(getTestDirectory(), testId);
-        File webAppSource = createWebAppSource(testId);
-        File classesDir = createClassesDir(testId, true);
+        // configure mojo
+        MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         EJBArtifactStub ejbArtifact = new EJBArtifactStub(getBasedir());
         ejbArtifact.setGroupId("org.sample.ejb");
         EJBArtifactStub ejbArtifactDup = new EJBArtifactStub(getBasedir());
         ejbArtifactDup.setGroupId("org.dup.ejb");
-
-        // configure mojo
-        MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         project.addArtifact(ejbArtifact);
         project.addArtifact(ejbArtifactDup);
-        mojo.setOutputFileNameMapping("@{artifactId}@.@{extension}@");
-        configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
+        mojo.setProject(project);
         mojo.execute();
 
         // validate operation
+        File webAppDirectory = mojo.getWebappDirectory();
         File expectedWebSourceFile = new File(webAppDirectory, "pansit.jsp");
         File expectedWebSource2File = new File(webAppDirectory, "org/web/app/last-exile.jsp");
         // final name form is <artifactId>-<version>.<type>
