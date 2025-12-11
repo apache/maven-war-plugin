@@ -29,6 +29,7 @@ import org.apache.maven.api.plugin.testing.MojoExtension;
 import org.apache.maven.api.plugin.testing.MojoParameter;
 import org.apache.maven.api.plugin.testing.MojoTest;
 import org.apache.maven.artifact.handler.ArtifactHandler;
+import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.plugin.testing.stubs.ArtifactStub;
 import org.apache.maven.plugins.war.stub.AarArtifactStub;
 import org.apache.maven.plugins.war.stub.EJBArtifactStub;
@@ -346,21 +347,24 @@ public class WarExplodedMojoTest {
     }
 
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/warexplodedmojo/plugin-config.xml")
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithJar-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithJar-test-data/source/")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithJar")
     @Test
-    @Disabled // TODO interpolation of extension does not work
     public void testExplodedWarWithJar(WarExplodedMojo mojo) throws Exception {
-        // setup test data
-        String testId = "ExplodedWarWithJar";
-        File webAppDirectory = new File(getTestDirectory(), testId);
-        File webAppSource = createWebAppSource(testId);
-        File classesDir = createClassesDir(testId, true);
-        ArtifactStub jarArtifact = new JarArtifactStub(getBasedir(), artifactHandler);
-
         // configure mojo
-        configureMojo(mojo, jarArtifact, classesDir, webAppSource, webAppDirectory);
+        MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
+        ArtifactStub jarArtifact = new JarArtifactStub(getBasedir(), new DefaultArtifactHandler("jar"));
+        project.addArtifact(jarArtifact);
+        mojo.setProject(project);
         mojo.execute();
 
         // validate operation
+        File webAppDirectory = mojo.getWebappDirectory();
         File expectedWebSourceFile = new File(webAppDirectory, "pansit.jsp");
         File expectedWebSource2File = new File(webAppDirectory, "org/web/app/last-exile.jsp");
         // final name form is <artifactId>-<version>.<type>
