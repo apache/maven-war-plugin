@@ -18,8 +18,6 @@
  */
 package org.apache.maven.plugins.war;
 
-import javax.inject.Inject;
-
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -28,7 +26,6 @@ import org.apache.maven.api.plugin.testing.InjectMojo;
 import org.apache.maven.api.plugin.testing.MojoExtension;
 import org.apache.maven.api.plugin.testing.MojoParameter;
 import org.apache.maven.api.plugin.testing.MojoTest;
-import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.plugin.testing.stubs.ArtifactStub;
 import org.apache.maven.plugins.war.stub.AarArtifactStub;
@@ -45,7 +42,6 @@ import org.apache.maven.plugins.war.stub.ResourceStub;
 import org.apache.maven.plugins.war.stub.TLDArtifactStub;
 import org.apache.maven.plugins.war.stub.WarArtifactStub;
 import org.apache.maven.plugins.war.stub.XarArtifactStub;
-import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.jupiter.api.Test;
 
@@ -57,13 +53,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @MojoTest
 public class WarExplodedMojoTest {
-
-    @Inject
-    private ArtifactHandler artifactHandler;
-
-    protected File getTestDirectory() {
-        return new File(getBasedir(), "target/test-classes/unit/warexplodedmojo/test-dir");
-    }
 
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/warexplodedmojo/plugin-config.xml")
     @MojoParameter(
@@ -599,11 +588,6 @@ public class WarExplodedMojoTest {
     @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithDuplicateDependencies")
     @Test
     public void testExplodedWarWithDuplicateDependencies(WarExplodedMojo mojo) throws Exception {
-        // setup test data
-        String testId = "ExplodedWarWithDuplicateDependencies";
-        File webAppSource = createWebAppSource(testId);
-        File classesDir = createClassesDir(testId, true);
-
         // configure mojo
         EJBArtifactStub ejbArtifact = new EJBArtifactStub(getBasedir());
         ejbArtifact.setGroupId("org.sample.ejb");
@@ -922,121 +906,4 @@ public class WarExplodedMojoTest {
         expectedEJBDupArtifact.delete();
     }
 
-    private void configureMojo(WarExplodedMojo mojo, File classesDir, File webAppSource, File webAppDirectory)
-            throws Exception {
-        MavenProjectBasicStub project = new MavenProjectBasicStub();
-        configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
-    }
-
-    private void configureMojo(
-            WarExplodedMojo mojo, ArtifactStub artifact, File classesDir, File webAppSource, File webAppDirectory)
-            throws Exception {
-        MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
-        project.addArtifact(artifact);
-        configureMojo(mojo, classesDir, webAppSource, webAppDirectory, project);
-    }
-
-    private void configureMojo(
-            WarExplodedMojo mojo, File classesDir, File webAppSource, File webAppDirectory, MavenProject project) {
-        mojo.setClassesDirectory(classesDir);
-        mojo.setWarSourceDirectory(webAppSource);
-        mojo.setWebappDirectory(webAppDirectory);
-        mojo.setProject(project);
-    }
-
-    /**
-     * create an isolated xml dir
-     *
-     * @param id The id.
-     * @param xmlFiles array of xml files.
-     * @return The created file.
-     * @throws Exception in case of errors.
-     */
-    protected File createXMLConfigDir(String id, String[] xmlFiles) throws Exception {
-        File xmlConfigDir = new File(getTestDirectory(), "/" + id + "-test-data/xml-config");
-        File xmlFile;
-
-        createDir(xmlConfigDir);
-
-        if (xmlFiles != null) {
-            for (String o : xmlFiles) {
-                xmlFile = new File(xmlConfigDir, o);
-                createFile(xmlFile);
-            }
-        }
-
-        return xmlConfigDir;
-    }
-
-    /**
-     * Returns the webapp source directory for the specified id.
-     *
-     * @param id the id of the test
-     * @return the source directory for that test
-     * @throws Exception if an exception occurs
-     */
-    protected File getWebAppSource(String id) throws Exception {
-        return new File(getTestDirectory(), "/" + id + "-test-data/source");
-    }
-
-    /**
-     * create an isolated web source with a sample jsp file
-     *
-     * @param id The id.
-     * @param createSamples Create example files yes or no.
-     * @return The created file.
-     * @throws Exception in case of errors.
-     */
-    protected File createWebAppSource(String id, boolean createSamples) throws Exception {
-        File webAppSource = getWebAppSource(id);
-        if (createSamples) {
-            File simpleJSP = new File(webAppSource, "pansit.jsp");
-            File jspFile = new File(webAppSource, "org/web/app/last-exile.jsp");
-
-            createFile(simpleJSP);
-            createFile(jspFile);
-        }
-        return webAppSource;
-    }
-
-    protected File createWebAppSource(String id) throws Exception {
-        return createWebAppSource(id, true);
-    }
-
-    /**
-     * create a class directory with or without a sample class
-     *
-     * @param id The id.
-     * @param empty true to create a class files false otherwise.
-     * @return The created class file.
-     * @throws Exception in case of errors.
-     */
-    protected File createClassesDir(String id, boolean empty) throws Exception {
-        File classesDir = new File(getTestDirectory() + "/" + id + "-test-data/classes/");
-
-        createDir(classesDir);
-
-        if (!empty) {
-            createFile(new File(classesDir + "/sample-servlet.clazz"));
-        }
-
-        return classesDir;
-    }
-
-    protected void createDir(File dir) {
-        if (!dir.exists()) {
-            assertTrue(dir.mkdirs(), "can not create test dir: " + dir);
-        }
-    }
-
-    protected void createFile(File testFile, String body) throws Exception {
-        createDir(testFile.getParentFile());
-        FileUtils.fileWrite(testFile.toString(), body);
-
-        assertTrue(testFile.exists(), "could not create file: " + testFile);
-    }
-
-    protected void createFile(File testFile) throws Exception {
-        createFile(testFile, testFile.toString());
-    }
 }
