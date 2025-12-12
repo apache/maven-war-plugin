@@ -38,7 +38,6 @@ import org.apache.maven.plugins.war.stub.WarOverlayStub;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.util.FileUtils;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
@@ -58,16 +57,6 @@ public class WarOverlaysTest {
     private static final File OVERLAYS_ROOT_DIR = new File(getBasedir(), "target/test-classes/overlays/");
     private static final String MANIFEST_PATH = "META-INF" + File.separator + "MANIFEST.MF";
 
-    @BeforeEach
-    public void setUp() throws Exception {
-        //        generateFullOverlayWar("overlay-full-1");
-        //        generateFullOverlayWar("overlay-full-2");
-        //        generateFullOverlayWar("overlay-full-3");
-    }
-
-    private File getTestDirectory() {
-        return new File(getBasedir(), "target/test-classes/unit/waroverlays");
-    }
 
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/waroverlays/default.xml")
     @MojoParameter(name = "workDirectory", value = "target/test-classes/unit/waroverlays/war/work-no-overlay")
@@ -654,30 +643,6 @@ public class WarOverlaysTest {
     }
 
     /**
-     * create an isolated xml dir
-     *
-     * @param id The id.
-     * @param xmlFiles array of xml files.
-     * @return The created file.
-     * @throws Exception in case of errors.
-     */
-    private File createXMLConfigDir(String id, String[] xmlFiles) throws Exception {
-        File xmlConfigDir = new File(getTestDirectory(), "/" + id + "-test-data/xml-config");
-        File xmlFile;
-
-        createDir(xmlConfigDir);
-
-        if (xmlFiles != null) {
-            for (String o : xmlFiles) {
-                xmlFile = new File(xmlConfigDir, o);
-                createFile(xmlFile);
-            }
-        }
-
-        return xmlConfigDir;
-    }
-
-    /**
      * Builds the list of files and directories from the specified dir.
      *
      * Note that the filter is not used the usual way. If the filter does not accept the current file, it's not added
@@ -701,155 +666,6 @@ public class WarOverlaysTest {
                 buildFilesList(file, filter, content);
             }
         }
-    }
-
-    /**
-     * Returns the webapp source directory for the specified id.
-     *
-     * @param id the id of the test
-     * @return the source directory for that test
-     * @throws Exception if an exception occurs
-     */
-    private File getWebAppSource(String id) throws Exception {
-        return new File(getTestDirectory(), "/" + id + "-test-data/source");
-    }
-
-    /**
-     * create an isolated web source with a sample jsp file
-     *
-     * @param id The id.
-     * @param createSamples Create example files yes or no.
-     * @return The created file.
-     * @throws Exception in case of errors.
-     */
-    private File createWebAppSource(String id, boolean createSamples) throws Exception {
-        File webAppSource = getWebAppSource(id);
-        if (createSamples) {
-            File simpleJSP = new File(webAppSource, "pansit.jsp");
-            File jspFile = new File(webAppSource, "org/web/app/last-exile.jsp");
-
-            createFile(simpleJSP);
-            createFile(jspFile);
-        }
-        return webAppSource;
-    }
-
-    private File createWebAppSource(String id) throws Exception {
-        return createWebAppSource(id, true);
-    }
-
-    /**
-     * create a class directory with or without a sample class
-     *
-     * @param id The id.
-     * @param empty true to create a class files false otherwise.
-     * @return The created class file.
-     * @throws Exception in case of errors.
-     */
-    private File createClassesDir(String id, boolean empty) throws Exception {
-        File classesDir = new File(getTestDirectory() + "/" + id + "-test-data/classes/");
-
-        createDir(classesDir);
-
-        if (!empty) {
-            createFile(new File(classesDir + "/sample-servlet.clazz"));
-        }
-
-        return classesDir;
-    }
-
-    private void createDir(File dir) {
-        if (!dir.exists()) {
-            assertTrue(dir.mkdirs(), "can not create test dir: " + dir);
-        }
-    }
-
-    private void createFile(File testFile, String body) throws Exception {
-        createDir(testFile.getParentFile());
-        FileUtils.fileWrite(testFile.toString(), body);
-
-        assertTrue(testFile.exists(), "could not create file: " + testFile);
-    }
-
-    private void createFile(File testFile) throws Exception {
-        createFile(testFile, testFile.toString());
-    }
-
-    /**
-     * Generates test war.
-     * Generates war with such a structure:
-     * <ul>
-     * <li>jsp
-     * <ul>
-     * <li>d
-     * <ul>
-     * <li>a.jsp</li>
-     * <li>b.jsp</li>
-     * <li>c.jsp</li>
-     * </ul>
-     * </li>
-     * <li>a.jsp</li>
-     * <li>b.jsp</li>
-     * <li>c.jsp</li>
-     * </ul>
-     * </li>
-     * <li>WEB-INF
-     * <ul>
-     * <li>classes
-     * <ul>
-     * <li>a.clazz</li>
-     * <li>b.clazz</li>
-     * <li>c.clazz</li>
-     * </ul>
-     * </li>
-     * <li>lib
-     * <ul>
-     * <li>a.jar</li>
-     * <li>b.jar</li>
-     * <li>c.jar</li>
-     * </ul>
-     * </li>
-     * <li>web.xml</li>
-     * </ul>
-     * </li>
-     * </ul>
-     * Each of the files will contain: id+'-'+path
-     *
-     * @param id the id of the overlay containing the full structure
-     * @return the war file
-     * @throws Exception if an error occurs
-     */
-    private File generateFullOverlayWar(String id) throws Exception {
-        final File destFile = new File(OVERLAYS_TEMP_DIR, id + ".war");
-        if (destFile.exists()) {
-            return destFile;
-        }
-
-        // Archive was not yet created for that id so let's create it
-        final File rootDir = new File(OVERLAYS_ROOT_DIR, id);
-        rootDir.mkdirs();
-        String[] filePaths = new String[] {
-            "jsp/d/a.jsp",
-            "jsp/d/b.jsp",
-            "jsp/d/c.jsp",
-            "jsp/a.jsp",
-            "jsp/b.jsp",
-            "jsp/c.jsp",
-            "WEB-INF/classes/a.clazz",
-            "WEB-INF/classes/b.clazz",
-            "WEB-INF/classes/c.clazz",
-            "WEB-INF/lib/a.jar",
-            "WEB-INF/lib/b.jar",
-            "WEB-INF/lib/c.jar",
-            "WEB-INF/web.xml"
-        };
-
-        for (String filePath : filePaths) {
-            createFile(new File(rootDir, filePath), id + "-" + filePath);
-        }
-
-        createArchive(rootDir, destFile);
-        return destFile;
     }
 
     /**
