@@ -515,21 +515,23 @@ public class WarMojoTest {
 
     @InjectMojo(goal = "war", pom = "src/test/resources/unit/warmojotest/plugin-config-primary-artifact.xml")
     @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warmojotest/SimpleWarNotUnderServlet30-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warmojotest/SimpleWarNotUnderServlet30-test-data/source/")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warmojotest/SimpleWarNotUnderServlet30")
+    @MojoParameter(
             name = "outputDirectory",
-            value = "target/test-classes/unit/warmojotest/SimpleWarUnderServlet30-output")
+            value = "target/test-classes/unit/warmojotest/SimpleWarNotUnderServlet30-output")
     @MojoParameter(name = "warName", value = "simple")
     @Test
     public void testFailOnMissingWebXmlNotSpecifiedAndServlet30NotUsed(WarMojo mojo) throws Exception {
-        String testId = "SimpleWarNotUnderServlet30";
-        File webAppDirectory = new File(getTestDirectory(), testId);
-        File webAppSource = createWebAppSource(testId);
-        File classesDir = createClassesDir(testId, true);
-
         WarArtifact4CCStub warArtifact = new WarArtifact4CCStub(getBasedir());
         MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         project.setArtifact(warArtifact);
         project.setFile(warArtifact.getFile());
-        configureMojo(mojo, project, classesDir, webAppSource, webAppDirectory);
+        mojo.setProject(project);
 
         try {
             mojo.execute();
