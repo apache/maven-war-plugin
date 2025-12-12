@@ -543,20 +543,24 @@ public class WarMojoTest {
     }
 
     @InjectMojo(goal = "war", pom = "src/test/resources/unit/warmojotest/plugin-config-primary-artifact.xml")
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warmojotest/AttachClasses-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warmojotest/AttachClasses-test-data/source/")
+    @MojoParameter(name = "webXml", value = "target/test-classes/unit/warmojotest/AttachClasses-test-data/xml-config/web.xml")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warmojotest/AttachClasses")
     @MojoParameter(name = "outputDirectory", value = "target/test-classes/unit/warmojotest/AttachClasses-output")
     @MojoParameter(name = "warName", value = "simple")
+    @MojoParameter(name = "attachClasses", value = "true")
+    @MojoParameter(name = "classesClassifier", value = "classes")
     @Test
     public void testAttachClasses(WarMojo mojo) throws Exception {
-        String testId = "AttachClasses";
-        File webAppDirectory = new File(getTestDirectory(), testId);
-        File webAppSource = createWebAppSource(testId);
-        File classesDir = createClassesDir(testId, false);
-        File xmlSource = createXMLConfigDir(testId, new String[] {"web.xml"});
-
         WarArtifact4CCStub warArtifact = new WarArtifact4CCStub(getBasedir());
-        configureMojo(mojo, warArtifact, classesDir, webAppSource, webAppDirectory, xmlSource);
-        mojo.setAttachClasses(true);
-        mojo.setClassesClassifier("classes");
+        MavenProject4CopyConstructor project = new MavenProject4CopyConstructor();
+        project.setArtifact(warArtifact);
+        mojo.setProject(project);
 
         mojo.execute();
 
