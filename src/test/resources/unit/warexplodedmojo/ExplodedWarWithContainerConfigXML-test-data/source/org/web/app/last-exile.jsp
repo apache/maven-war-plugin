@@ -1,1 +1,1 @@
-/home/sparsick/dev/workspace/m-war-plugin-master/target/test-classes/unit/warexplodedmojo/test-dir/ExplodedWarWithContainerConfigXML-test-data/source/org/web/app/last-exile.jsp
+target/test-classes/unit/warexplodedmojo/test-dir/ExplodedWarWithContainerConfigXML-test-data/source/org/web/app/last-exile.jsp
