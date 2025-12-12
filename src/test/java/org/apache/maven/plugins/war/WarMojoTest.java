@@ -151,20 +151,24 @@ public class WarMojoTest {
 
     @InjectMojo(goal = "war", pom = "src/test/resources/unit/warmojotest/plugin-config-primary-artifact.xml")
     @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warmojotest/SimpleWarPackagingExcludesWithRegEx-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warmojotest/SimpleWarPackagingExcludesWithRegEx-test-data/source/")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warmojotest/SimpleWarPackagingExcludesWithRegEx")
+    @MojoParameter(
             name = "outputDirectory",
             value = "target/test-classes/unit/warmojotest/SimpleWarPackagingExcludesWithRegEx-output")
+    @MojoParameter(name = "webXml", value = "target/test-classes/unit/warmojotest/SimpleWarPackagingExcludesWithRegEx-test-data/xml-config/web.xml")
     @MojoParameter(name = "warName", value = "simple")
     @MojoParameter(name = "packagingExcludes", value = "%regex[.+/last-exile.+]")
     @Test
     public void testSimpleWarPackagingExcludesWithRegEx(WarMojo mojo) throws Exception {
-        String testId = "SimpleWarPackagingExcludesWithRegEx";
-        File webAppDirectory = new File(getTestDirectory(), testId);
-        File webAppSource = createWebAppSource(testId);
-        File classesDir = createClassesDir(testId, true);
-        File xmlSource = createXMLConfigDir(testId, new String[] {"web.xml"});
-
         WarArtifact4CCStub warArtifact = new WarArtifact4CCStub(getBasedir());
-        configureMojo(mojo, warArtifact, classesDir, webAppSource, webAppDirectory, xmlSource);
+        MavenProject4CopyConstructor project = new MavenProject4CopyConstructor();
+        project.setArtifact(warArtifact);
+        mojo.setProject(project);
 
         mojo.execute();
 
@@ -182,7 +186,7 @@ public class WarMojoTest {
                     "META-INF/maven/org.apache.maven.plugin.test/maven-war-plugin-test/pom.properties"
                 },
                 new String[] {
-                    null, mojo.getWebXml().toString(), null, null, null,
+                    null, mojo.getWebXml().getName(), null, null, null,
                 },
                 new String[] {"org/web/app/last-exile.jsp"});
     }
