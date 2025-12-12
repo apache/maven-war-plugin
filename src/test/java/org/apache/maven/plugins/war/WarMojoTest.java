@@ -18,8 +18,6 @@
  */
 package org.apache.maven.plugins.war;
 
-import javax.inject.Inject;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
@@ -28,21 +26,17 @@ import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import org.apache.maven.api.di.Provides;
 import org.apache.maven.api.plugin.testing.InjectMojo;
 import org.apache.maven.api.plugin.testing.MojoExtension;
 import org.apache.maven.api.plugin.testing.MojoParameter;
 import org.apache.maven.api.plugin.testing.MojoTest;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.war.stub.JarArtifactStub;
 import org.apache.maven.plugins.war.stub.MavenProject4CopyConstructor;
 import org.apache.maven.plugins.war.stub.MavenProjectArtifactsStub;
-import org.apache.maven.plugins.war.stub.ProjectHelperStub;
 import org.apache.maven.plugins.war.stub.WarArtifact4CCStub;
-import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.util.IOUtil;
 import org.junit.jupiter.api.Test;
 
@@ -59,7 +53,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 @MojoTest
 public class WarMojoTest {
 
-
     @InjectMojo(goal = "war", pom = "src/test/resources/unit/warmojotest/plugin-config-primary-artifact.xml")
     @MojoParameter(
             name = "classesDirectory",
@@ -70,7 +63,9 @@ public class WarMojoTest {
     @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warmojotest/SimpleWar")
     @MojoParameter(name = "outputDirectory", value = "target/test-classes/unit/warmojotest/SimpleWar-output")
     @MojoParameter(name = "warName", value = "simple")
-    @MojoParameter(name = "webXml", value = "target/test-classes/unit/warmojotest/SimpleWar-test-data/xml-config/web.xml")
+    @MojoParameter(
+            name = "webXml",
+            value = "target/test-classes/unit/warmojotest/SimpleWar-test-data/xml-config/web.xml")
     @Test
     public void testSimpleWar(WarMojo mojo) throws Exception {
         WarArtifact4CCStub warArtifact = new WarArtifact4CCStub(getBasedir());
@@ -99,15 +94,21 @@ public class WarMojoTest {
     @InjectMojo(goal = "war", pom = "src/test/resources/unit/warmojotest/plugin-config-primary-artifact.xml")
     @MojoParameter(
             name = "classesDirectory",
-            value = "target/test-classes/unit/warmojotest/SimpleWarPackagingExcludeWithIncludesRegEx-test-data/classes/")
+            value =
+                    "target/test-classes/unit/warmojotest/SimpleWarPackagingExcludeWithIncludesRegEx-test-data/classes/")
     @MojoParameter(
             name = "warSourceDirectory",
             value = "target/test-classes/unit/warmojotest/SimpleWarPackagingExcludeWithIncludesRegEx-test-data/source/")
-    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warmojotest/SimpleWarPackagingExcludeWithIncludesRegEx")
+    @MojoParameter(
+            name = "webappDirectory",
+            value = "target/test-classes/unit/warmojotest/SimpleWarPackagingExcludeWithIncludesRegEx")
     @MojoParameter(
             name = "outputDirectory",
             value = "target/test-classes/unit/warmojotest/SimpleWarPackagingExcludeWithIncludesRegEx-output")
-    @MojoParameter(name = "webXml", value = "target/test-classes/unit/warmojotest/SimpleWarPackagingExcludeWithIncludesRegEx-test-data/xml-config/web.xml")
+    @MojoParameter(
+            name = "webXml",
+            value =
+                    "target/test-classes/unit/warmojotest/SimpleWarPackagingExcludeWithIncludesRegEx-test-data/xml-config/web.xml")
     @MojoParameter(name = "warName", value = "simple")
     @MojoParameter(name = "packagingIncludes", value = "%regex[(.(?!exile))+]")
     @Test
@@ -145,11 +146,16 @@ public class WarMojoTest {
     @MojoParameter(
             name = "warSourceDirectory",
             value = "target/test-classes/unit/warmojotest/SimpleWarPackagingExcludesWithRegEx-test-data/source/")
-    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warmojotest/SimpleWarPackagingExcludesWithRegEx")
+    @MojoParameter(
+            name = "webappDirectory",
+            value = "target/test-classes/unit/warmojotest/SimpleWarPackagingExcludesWithRegEx")
     @MojoParameter(
             name = "outputDirectory",
             value = "target/test-classes/unit/warmojotest/SimpleWarPackagingExcludesWithRegEx-output")
-    @MojoParameter(name = "webXml", value = "target/test-classes/unit/warmojotest/SimpleWarPackagingExcludesWithRegEx-test-data/xml-config/web.xml")
+    @MojoParameter(
+            name = "webXml",
+            value =
+                    "target/test-classes/unit/warmojotest/SimpleWarPackagingExcludesWithRegEx-test-data/xml-config/web.xml")
     @MojoParameter(name = "warName", value = "simple")
     @MojoParameter(name = "packagingExcludes", value = "%regex[.+/last-exile.+]")
     @Test
@@ -188,10 +194,10 @@ public class WarMojoTest {
             name = "warSourceDirectory",
             value = "target/test-classes/unit/warmojotest/Classifier-test-data/source/")
     @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warmojotest/Classifier")
+    @MojoParameter(name = "outputDirectory", value = "target/test-classes/unit/warmojotest/Classifier-output")
     @MojoParameter(
-            name = "outputDirectory",
-            value = "target/test-classes/unit/warmojotest/Classifier-output")
-    @MojoParameter(name = "webXml", value = "target/test-classes/unit/warmojotest/Classifier-test-data/xml-config/web.xml")
+            name = "webXml",
+            value = "target/test-classes/unit/warmojotest/Classifier-test-data/xml-config/web.xml")
     @MojoParameter(name = "classifier", value = "test-classifier")
     @MojoParameter(name = "warName", value = "simple")
     @Test
@@ -228,10 +234,10 @@ public class WarMojoTest {
             name = "warSourceDirectory",
             value = "target/test-classes/unit/warmojotest/PrimaryArtifact-test-data/source/")
     @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warmojotest/PrimaryArtifact")
+    @MojoParameter(name = "outputDirectory", value = "target/test-classes/unit/warmojotest/PrimaryArtifact-output")
     @MojoParameter(
-            name = "outputDirectory",
-            value = "target/test-classes/unit/warmojotest/PrimaryArtifact-output")
-    @MojoParameter(name = "webXml", value = "target/test-classes/unit/warmojotest/PrimaryArtifact-test-data/xml-config/web.xml")
+            name = "webXml",
+            value = "target/test-classes/unit/warmojotest/PrimaryArtifact-test-data/xml-config/web.xml")
     @MojoParameter(name = "warName", value = "simple")
     @Test
     public void testPrimaryArtifact(WarMojo mojo) throws Exception {
@@ -268,10 +274,10 @@ public class WarMojoTest {
             name = "warSourceDirectory",
             value = "target/test-classes/unit/warmojotest/NotPrimaryArtifact-test-data/source/")
     @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warmojotest/NotPrimaryArtifact")
+    @MojoParameter(name = "outputDirectory", value = "target/test-classes/unit/warmojotest/NotPrimaryArtifact-output")
     @MojoParameter(
-            name = "outputDirectory",
-            value = "target/test-classes/unit/warmojotest/NotPrimaryArtifact-output")
-    @MojoParameter(name = "webXml", value = "target/test-classes/unit/warmojotest/NotPrimaryArtifact-test-data/xml-config/web.xml")
+            name = "webXml",
+            value = "target/test-classes/unit/warmojotest/NotPrimaryArtifact-test-data/xml-config/web.xml")
     @MojoParameter(name = "warName", value = "simple")
     @Test
     public void testNotPrimaryArtifact(WarMojo mojo) throws Exception {
@@ -311,7 +317,9 @@ public class WarMojoTest {
     @MojoParameter(
             name = "outputDirectory",
             value = "target/test-classes/unit/warmojotest/SimpleWarWithMetaInfContent-output")
-    @MojoParameter(name = "webXml", value = "target/test-classes/unit/warmojotest/SimpleWarWithMetaInfContent-test-data/xml-config/web.xml")
+    @MojoParameter(
+            name = "webXml",
+            value = "target/test-classes/unit/warmojotest/SimpleWarWithMetaInfContent-test-data/xml-config/web.xml")
     @MojoParameter(name = "warName", value = "simple")
     @Test
     public void testMetaInfContent(WarMojo mojo) throws Exception {
@@ -347,12 +355,19 @@ public class WarMojoTest {
     @MojoParameter(
             name = "warSourceDirectory",
             value = "target/test-classes/unit/warmojotest/SimpleWarWithContainerConfig-test-data/source/")
-    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warmojotest/SimpleWarWithContainerConfig")
+    @MojoParameter(
+            name = "webappDirectory",
+            value = "target/test-classes/unit/warmojotest/SimpleWarWithContainerConfig")
     @MojoParameter(
             name = "outputDirectory",
             value = "target/test-classes/unit/warmojotest/SimpleWarWithContainerConfig-output")
-    @MojoParameter(name = "webXml", value = "target/test-classes/unit/warmojotest/SimpleWarWithContainerConfig-test-data/xml-config/web.xml")
-    @MojoParameter(name = "containerConfigXML", value = "target/test-classes/unit/warmojotest/SimpleWarWithContainerConfig-test-data/source/META-INF/config.xml")
+    @MojoParameter(
+            name = "webXml",
+            value = "target/test-classes/unit/warmojotest/SimpleWarWithContainerConfig-test-data/xml-config/web.xml")
+    @MojoParameter(
+            name = "containerConfigXML",
+            value =
+                    "target/test-classes/unit/warmojotest/SimpleWarWithContainerConfig-test-data/source/META-INF/config.xml")
     @MojoParameter(name = "warName", value = "simple")
     @Test
     public void testMetaInfContentWithContainerConfig(WarMojo mojo) throws Exception {
@@ -392,7 +407,9 @@ public class WarMojoTest {
     @MojoParameter(
             name = "outputDirectory",
             value = "target/test-classes/unit/warmojotest/SimpleWarMissingWebXmlFalse-output")
-    @MojoParameter(name = "webXml", value = "target/test-classes/unit/warmojotest/SimpleWarMissingWebXmlFalse-test-data/xml-config/web.xml")
+    @MojoParameter(
+            name = "webXml",
+            value = "target/test-classes/unit/warmojotest/SimpleWarMissingWebXmlFalse-test-data/xml-config/web.xml")
     @MojoParameter(name = "failOnMissingWebXml", value = "false")
     @MojoParameter(name = "warName", value = "simple")
     @Test
@@ -538,7 +555,9 @@ public class WarMojoTest {
     @MojoParameter(
             name = "warSourceDirectory",
             value = "target/test-classes/unit/warmojotest/AttachClasses-test-data/source/")
-    @MojoParameter(name = "webXml", value = "target/test-classes/unit/warmojotest/AttachClasses-test-data/xml-config/web.xml")
+    @MojoParameter(
+            name = "webXml",
+            value = "target/test-classes/unit/warmojotest/AttachClasses-test-data/xml-config/web.xml")
     @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warmojotest/AttachClasses")
     @MojoParameter(name = "outputDirectory", value = "target/test-classes/unit/warmojotest/AttachClasses-output")
     @MojoParameter(name = "warName", value = "simple")
@@ -569,9 +588,15 @@ public class WarMojoTest {
     @MojoParameter(
             name = "warSourceDirectory",
             value = "target/test-classes/unit/warmojotest/AttachClassesCustomClassifier-test-data/source/")
-    @MojoParameter(name = "webXml", value = "target/test-classes/unit/warmojotest/AttachClassesCustomClassifier-test-data/xml-config/web.xml")
-    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warmojotest/AttachClassesCustomClassifier")
-    @MojoParameter(name = "outputDirectory", value = "target/test-classes/unit/warmojotest/AttachClassesCustomClassifier-output")
+    @MojoParameter(
+            name = "webXml",
+            value = "target/test-classes/unit/warmojotest/AttachClassesCustomClassifier-test-data/xml-config/web.xml")
+    @MojoParameter(
+            name = "webappDirectory",
+            value = "target/test-classes/unit/warmojotest/AttachClassesCustomClassifier")
+    @MojoParameter(
+            name = "outputDirectory",
+            value = "target/test-classes/unit/warmojotest/AttachClassesCustomClassifier-output")
     @MojoParameter(name = "warName", value = "simple")
     @MojoParameter(name = "attachClasses", value = "true")
     @MojoParameter(name = "classesClassifier", value = "mystuff")
@@ -636,5 +661,4 @@ public class WarMojoTest {
             return jarContent;
         }
     }
-
 }

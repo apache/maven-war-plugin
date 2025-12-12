@@ -23,7 +23,6 @@ import java.io.File;
 import org.apache.maven.api.plugin.testing.InjectMojo;
 import org.apache.maven.api.plugin.testing.MojoParameter;
 import org.apache.maven.api.plugin.testing.MojoTest;
-import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.apache.maven.plugins.war.stub.MavenProjectBasicStub;
 import org.apache.maven.plugins.war.stub.ResourceStub;
 import org.junit.jupiter.api.Test;
@@ -41,12 +40,15 @@ public class WarInPlaceMojoTest {
     @MojoParameter(
             name = "warSourceDirectory",
             value = "target/test-classes/unit/warexplodedinplacemojo/SimpleExplodedInplaceWar-test-data/source/")
-    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedinplacemojo/SimpleExplodedInplaceWar")
+    @MojoParameter(
+            name = "webappDirectory",
+            value = "target/test-classes/unit/warexplodedinplacemojo/SimpleExplodedInplaceWar")
     @Test
     public void testSimpleExplodedInplaceWar(WarInPlaceMojo mojo) throws Exception {
         // configure mojo
         ResourceStub[] resources = new ResourceStub[] {new ResourceStub()};
-        resources[0].setDirectory(getBasedir() + "/target/test-classes/unit/warexplodedinplacemojo/SimpleExplodedInplaceWar-test-data/resources");
+        resources[0].setDirectory(getBasedir()
+                + "/target/test-classes/unit/warexplodedinplacemojo/SimpleExplodedInplaceWar-test-data/resources");
         mojo.setWebResources(resources);
         MavenProjectBasicStub project = new MavenProjectBasicStub();
         mojo.setProject(project);
@@ -66,5 +68,4 @@ public class WarInPlaceMojoTest {
         assertTrue(expectedWEBINFDir.exists(), "WEB-INF not found");
         assertTrue(expectedMETAINFDir.exists(), "META-INF not found");
     }
-
 }
