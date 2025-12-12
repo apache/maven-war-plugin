@@ -1,0 +1,1 @@
+target/test-classes/unit/warexplodedmojo/test-dir/ExplodedWarWithContainerConfigXML-test-data/source/pansit.jsp
