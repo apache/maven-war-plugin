@@ -35,6 +35,7 @@ import org.apache.maven.api.plugin.testing.MojoParameter;
 import org.apache.maven.api.plugin.testing.MojoTest;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
+import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.war.stub.JarArtifactStub;
 import org.apache.maven.plugins.war.stub.MavenProject4CopyConstructor;
@@ -44,7 +45,6 @@ import org.apache.maven.plugins.war.stub.WarArtifact4CCStub;
 import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
@@ -445,7 +445,6 @@ public class WarMojoTest {
             value = "target/test-classes/unit/warmojotest/SimpleWarMissingWebXmlTrue-output")
     @MojoParameter(name = "warName", value = "simple")
     @MojoParameter(name = "failOnMissingWebXml", value = "true")
-
     @Test
     public void testFailOnMissingWebXmlTrue(WarMojo mojo) throws Exception {
 
@@ -464,24 +463,25 @@ public class WarMojoTest {
 
     @InjectMojo(goal = "war", pom = "src/test/resources/unit/warmojotest/plugin-config-primary-artifact.xml")
     @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warmojotest/SimpleWarUnderServlet30-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warmojotest/SimpleWarUnderServlet30-test-data/source/")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warmojotest/SimpleWarUnderServlet30")
+    @MojoParameter(
             name = "outputDirectory",
             value = "target/test-classes/unit/warmojotest/SimpleWarUnderServlet30-output")
     @MojoParameter(name = "warName", value = "simple")
     @Test
-    @Disabled // TODO test failed and error message corresponed to the test case description
     public void testFailOnMissingWebXmlNotSpecifiedAndServlet30Used(WarMojo mojo) throws Exception {
-        String testId = "SimpleWarUnderServlet30";
-        File webAppDirectory = new File(getTestDirectory(), testId);
-        File webAppSource = createWebAppSource(testId);
-        File classesDir = createClassesDir(testId, true);
         JarArtifactStub jarArtifactStub = createServletApi3JarArtifact();
-
         WarArtifact4CCStub warArtifact = new WarArtifact4CCStub(getBasedir());
         MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         project.addArtifact(jarArtifactStub);
         project.setArtifact(warArtifact);
         project.setFile(warArtifact.getFile());
-        configureMojo(mojo, project, classesDir, webAppSource, webAppDirectory);
+        mojo.setProject(project);
 
         mojo.execute();
 
@@ -504,7 +504,9 @@ public class WarMojoTest {
     }
 
     private JarArtifactStub createServletApi3JarArtifact() {
-        JarArtifactStub jarArtifactStub = new JarArtifactStub(getBasedir(), artifactHandler);
+        DefaultArtifactHandler jarArtifactHandler = new DefaultArtifactHandler("jar");
+        jarArtifactHandler.setAddedToClasspath(true);
+        JarArtifactStub jarArtifactStub = new JarArtifactStub(getBasedir(), jarArtifactHandler);
         jarArtifactStub.setFile(
                 new File(getBasedir(), "/target/test-classes/unit/sample_wars/javax.servlet-api-3.0.1.jar"));
         jarArtifactStub.setScope(Artifact.SCOPE_PROVIDED);
