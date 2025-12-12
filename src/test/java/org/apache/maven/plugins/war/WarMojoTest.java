@@ -43,7 +43,6 @@ import org.apache.maven.plugins.war.stub.MavenProjectArtifactsStub;
 import org.apache.maven.plugins.war.stub.ProjectHelperStub;
 import org.apache.maven.plugins.war.stub.WarArtifact4CCStub;
 import org.apache.maven.project.MavenProjectHelper;
-import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 import org.junit.jupiter.api.Test;
 
@@ -60,16 +59,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 @MojoTest
 public class WarMojoTest {
 
-    @Inject
-    private MavenProjectHelper projectHelper;
-
-    @Inject
-    private ArtifactHandler artifactHandler;
-
-    @Provides
-    private MavenProjectHelper projectHelper() {
-        return new ProjectHelperStub();
-    }
 
     @InjectMojo(goal = "war", pom = "src/test/resources/unit/warmojotest/plugin-config-primary-artifact.xml")
     @MojoParameter(
@@ -575,21 +564,23 @@ public class WarMojoTest {
 
     @InjectMojo(goal = "war", pom = "src/test/resources/unit/warmojotest/plugin-config-primary-artifact.xml")
     @MojoParameter(
-            name = "outputDirectory",
-            value = "target/test-classes/unit/warmojotest/AttachClassesCustomClassifier-output")
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warmojotest/AttachClassesCustomClassifier-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warmojotest/AttachClassesCustomClassifier-test-data/source/")
+    @MojoParameter(name = "webXml", value = "target/test-classes/unit/warmojotest/AttachClassesCustomClassifier-test-data/xml-config/web.xml")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warmojotest/AttachClassesCustomClassifier")
+    @MojoParameter(name = "outputDirectory", value = "target/test-classes/unit/warmojotest/AttachClassesCustomClassifier-output")
     @MojoParameter(name = "warName", value = "simple")
+    @MojoParameter(name = "attachClasses", value = "true")
+    @MojoParameter(name = "classesClassifier", value = "mystuff")
     @Test
     public void testAttachClassesWithCustomClassifier(WarMojo mojo) throws Exception {
-        String testId = "AttachClassesCustomClassifier";
-        File webAppDirectory = new File(getTestDirectory(), testId);
-        File webAppSource = createWebAppSource(testId);
-        File classesDir = createClassesDir(testId, false);
-        File xmlSource = createXMLConfigDir(testId, new String[] {"web.xml"});
-
         WarArtifact4CCStub warArtifact = new WarArtifact4CCStub(getBasedir());
-        configureMojo(mojo, warArtifact, classesDir, webAppSource, webAppDirectory, xmlSource);
-        mojo.setAttachClasses(true);
-        mojo.setClassesClassifier("mystuff");
+        MavenProject4CopyConstructor project = new MavenProject4CopyConstructor();
+        project.setArtifact(warArtifact);
+        mojo.setProject(project);
 
         mojo.execute();
 
@@ -600,41 +591,6 @@ public class WarMojoTest {
         assertJarContent(
                 expectedJarFile, new String[] {"META-INF/MANIFEST.MF", "sample-servlet.clazz"}, new String[] {null, null
                 });
-    }
-
-    private void configureMojo(
-            WarMojo mojo,
-            WarArtifact4CCStub warArtifact,
-            File classesDir,
-            File webAppSource,
-            File webAppDirectory,
-            File xmlSource)
-            throws Exception {
-        configureMojo(mojo, warArtifact, classesDir, webAppSource, webAppDirectory);
-        mojo.setWebXml(new File(xmlSource, "web.xml"));
-    }
-
-    private void configureMojo(
-            WarMojo mojo, MavenProjectArtifactsStub project, File classesDir, File webAppSource, File webAppDirectory) {
-        mojo.setProject(project);
-        mojo.setClassesDirectory(classesDir);
-        mojo.setWarSourceDirectory(webAppSource);
-        mojo.setWebappDirectory(webAppDirectory);
-    }
-
-    private void configureMojo(
-            WarMojo mojo, WarArtifact4CCStub warArtifact, File classesDir, File webAppSource, File webAppDirectory)
-            throws Exception {
-        MavenProject4CopyConstructor project = new MavenProject4CopyConstructor();
-        project.setArtifact(warArtifact);
-        mojo.setClassesDirectory(classesDir);
-        mojo.setWarSourceDirectory(webAppSource);
-        mojo.setWebappDirectory(webAppDirectory);
-        mojo.setProject(project);
-    }
-
-    private File getTestDirectory() {
-        return new File(getBasedir(), "target/test-classes/unit/warmojotest");
     }
 
     private Map<String, JarEntry> assertJarContent(
@@ -681,99 +637,4 @@ public class WarMojoTest {
         }
     }
 
-    /**
-     * create an isolated xml dir
-     *
-     * @param id The id.
-     * @param xmlFiles array of xml files.
-     * @return The created file.
-     * @throws Exception in case of errors.
-     */
-    private File createXMLConfigDir(String id, String[] xmlFiles) throws Exception {
-        File xmlConfigDir = new File(getTestDirectory(), "/" + id + "-test-data/xml-config");
-        File xmlFile;
-
-        createDir(xmlConfigDir);
-
-        if (xmlFiles != null) {
-            for (String o : xmlFiles) {
-                xmlFile = new File(xmlConfigDir, o);
-                createFile(xmlFile);
-            }
-        }
-
-        return xmlConfigDir;
-    }
-
-    /**
-     * Returns the webapp source directory for the specified id.
-     *
-     * @param id the id of the test
-     * @return the source directory for that test
-     * @throws Exception if an exception occurs
-     */
-    private File getWebAppSource(String id) throws Exception {
-        return new File(getTestDirectory(), "/" + id + "-test-data/source");
-    }
-
-    /**
-     * create an isolated web source with a sample jsp file
-     *
-     * @param id The id.
-     * @param createSamples Create example files yes or no.
-     * @return The created file.
-     * @throws Exception in case of errors.
-     */
-    private File createWebAppSource(String id, boolean createSamples) throws Exception {
-        File webAppSource = getWebAppSource(id);
-        if (createSamples) {
-            File simpleJSP = new File(webAppSource, "pansit.jsp");
-            File jspFile = new File(webAppSource, "org/web/app/last-exile.jsp");
-
-            createFile(simpleJSP);
-            createFile(jspFile);
-        }
-        return webAppSource;
-    }
-
-    private File createWebAppSource(String id) throws Exception {
-        return createWebAppSource(id, true);
-    }
-
-    /**
-     * create a class directory with or without a sample class
-     *
-     * @param id The id.
-     * @param empty true to create a class files false otherwise.
-     * @return The created class file.
-     * @throws Exception in case of errors.
-     */
-    private File createClassesDir(String id, boolean empty) throws Exception {
-        File classesDir = new File(getTestDirectory() + "/" + id + "-test-data/classes/");
-
-        createDir(classesDir);
-
-        if (!empty) {
-            createFile(new File(classesDir + "/sample-servlet.clazz"));
-        }
-
-        return classesDir;
-    }
-
-    private void createDir(File dir) {
-        if (!dir.exists()) {
-            assertTrue(dir.mkdirs(), "can not create test dir: " + dir.toString());
-        }
-    }
-
-    private void createFile(File testFile, String body) throws Exception {
-        createDir(testFile.getParentFile());
-        FileUtils.fileWrite(testFile.toString(), body);
-
-        assertTrue(testFile.exists(), "could not create file: " + testFile);
-    }
-
-    private void createFile(File testFile) throws Exception {
-        createFile(testFile, testFile.toString());
-    }
 }
