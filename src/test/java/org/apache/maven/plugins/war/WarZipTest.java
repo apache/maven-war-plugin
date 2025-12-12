@@ -21,7 +21,6 @@ package org.apache.maven.plugins.war;
 import javax.inject.Inject;
 
 import java.io.File;
-import java.net.URI;
 
 import org.apache.maven.api.plugin.testing.InjectMojo;
 import org.apache.maven.api.plugin.testing.MojoParameter;
@@ -123,24 +122,24 @@ public class WarZipTest {
     }
 
     @InjectMojo(goal = "war", pom = "src/test/resources/unit/warziptest/war-with-zip.xml")
-    @MojoParameter(
-            name = "outputDirectory",
-            value = "target/test-classes/unit/warziptest/one-zip-overlay-default-skip-output")
+    @MojoParameter(name = "classesDirectory", value = "target/test-classes/unit/warziptest/one-zip-overlay-skip-test-data/classes/")
+    @MojoParameter(name = "warSourceDirectory", value = "target/test-classes/unit/warziptest/one-zip-overlay-skip-test-data/source/")
+    @MojoParameter(name = "webXml", value = "target/test-classes/unit/warziptest/one-zip-overlay-skip-test-data/xml-config/web.xml")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warziptest/one-zip-overlay-skip")
+    @MojoParameter(name = "outputDirectory", value = "target/test-classes/unit/warziptest/one-zip-overlay-skip-output")
     @MojoParameter(name = "warName", value = "simple")
     @MojoParameter(name = "workDirectory", value = "target/test-classes/unit/warziptest/work")
     @Test
     public void testOneZipDefaultSkip(WarMojo mojo) throws Exception {
-        String testId = "one-zip-overlay-default-skip";
-        File webAppDirectory = new File(getTestDirectory(), testId);
-        File webAppSource = createWebAppSource(testId);
-        File classesDir = createClassesDir(testId, true);
-        File xmlSource = createXMLConfigDir(testId, new String[] {"web.xml"});
-
-        configureMojo(mojo, classesDir, webAppSource, webAppDirectory, xmlSource);
+        WarArtifactStub warArtifact = new WarArtifactStub(getBasedir());
+        MavenZipProject project = new MavenZipProject();
+        project.setArtifact(warArtifact);
+        project.getArtifacts().add(buildZipArtifact());
+        mojo.setProject(project);
 
         mojo.execute();
 
-        assertZipContentNotHere(webAppDirectory);
+        assertZipContentNotHere(mojo.getWebappDirectory());
     }
 
     @InjectMojo(goal = "war", pom = "src/test/resources/unit/warziptest/war-with-zip.xml")
