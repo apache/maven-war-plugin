@@ -143,6 +143,10 @@ public class WarZipTest {
     }
 
     @InjectMojo(goal = "war", pom = "src/test/resources/unit/warziptest/war-with-zip.xml")
+    @MojoParameter(name = "classesDirectory", value = "target/test-classes/unit/warziptest/one-zip-overlay-skip-test-data/classes/")
+    @MojoParameter(name = "warSourceDirectory", value = "target/test-classes/unit/warziptest/one-zip-overlay-skip-test-data/source/")
+    @MojoParameter(name = "webXml", value = "target/test-classes/unit/warziptest/one-zip-overlay-skip-test-data/xml-config/web.xml")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warziptest/one-zip-overlay-skip")
     @MojoParameter(
             name = "outputDirectory",
             value = "target/test-classes/unit/warziptest/one-zip-overlay-force-skip-output")
@@ -150,13 +154,12 @@ public class WarZipTest {
     @MojoParameter(name = "workDirectory", value = "target/test-classes/unit/warziptest/work")
     @Test
     public void testOneZipWithForceSkip(WarMojo mojo) throws Exception {
-        String testId = "one-zip-overlay-force-skip";
-        File webAppDirectory = new File(getTestDirectory(), testId);
-        File webAppSource = createWebAppSource(testId);
-        File classesDir = createClassesDir(testId, true);
-        File xmlSource = createXMLConfigDir(testId, new String[] {"web.xml"});
 
-        configureMojo(mojo, classesDir, webAppSource, webAppDirectory, xmlSource);
+        WarArtifactStub warArtifact = new WarArtifactStub(getBasedir());
+        MavenZipProject project = new MavenZipProject();
+        project.setArtifact(warArtifact);
+        project.getArtifacts().add(buildZipArtifact());
+        mojo.setProject(project);
 
         Overlay overlay = new DefaultOverlay(buildZipArtifact());
         overlay.setSkip(true);
@@ -165,7 +168,7 @@ public class WarZipTest {
 
         mojo.execute();
 
-        assertZipContentNotHere(webAppDirectory);
+        assertZipContentNotHere(mojo.getWebappDirectory());
     }
 
     private void configureMojo(
