@@ -48,23 +48,28 @@ public class WarZipTest {
     private ArtifactHandler artifactHandler;
 
     @InjectMojo(goal = "war", pom = "src/test/resources/unit/warziptest/war-with-zip.xml")
+    @MojoParameter(name = "classesDirectory", value = "target/test-classes/unit/warziptest/one-zip-test-data/classes/")
+    @MojoParameter(name = "warSourceDirectory", value = "target/test-classes/unit/warziptest/one-zip-test-data/source/")
+    @MojoParameter(name = "webXml", value = "target/test-classes/unit/warziptest/one-zip-test-data/xml-config/web.xml")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warziptest/one-zip")
     @MojoParameter(name = "outputDirectory", value = "target/test-classes/unit/warziptest/one-zip-output")
     @MojoParameter(name = "warName", value = "simple")
     @MojoParameter(name = "workDirectory", value = "target/test-classes/unit/warziptest/work")
     @Test
     public void testOneZipWithNoSkip(WarMojo mojo) throws Exception {
-        String testId = "one-zip";
-        File webAppDirectory = new File(getTestDirectory(), testId);
-        File webAppSource = createWebAppSource(testId);
-        File classesDir = createClassesDir(testId, true);
-        File xmlSource = createXMLConfigDir(testId, new String[] {"web.xml"});
-
         Overlay overlay = new DefaultOverlay(buildZipArtifact());
         overlay.setType("zip");
-        configureMojo(mojo, classesDir, webAppSource, webAppDirectory, xmlSource, overlay);
+        mojo.addOverlay(overlay);
+
+        WarArtifactStub warArtifact = new WarArtifactStub(getBasedir());
+        MavenZipProject project = new MavenZipProject();
+        project.setArtifact(warArtifact);
+        project.getArtifacts().add(buildZipArtifact());
+        mojo.setProject(project);
 
         mojo.execute();
 
+        File webAppDirectory = mojo.getWebappDirectory();
         File foo = new File(webAppDirectory, "foo.txt");
         assertTrue(foo.exists(), "foo.txt not exists");
         assertTrue(foo.isFile(), "foo.txt not a file");
