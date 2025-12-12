@@ -434,19 +434,25 @@ public class WarMojoTest {
 
     @InjectMojo(goal = "war", pom = "src/test/resources/unit/warmojotest/plugin-config-primary-artifact.xml")
     @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warmojotest/SimpleWarMissingWebXmlTrue-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warmojotest/SimpleWarMissingWebXmlTrue-test-data/source/")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warmojotest/SimpleWarMissingWebXmlTrue")
+    @MojoParameter(
             name = "outputDirectory",
             value = "target/test-classes/unit/warmojotest/SimpleWarMissingWebXmlTrue-output")
     @MojoParameter(name = "warName", value = "simple")
+    @MojoParameter(name = "failOnMissingWebXml", value = "true")
+
     @Test
     public void testFailOnMissingWebXmlTrue(WarMojo mojo) throws Exception {
-        String testId = "SimpleWarMissingWebXmlTrue";
-        File webAppDirectory = new File(getTestDirectory(), testId);
-        File webAppSource = createWebAppSource(testId);
-        File classesDir = createClassesDir(testId, true);
 
         WarArtifact4CCStub warArtifact = new WarArtifact4CCStub(getBasedir());
-        configureMojo(mojo, warArtifact, classesDir, webAppSource, webAppDirectory);
-        mojo.setFailOnMissingWebXml(true);
+        MavenProject4CopyConstructor project = new MavenProject4CopyConstructor();
+        project.setArtifact(warArtifact);
+        mojo.setProject(project);
 
         try {
             mojo.execute();
