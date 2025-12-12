@@ -313,23 +313,23 @@ public class WarMojoTest {
 
     @InjectMojo(goal = "war", pom = "src/test/resources/unit/warmojotest/plugin-config-primary-artifact.xml")
     @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warmojotest/SimpleWarWithMetaInfContent-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warmojotest/SimpleWarWithMetaInfContent-test-data/source/")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warmojotest/SimpleWarWithMetaInfContent")
+    @MojoParameter(
             name = "outputDirectory",
             value = "target/test-classes/unit/warmojotest/SimpleWarWithMetaInfContent-output")
+    @MojoParameter(name = "webXml", value = "target/test-classes/unit/warmojotest/SimpleWarWithMetaInfContent-test-data/xml-config/web.xml")
     @MojoParameter(name = "warName", value = "simple")
     @Test
     public void testMetaInfContent(WarMojo mojo) throws Exception {
-        String testId = "SimpleWarWithMetaInfContent";
-        File webAppDirectory = new File(getTestDirectory(), testId);
-        File webAppSource = createWebAppSource(testId);
-        File classesDir = createClassesDir(testId, true);
-        File xmlSource = createXMLConfigDir(testId, new String[] {"web.xml"});
-
-        // Create the sample config.xml
-        final File configFile = new File(webAppSource, "META-INF/config.xml");
-        createFile(configFile, "<config></config>");
-
         WarArtifact4CCStub warArtifact = new WarArtifact4CCStub(getBasedir());
-        configureMojo(mojo, warArtifact, classesDir, webAppSource, webAppDirectory, xmlSource);
+        MavenProject4CopyConstructor project = new MavenProject4CopyConstructor();
+        project.setArtifact(warArtifact);
+        mojo.setProject(project);
 
         mojo.execute();
 
@@ -348,7 +348,7 @@ public class WarMojoTest {
                     "META-INF/maven/org.apache.maven.plugin.test/maven-war-plugin-test/pom.xml",
                     "META-INF/maven/org.apache.maven.plugin.test/maven-war-plugin-test/pom.properties"
                 },
-                new String[] {null, null, mojo.getWebXml().toString(), null, null, null, null});
+                new String[] {null, null, mojo.getWebXml().getName(), null, null, null, null});
     }
 
     @InjectMojo(goal = "war", pom = "src/test/resources/unit/warmojotest/plugin-config-primary-artifact.xml")
