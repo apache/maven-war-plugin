@@ -57,7 +57,6 @@ public class WarOverlaysTest {
     private static final File OVERLAYS_ROOT_DIR = new File(getBasedir(), "target/test-classes/overlays/");
     private static final String MANIFEST_PATH = "META-INF" + File.separator + "MANIFEST.MF";
 
-
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/waroverlays/default.xml")
     @MojoParameter(name = "workDirectory", value = "target/test-classes/unit/waroverlays/war/work-no-overlay")
     @MojoParameter(
