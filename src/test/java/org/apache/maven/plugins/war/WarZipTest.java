@@ -27,12 +27,17 @@ import org.apache.maven.plugins.war.stub.MavenZipProject;
 import org.apache.maven.plugins.war.stub.WarArtifactStub;
 import org.apache.maven.plugins.war.stub.ZipArtifactStub;
 import org.codehaus.plexus.util.FileUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Olivier Lamy
  * @since 7 Oct 07
  */
-public class WarZipTest extends AbstractWarMojoTest {
+class WarZipTest extends AbstractWarMojoTest {
     WarMojo mojo;
 
     private static File pomFile = new File(getBasedir(), "src/test/resources/unit/warziptest/war-with-zip.xml");
@@ -41,6 +46,7 @@ public class WarZipTest extends AbstractWarMojoTest {
         return new File(getBasedir(), "target/test-classes/unit/warziptest");
     }
 
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         mojo = (WarMojo) lookupMojo("war", pomFile);
@@ -79,7 +85,8 @@ public class WarZipTest extends AbstractWarMojoTest {
         return webAppDirectory;
     }
 
-    public void testOneZipWithNoSkip() throws Exception {
+    @Test
+    void oneZipWithNoSkip() throws Exception {
         File webAppDirectory = configureMojo("one-zip");
 
         Overlay overlay = new DefaultOverlay(buildZipArtifact());
@@ -89,19 +96,20 @@ public class WarZipTest extends AbstractWarMojoTest {
         mojo.execute();
 
         File foo = new File(webAppDirectory, "foo.txt");
-        assertTrue("foo.txt not exists", foo.exists());
-        assertTrue("foo.txt not a file", foo.isFile());
+        assertTrue(foo.exists(), "foo.txt not exists");
+        assertTrue(foo.isFile(), "foo.txt not a file");
 
         File barDirectory = new File(webAppDirectory, "bar");
-        assertTrue("bar directory not exists", barDirectory.exists());
-        assertTrue("bar not a directory", barDirectory.isDirectory());
+        assertTrue(barDirectory.exists(), "bar directory not exists");
+        assertTrue(barDirectory.isDirectory(), "bar not a directory");
 
         File bar = new File(barDirectory, "bar.txt");
-        assertTrue("bar/bar.txt not exists", bar.exists());
-        assertTrue("bar/bar.txt not a file", bar.isFile());
+        assertTrue(bar.exists(), "bar/bar.txt not exists");
+        assertTrue(bar.isFile(), "bar/bar.txt not a file");
     }
 
-    public void testOneZipWithTargetPathOverlay() throws Exception {
+    @Test
+    void oneZipWithTargetPathOverlay() throws Exception {
         File webAppDirectory = configureMojo("one-zip-overlay-targetPath");
 
         Overlay overlay = new DefaultOverlay(buildZipArtifact());
@@ -113,19 +121,20 @@ public class WarZipTest extends AbstractWarMojoTest {
         mojo.execute();
 
         File foo = new File(webAppDirectory.getPath() + File.separatorChar + "overridePath", "foo.txt");
-        assertTrue("foo.txt not exists", foo.exists());
-        assertTrue("foo.txt not a file", foo.isFile());
+        assertTrue(foo.exists(), "foo.txt not exists");
+        assertTrue(foo.isFile(), "foo.txt not a file");
 
         File barDirectory = new File(webAppDirectory.getPath() + File.separatorChar + "overridePath", "bar");
-        assertTrue("bar directory not exists", barDirectory.exists());
-        assertTrue("bar not a directory", barDirectory.isDirectory());
+        assertTrue(barDirectory.exists(), "bar directory not exists");
+        assertTrue(barDirectory.isDirectory(), "bar not a directory");
 
         File bar = new File(barDirectory, "bar.txt");
-        assertTrue("bar/bar.txt not exists", bar.exists());
-        assertTrue("bar/bar.txt not a file", bar.isFile());
+        assertTrue(bar.exists(), "bar/bar.txt not exists");
+        assertTrue(bar.isFile(), "bar/bar.txt not a file");
     }
 
-    public void testOneZipDefaultSkip() throws Exception {
+    @Test
+    void oneZipDefaultSkip() throws Exception {
         File webAppDirectory = configureMojo("one-zip-overlay-skip");
 
         mojo.execute();
@@ -133,7 +142,8 @@ public class WarZipTest extends AbstractWarMojoTest {
         assertZipContentNotHere(webAppDirectory);
     }
 
-    public void testOneZipWithForceSkip() throws Exception {
+    @Test
+    void oneZipWithForceSkip() throws Exception {
         File webAppDirectory = configureMojo("one-zip-overlay-skip");
         Overlay overlay = new DefaultOverlay(buildZipArtifact());
         overlay.setSkip(true);
@@ -146,15 +156,15 @@ public class WarZipTest extends AbstractWarMojoTest {
 
     protected void assertZipContentNotHere(File webAppDirectory) {
         File foo = new File(webAppDirectory.getPath() + File.separatorChar + "overridePath", "foo.txt");
-        assertFalse("foo.txt exists", foo.exists());
-        assertFalse("foo.txt a file", foo.isFile());
+        assertFalse(foo.exists(), "foo.txt exists");
+        assertFalse(foo.isFile(), "foo.txt a file");
 
         File barDirectory = new File(webAppDirectory.getPath() + File.separatorChar + "overridePath", "bar");
-        assertFalse("bar directory exists", barDirectory.exists());
-        assertFalse("bar is a directory", barDirectory.isDirectory());
+        assertFalse(barDirectory.exists(), "bar directory exists");
+        assertFalse(barDirectory.isDirectory(), "bar is a directory");
 
         File bar = new File(barDirectory, "bar.txt");
-        assertFalse("bar/bar.txt exists", bar.exists());
-        assertFalse("bar/bar.txt is a file", bar.isFile());
+        assertFalse(bar.exists(), "bar/bar.txt exists");
+        assertFalse(bar.isFile(), "bar/bar.txt is a file");
     }
 }

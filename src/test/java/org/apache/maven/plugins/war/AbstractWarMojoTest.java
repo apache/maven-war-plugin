@@ -34,6 +34,10 @@ import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.aether.RepositorySystemSession;
+import org.junit.jupiter.api.BeforeEach;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public abstract class AbstractWarMojoTest extends AbstractMojoTestCase {
 
@@ -45,7 +49,8 @@ public abstract class AbstractWarMojoTest extends AbstractMojoTestCase {
 
     protected abstract File getTestDirectory() throws Exception;
 
-    protected void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() throws Exception {
         super.setUp();
 
         MavenExecutionRequest request = new DefaultMavenExecutionRequest()
@@ -157,7 +162,7 @@ public abstract class AbstractWarMojoTest extends AbstractMojoTestCase {
 
     protected void createDir(File dir) {
         if (!dir.exists()) {
-            assertTrue("can not create test dir: " + dir.toString(), dir.mkdirs());
+            assertTrue(dir.mkdirs(), "can not create test dir: " + dir.toString());
         }
     }
 
@@ -165,7 +170,7 @@ public abstract class AbstractWarMojoTest extends AbstractMojoTestCase {
         createDir(testFile.getParentFile());
         FileUtils.fileWrite(testFile.toString(), body);
 
-        assertTrue("could not create file: " + testFile, testFile.exists());
+        assertTrue(testFile.exists(), "could not create file: " + testFile);
     }
 
     protected void createFile(File testFile) throws Exception {
@@ -273,8 +278,8 @@ public abstract class AbstractWarMojoTest extends AbstractMojoTestCase {
 
         // Make sure the file exists
         assertTrue(
-                "Overlay file " + filePath + " does not exist for overlay " + id + " at " + file.getAbsolutePath(),
-                file.exists());
+                file.exists(),
+                "Overlay file " + filePath + " does not exist for overlay " + id + " at " + file.getAbsolutePath());
         return file;
     }
 

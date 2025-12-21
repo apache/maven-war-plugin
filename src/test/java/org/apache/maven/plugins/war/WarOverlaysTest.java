@@ -28,14 +28,19 @@ import java.util.List;
 import org.apache.maven.plugin.testing.stubs.ArtifactStub;
 import org.apache.maven.plugins.war.overlay.DefaultOverlay;
 import org.codehaus.plexus.util.FileUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Stephane Nicoll
  */
-public class WarOverlaysTest extends AbstractWarExplodedMojoTest {
+class WarOverlaysTest extends AbstractWarExplodedMojoTest {
 
     private static File pomFile = new File(getBasedir(), "target/test-classes/unit/waroverlays/default.xml");
 
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         generateFullOverlayWar("overlay-full-1");
@@ -51,7 +56,8 @@ public class WarOverlaysTest extends AbstractWarExplodedMojoTest {
         return new File(getBasedir(), "target/test-classes/unit/waroverlays");
     }
 
-    public void testNoOverlay() throws Exception {
+    @Test
+    void noOverlay() throws Exception {
         // setup test data
         final String testId = "no-overlay";
         final File xmlSource = createXMLConfigDir(testId, new String[] {"web.xml"});
@@ -69,7 +75,8 @@ public class WarOverlaysTest extends AbstractWarExplodedMojoTest {
         }
     }
 
-    public void testDefaultOverlay() throws Exception {
+    @Test
+    void defaultOverlay() throws Exception {
         // setup test data
         final String testId = "default-overlay";
 
@@ -97,7 +104,8 @@ public class WarOverlaysTest extends AbstractWarExplodedMojoTest {
         }
     }
 
-    public void testDefaultOverlays() throws Exception {
+    @Test
+    void defaultOverlays() throws Exception {
         // setup test data
         final String testId = "default-overlays";
 
@@ -137,7 +145,8 @@ public class WarOverlaysTest extends AbstractWarExplodedMojoTest {
      *
      * @throws Exception if any error occurs
      */
-    public void testScenarioOneWithDefaulSettings() throws Exception {
+    @Test
+    void scenarioOneWithDefaulSettings() throws Exception {
         // setup test data
         final String testId = "scenario-one-default-settings";
 
@@ -160,7 +169,8 @@ public class WarOverlaysTest extends AbstractWarExplodedMojoTest {
      *
      * @throws Exception if an error occurs
      */
-    public void testScenarioOneWithOverlaySettings() throws Exception {
+    @Test
+    void scenarioOneWithOverlaySettings() throws Exception {
         // setup test data
         final String testId = "scenario-one-overlay-settings";
 
@@ -191,7 +201,8 @@ public class WarOverlaysTest extends AbstractWarExplodedMojoTest {
      *
      * @throws Exception if an error occurs
      */
-    public void testScenarioOneWithFullSettings() throws Exception {
+    @Test
+    void scenarioOneWithFullSettings() throws Exception {
         // setup test data
         final String testId = "scenario-one-full-settings";
 
@@ -277,7 +288,8 @@ public class WarOverlaysTest extends AbstractWarExplodedMojoTest {
         }
     }
 
-    public void testOverlaysIncludesExcludesWithMultipleDefinitions() throws Exception {
+    @Test
+    void overlaysIncludesExcludesWithMultipleDefinitions() throws Exception {
         // setup test data
         final String testId = "overlays-includes-excludes-multiple-defs";
 
@@ -355,7 +367,8 @@ public class WarOverlaysTest extends AbstractWarExplodedMojoTest {
         }
     }
 
-    public void testOverlaysIncludesExcludesWithMultipleDefinitions2() throws Exception {
+    @Test
+    void overlaysIncludesExcludesWithMultipleDefinitions2() throws Exception {
         // setup test data
         final String testId = "overlays-includes-excludes-multiple-defs2";
 
@@ -451,9 +464,9 @@ public class WarOverlaysTest extends AbstractWarExplodedMojoTest {
         final File webAppFile = new File(webAppDirectory, filePath);
         final File overlayFile = getOverlayFile(overlayId, filePath);
         assertEquals(
-                "Wrong content for overlayed file " + filePath,
                 FileUtils.fileRead(overlayFile),
-                FileUtils.fileRead(webAppFile));
+                FileUtils.fileRead(webAppFile),
+                "Wrong content for overlayed file " + filePath);
     }
 
     /**
@@ -471,6 +484,6 @@ public class WarOverlaysTest extends AbstractWarExplodedMojoTest {
         final File webAppFile = new File(webAppDirectory, filePath);
         final File sourceFile = new File(getWebAppSource(testId), filePath);
         final String expectedContent = sourceFile.toString();
-        assertEquals("Wrong content for file " + filePath, expectedContent, FileUtils.fileRead(webAppFile));
+        assertEquals(expectedContent, FileUtils.fileRead(webAppFile), "Wrong content for file " + filePath);
     }
 }

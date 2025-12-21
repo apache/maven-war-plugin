@@ -29,6 +29,10 @@ import java.util.List;
 import org.apache.maven.plugin.testing.stubs.ArtifactStub;
 import org.apache.maven.plugins.war.stub.MavenProjectArtifactsStub;
 import org.codehaus.plexus.util.FileUtils;
+import org.junit.jupiter.api.BeforeEach;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Stephane Nicoll
@@ -37,6 +41,7 @@ public abstract class AbstractWarExplodedMojoTest extends AbstractWarMojoTest {
 
     protected WarExplodedMojo mojo;
 
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         mojo = lookupMojo("exploded", getPomFile());
@@ -134,8 +139,8 @@ public abstract class AbstractWarExplodedMojoTest extends AbstractWarMojoTest {
         File expectedWebSourceFile = new File(webAppDirectory, "pansit.jsp");
         File expectedWebSource2File = new File(webAppDirectory, "org/web/app/last-exile.jsp");
 
-        assertTrue("source file not found: " + expectedWebSourceFile.toString(), expectedWebSourceFile.exists());
-        assertTrue("source file not found: " + expectedWebSource2File.toString(), expectedWebSource2File.exists());
+        assertTrue(expectedWebSourceFile.exists(), "source file not found: " + expectedWebSourceFile.toString());
+        assertTrue(expectedWebSource2File.exists(), "source file not found: " + expectedWebSource2File.toString());
 
         final List<File> content = new ArrayList<>();
         content.add(expectedWebSourceFile);
@@ -152,7 +157,7 @@ public abstract class AbstractWarExplodedMojoTest extends AbstractWarMojoTest {
      */
     protected List<File> assertWebXml(File webAppDirectory) {
         File expectedWEBXMLFile = new File(webAppDirectory, "WEB-INF/web.xml");
-        assertTrue("web xml not found: " + expectedWEBXMLFile.toString(), expectedWEBXMLFile.exists());
+        assertTrue(expectedWEBXMLFile.exists(), "web xml not found: " + expectedWEBXMLFile.toString());
 
         final List<File> content = new ArrayList<>();
         content.add(expectedWEBXMLFile);
@@ -173,9 +178,9 @@ public abstract class AbstractWarExplodedMojoTest extends AbstractWarMojoTest {
         for (String filePath : filePaths) {
             final File expectedFile = new File(webAppDirectory, filePath);
             if (customMessage != null) {
-                assertTrue(customMessage + " - " + expectedFile.toString(), expectedFile.exists());
+                assertTrue(expectedFile.exists(), customMessage + " - " + expectedFile.toString());
             } else {
-                assertTrue("source file not found: " + expectedFile.toString(), expectedFile.exists());
+                assertTrue(expectedFile.exists(), "source file not found: " + expectedFile.toString());
             }
             content.add(expectedFile);
         }
@@ -201,10 +206,10 @@ public abstract class AbstractWarExplodedMojoTest extends AbstractWarMojoTest {
         Collections.sort(expectedFiles);
         Collections.sort(webAppContent);
         assertEquals(
-                "Invalid webapp content, expected " + expectedFiles.size() + "file(s) " + expectedFiles + " but got "
-                        + webAppContent.size() + " file(s) " + webAppContent,
                 expectedFiles,
-                webAppContent);
+                webAppContent,
+                "Invalid webapp content, expected " + expectedFiles.size() + "file(s) " + expectedFiles + " but got "
+                        + webAppContent.size() + " file(s) " + webAppContent);
     }
 
     /**

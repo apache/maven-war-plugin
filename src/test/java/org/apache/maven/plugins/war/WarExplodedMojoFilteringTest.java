@@ -28,12 +28,16 @@ import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugins.war.stub.MavenProjectBasicStub;
 import org.apache.maven.plugins.war.stub.ResourceStub;
 import org.codehaus.plexus.util.FileUtils;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Olivier Lamy
  * @since 21 juil. 2008
  */
-public class WarExplodedMojoFilteringTest extends AbstractWarExplodedMojoTest {
+class WarExplodedMojoFilteringTest extends AbstractWarExplodedMojoTest {
 
     protected File getPomFile() {
         return new File(getBasedir(), "/target/test-classes/unit/warexplodedmojo/plugin-config.xml");
@@ -47,7 +51,8 @@ public class WarExplodedMojoFilteringTest extends AbstractWarExplodedMojoTest {
      * @throws Exception in case of an error.
      */
     @SuppressWarnings("checkstyle:MethodLength")
-    public void testExplodedWarWithResourceFiltering() throws Exception {
+    @Test
+    void explodedWarWithResourceFiltering() throws Exception {
         // setup test data
         String testId = "ExplodedWarWithResourceFiltering";
         MavenProjectBasicStub project = new MavenProjectBasicStub();
@@ -96,40 +101,40 @@ public class WarExplodedMojoFilteringTest extends AbstractWarExplodedMojoTest {
         File expectedResourceFile = new File(webAppDirectory, "custom-setting.cfg");
         File expectedResourceWDirFile = new File(webAppDirectory, "custom-config/custom-setting.cfg");
 
-        assertTrue("source files not found: " + expectedWebSourceFile.toString(), expectedWebSourceFile.exists());
-        assertTrue("source files not found: " + expectedWebSource2File.toString(), expectedWebSource2File.exists());
-        assertTrue("resource file not found:" + expectedResourceFile.toString(), expectedResourceFile.exists());
+        assertTrue(expectedWebSourceFile.exists(), "source files not found: " + expectedWebSourceFile.toString());
+        assertTrue(expectedWebSource2File.exists(), "source files not found: " + expectedWebSource2File.toString());
+        assertTrue(expectedResourceFile.exists(), "resource file not found:" + expectedResourceFile.toString());
         assertTrue(
-                "resource file with dir not found:" + expectedResourceWDirFile.toString(),
-                expectedResourceWDirFile.exists());
+                expectedResourceWDirFile.exists(),
+                "resource file with dir not found:" + expectedResourceWDirFile.toString());
 
         // validate filtered file
         content = FileUtils.fileRead(expectedResourceWDirFile);
         BufferedReader reader = new BufferedReader(new StringReader(content));
 
-        assertEquals("error in filtering using System Properties", comment, reader.readLine());
+        assertEquals(comment, reader.readLine(), "error in filtering using System Properties");
 
         String line = reader.readLine();
         assertEquals(
-                "error in filtering using System properties", "system_key_1=" + System.getProperty("user.dir"), line);
+                "system_key_1=" + System.getProperty("user.dir"), line, "error in filtering using System properties");
         line = reader.readLine();
         assertEquals(
-                "error in filtering using System properties", "system_key_2=" + System.getProperty("user.dir"), line);
+                "system_key_2=" + System.getProperty("user.dir"), line, "error in filtering using System properties");
 
-        assertEquals("error in filtering using project properties", "project_key_1=i_think_so", reader.readLine());
-        assertEquals("error in filtering using project properties", "project_key_2=i_think_so", reader.readLine());
+        assertEquals("project_key_1=i_think_so", reader.readLine(), "error in filtering using project properties");
+        assertEquals("project_key_2=i_think_so", reader.readLine(), "error in filtering using project properties");
 
-        assertEquals("error in filtering using project properties", "project_name_1=Test Project ", reader.readLine());
-        assertEquals("error in filtering using project properties", "project_name_2=Test Project ", reader.readLine());
+        assertEquals("project_name_1=Test Project ", reader.readLine(), "error in filtering using project properties");
+        assertEquals("project_name_2=Test Project ", reader.readLine(), "error in filtering using project properties");
 
         assertEquals(
-                "error in filtering using System properties",
                 "system_property_1=system-property-value",
-                reader.readLine());
+                reader.readLine(),
+                "error in filtering using System properties");
         assertEquals(
-                "error in filtering using System properties",
                 "system_property_2=system-property-value",
-                reader.readLine());
+                reader.readLine(),
+                "error in filtering using System properties");
 
         // update property, and generate again
         lookup(MavenSession.class).getSystemProperties().setProperty("system.property", "new-system-property-value");
@@ -141,31 +146,31 @@ public class WarExplodedMojoFilteringTest extends AbstractWarExplodedMojoTest {
         content = FileUtils.fileRead(expectedResourceWDirFile);
         reader = new BufferedReader(new StringReader(content));
 
-        assertEquals("error in filtering using System Properties", comment, reader.readLine());
+        assertEquals(comment, reader.readLine(), "error in filtering using System Properties");
 
         assertEquals(
-                "error in filtering using System properties",
                 "system_key_1=" + System.getProperty("user.dir"),
-                reader.readLine());
+                reader.readLine(),
+                "error in filtering using System properties");
         assertEquals(
-                "error in filtering using System properties",
                 "system_key_2=" + System.getProperty("user.dir"),
-                reader.readLine());
+                reader.readLine(),
+                "error in filtering using System properties");
 
-        assertEquals("error in filtering using project properties", "project_key_1=i_think_so", reader.readLine());
-        assertEquals("error in filtering using project properties", "project_key_2=i_think_so", reader.readLine());
+        assertEquals("project_key_1=i_think_so", reader.readLine(), "error in filtering using project properties");
+        assertEquals("project_key_2=i_think_so", reader.readLine(), "error in filtering using project properties");
 
-        assertEquals("error in filtering using project properties", "project_name_1=Test Project ", reader.readLine());
-        assertEquals("error in filtering using project properties", "project_name_2=Test Project ", reader.readLine());
+        assertEquals("project_name_1=Test Project ", reader.readLine(), "error in filtering using project properties");
+        assertEquals("project_name_2=Test Project ", reader.readLine(), "error in filtering using project properties");
 
         assertEquals(
-                "error in filtering using System properties",
                 "system_property_1=new-system-property-value",
-                reader.readLine());
+                reader.readLine(),
+                "error in filtering using System properties");
         assertEquals(
-                "error in filtering using System properties",
                 "system_property_2=new-system-property-value",
-                reader.readLine());
+                reader.readLine(),
+                "error in filtering using System properties");
 
         // update property, and generate again
         File filterFile = new File(getTestDirectory(), testId + "-test-data/filters/filter.properties");
@@ -185,34 +190,34 @@ public class WarExplodedMojoFilteringTest extends AbstractWarExplodedMojoTest {
         content = FileUtils.fileRead(expectedResourceWDirFile);
         reader = new BufferedReader(new StringReader(content));
 
-        assertEquals("error in filtering using System Properties", comment, reader.readLine());
+        assertEquals(comment, reader.readLine(), "error in filtering using System Properties");
 
         assertEquals(
-                "error in filtering using System properties",
                 "system_key_1=" + System.getProperty("user.dir"),
-                reader.readLine());
+                reader.readLine(),
+                "error in filtering using System properties");
         assertEquals(
-                "error in filtering using System properties",
                 "system_key_2=" + System.getProperty("user.dir"),
-                reader.readLine());
+                reader.readLine(),
+                "error in filtering using System properties");
 
-        assertEquals("error in filtering using project properties", "project_key_1=i_think_so", reader.readLine());
-        assertEquals("error in filtering using project properties", "project_key_2=i_think_so", reader.readLine());
+        assertEquals("project_key_1=i_think_so", reader.readLine(), "error in filtering using project properties");
+        assertEquals("project_key_2=i_think_so", reader.readLine(), "error in filtering using project properties");
 
-        assertEquals("error in filtering using project properties", "project_name_1=Test Project ", reader.readLine());
-        assertEquals("error in filtering using project properties", "project_name_2=Test Project ", reader.readLine());
+        assertEquals("project_name_1=Test Project ", reader.readLine(), "error in filtering using project properties");
+        assertEquals("project_name_2=Test Project ", reader.readLine(), "error in filtering using project properties");
 
         assertEquals(
-                "error in filtering using System properties",
                 "system_property_1=new-system-property-value",
-                reader.readLine());
+                reader.readLine(),
+                "error in filtering using System properties");
         assertEquals(
-                "error in filtering using System properties",
                 "system_property_2=new-system-property-value",
-                reader.readLine());
+                reader.readLine(),
+                "error in filtering using System properties");
 
-        assertEquals("error in filtering using filter files", "resource_key_1=this_is_filtered", reader.readLine());
-        assertEquals("error in filtering using filter files", "resource_key_2=this_is_filtered", reader.readLine());
+        assertEquals("resource_key_1=this_is_filtered", reader.readLine(), "error in filtering using filter files");
+        assertEquals("resource_key_2=this_is_filtered", reader.readLine(), "error in filtering using filter files");
 
         // house-keeping
         expectedWebSourceFile.delete();

@@ -22,8 +22,13 @@ import java.io.File;
 
 import org.apache.maven.plugins.war.stub.MavenProjectBasicStub;
 import org.apache.maven.plugins.war.stub.ResourceStub;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class WarInPlaceMojoTest extends AbstractWarMojoTest {
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class WarInPlaceMojoTest extends AbstractWarMojoTest {
     protected static final String POM_FILE_PATH =
             getBasedir() + "/target/test-classes/unit/warexplodedinplacemojo/plugin-config.xml";
 
@@ -33,6 +38,7 @@ public class WarInPlaceMojoTest extends AbstractWarMojoTest {
 
     private WarInPlaceMojo mojo;
 
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
 
@@ -40,7 +46,8 @@ public class WarInPlaceMojoTest extends AbstractWarMojoTest {
         assertNotNull(mojo);
     }
 
-    public void testSimpleExplodedInplaceWar() throws Exception {
+    @Test
+    void simpleExplodedInplaceWar() throws Exception {
         // setup test data
         String testId = "SimpleExplodedInplaceWar";
         MavenProjectBasicStub project = new MavenProjectBasicStub();
@@ -65,10 +72,10 @@ public class WarInPlaceMojoTest extends AbstractWarMojoTest {
         File expectedWEBINFDir = new File(webAppSource, "WEB-INF");
         File expectedMETAINFDir = new File(webAppSource, "META-INF");
 
-        assertTrue("source files not found: " + expectedWebSourceFile.toString(), expectedWebSourceFile.exists());
-        assertTrue("source files not found: " + expectedWebSource2File.toString(), expectedWebSource2File.exists());
-        assertTrue("resources doesn't exist: " + expectedWebResourceFile, expectedWebResourceFile.exists());
-        assertTrue("WEB-INF not found", expectedWEBINFDir.exists());
-        assertTrue("META-INF not found", expectedMETAINFDir.exists());
+        assertTrue(expectedWebSourceFile.exists(), "source files not found: " + expectedWebSourceFile.toString());
+        assertTrue(expectedWebSource2File.exists(), "source files not found: " + expectedWebSource2File.toString());
+        assertTrue(expectedWebResourceFile.exists(), "resources doesn't exist: " + expectedWebResourceFile);
+        assertTrue(expectedWEBINFDir.exists(), "WEB-INF not found");
+        assertTrue(expectedMETAINFDir.exists(), "META-INF not found");
     }
 }

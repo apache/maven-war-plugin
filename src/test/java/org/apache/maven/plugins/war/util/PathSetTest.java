@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class PathSetTest {
+class PathSetTest {
 
     /* --------------- Normalization tests --------------*/
 
@@ -39,7 +39,7 @@ public class PathSetTest {
      * Test method for 'org.apache.maven.plugin.war.PathSet.normalizeSubPath(String)'
      */
     @Test
-    public void testNormalizeSubPath() {
+    void normalizeSubPath() {
         assertEquals("", PathSet.normalizeSubPath(""), "Normalized path error");
         assertEquals("", PathSet.normalizeSubPath("/"), "Normalized path error");
         assertEquals("", PathSet.normalizeSubPath("////"), "Normalized path error");
@@ -76,7 +76,7 @@ public class PathSetTest {
      * </ul>
      */
     @Test
-    public void testPathsSetBasic() {
+    void pathsSetBasic() {
         PathSet ps = new PathSet();
         assertEquals(0, ps.size(), "Unexpected PathSet size");
         Iterator<String> iter = ps.iterator();
@@ -134,7 +134,7 @@ public class PathSetTest {
      * </ul>
      */
     @Test
-    public void testPathsSetAddAlls() {
+    void pathsSetAddAlls() {
         Set<String> s1set = new HashSet<>();
         s1set.add("/a/b");
         s1set.add("a/b/c");
@@ -200,7 +200,7 @@ public class PathSetTest {
      * @throws IOException if an io error occurred
      */
     @Test
-    public void testAddAllFilesInDirectory() throws IOException {
+    void addAllFilesInDirectory() throws Exception {
         PathSet ps = new PathSet();
 
         /* Preparing directory structure*/

@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class OverlayManagerTest {
 
     @Test
-    public void testEmptyProject() throws Exception {
+    void emptyProject() throws Exception {
         final MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         final List<Overlay> overlays = new ArrayList<>();
         final Overlay currentProjectOverlay = Overlay.createInstance();
@@ -68,7 +68,7 @@ class OverlayManagerTest {
     }
 
     @Test
-    void testSimpleOverlay() throws Exception {
+    void simpleOverlay() throws Exception {
 
         final MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         final ArtifactStub first = newWarArtifact("test", "test-webapp");
@@ -87,7 +87,7 @@ class OverlayManagerTest {
     }
 
     @Test
-    void testUnknownOverlay() throws Exception {
+    void unknownOverlay() throws Exception {
 
         final MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         final ArtifactStub first = newWarArtifact("test", "test-webapp");
@@ -103,7 +103,7 @@ class OverlayManagerTest {
     }
 
     @Test
-    void testCustomCurrentProject() throws Exception {
+    void customCurrentProject() throws Exception {
 
         final MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         final ArtifactStub first = newWarArtifact("test", "test-webapp");
@@ -126,7 +126,7 @@ class OverlayManagerTest {
     }
 
     @Test
-    void testOverlaysWithSameArtifactAndGroupId() throws Exception {
+    void overlaysWithSameArtifactAndGroupId() throws Exception {
 
         final MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         final ArtifactStub first = newWarArtifact("test", "test-webapp");

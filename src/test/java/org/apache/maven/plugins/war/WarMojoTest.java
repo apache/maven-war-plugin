@@ -35,11 +35,19 @@ import org.apache.maven.plugins.war.stub.MavenProjectArtifactsStub;
 import org.apache.maven.plugins.war.stub.ProjectHelperStub;
 import org.apache.maven.plugins.war.stub.WarArtifact4CCStub;
 import org.codehaus.plexus.util.IOUtil;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * comprehensive test on buildExplodedWebApp is done on WarExplodedMojoTest
  */
-public class WarMojoTest extends AbstractWarMojoTest {
+class WarMojoTest extends AbstractWarMojoTest {
     WarMojo mojo;
 
     private static File pomFile =
@@ -49,12 +57,14 @@ public class WarMojoTest extends AbstractWarMojoTest {
         return new File(getBasedir(), "target/test-classes/unit/warmojotest");
     }
 
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         mojo = (WarMojo) lookupMojo("war", pomFile);
     }
 
-    public void testSimpleWar() throws Exception {
+    @Test
+    void simpleWar() throws Exception {
         String testId = "SimpleWar";
         MavenProject4CopyConstructor project = new MavenProject4CopyConstructor();
         String outputDir = getTestDirectory().getAbsolutePath() + "/" + testId + "-output";
@@ -88,7 +98,8 @@ public class WarMojoTest extends AbstractWarMojoTest {
                 new String[] {null, mojo.getWebXml().toString(), null, null, null, null});
     }
 
-    public void testSimpleWarPackagingExcludeWithIncludesRegEx() throws Exception {
+    @Test
+    void simpleWarPackagingExcludeWithIncludesRegEx() throws Exception {
         String testId = "SimpleWarPackagingExcludeWithIncludesRegEx";
         MavenProject4CopyConstructor project = new MavenProject4CopyConstructor();
         String outputDir = getTestDirectory().getAbsolutePath() + "/" + testId + "-output";
@@ -126,7 +137,8 @@ public class WarMojoTest extends AbstractWarMojoTest {
                 new String[] {"org/web/app/last-exile.jsp"});
     }
 
-    public void testSimpleWarPackagingExcludesWithRegEx() throws Exception {
+    @Test
+    void simpleWarPackagingExcludesWithRegEx() throws Exception {
         String testId = "SimpleWarPackagingExcludesWithRegEx";
         MavenProject4CopyConstructor project = new MavenProject4CopyConstructor();
         String outputDir = getTestDirectory().getAbsolutePath() + "/" + testId + "-output";
@@ -163,7 +175,8 @@ public class WarMojoTest extends AbstractWarMojoTest {
                 new String[] {"org/web/app/last-exile.jsp"});
     }
 
-    public void testClassifier() throws Exception {
+    @Test
+    void classifier() throws Exception {
         String testId = "Classifier";
         MavenProject4CopyConstructor project = new MavenProject4CopyConstructor();
         String outputDir = getTestDirectory().getAbsolutePath() + "/" + testId + "-output";
@@ -200,7 +213,8 @@ public class WarMojoTest extends AbstractWarMojoTest {
                 new String[] {null, mojo.getWebXml().toString(), null, null, null, null});
     }
 
-    public void testPrimaryArtifact() throws Exception {
+    @Test
+    void primaryArtifact() throws Exception {
         String testId = "PrimaryArtifact";
         MavenProject4CopyConstructor project = new MavenProject4CopyConstructor();
         String outputDir = getTestDirectory().getAbsolutePath() + "/" + testId + "-output";
@@ -237,7 +251,8 @@ public class WarMojoTest extends AbstractWarMojoTest {
                 new String[] {null, mojo.getWebXml().toString(), null, null, null, null});
     }
 
-    public void testNotPrimaryArtifact() throws Exception {
+    @Test
+    void notPrimaryArtifact() throws Exception {
         // use a different pom
         File pom = new File(getBasedir(), "target/test-classes/unit/warmojotest/not-primary-artifact.xml");
         mojo = (WarMojo) lookupMojo("war", pom);
@@ -278,7 +293,8 @@ public class WarMojoTest extends AbstractWarMojoTest {
                 new String[] {null, mojo.getWebXml().toString(), null, null, null, null});
     }
 
-    public void testMetaInfContent() throws Exception {
+    @Test
+    void metaInfContent() throws Exception {
         String testId = "SimpleWarWithMetaInfContent";
         MavenProject4CopyConstructor project = new MavenProject4CopyConstructor();
         String outputDir = getTestDirectory().getAbsolutePath() + "/" + testId + "-output";
@@ -317,7 +333,8 @@ public class WarMojoTest extends AbstractWarMojoTest {
                 new String[] {null, null, mojo.getWebXml().toString(), null, null, null, null});
     }
 
-    public void testMetaInfContentWithContainerConfig() throws Exception {
+    @Test
+    void metaInfContentWithContainerConfig() throws Exception {
         String testId = "SimpleWarWithContainerConfig";
         MavenProject4CopyConstructor project = new MavenProject4CopyConstructor();
         String outputDir = getTestDirectory().getAbsolutePath() + "/" + testId + "-output";
@@ -357,7 +374,8 @@ public class WarMojoTest extends AbstractWarMojoTest {
                 new String[] {null, null, mojo.getWebXml().toString(), null, null, null, null});
     }
 
-    public void testFailOnMissingWebXmlFalse() throws Exception {
+    @Test
+    void failOnMissingWebXmlFalse() throws Exception {
 
         String testId = "SimpleWarMissingWebXmlFalse";
         MavenProject4CopyConstructor project = new MavenProject4CopyConstructor();
@@ -388,10 +406,11 @@ public class WarMojoTest extends AbstractWarMojoTest {
                 },
                 new String[] {null, null, null, null, null});
 
-        assertFalse("web.xml should be missing", jarContent.containsKey("WEB-INF/web.xml"));
+        assertFalse(jarContent.containsKey("WEB-INF/web.xml"), "web.xml should be missing");
     }
 
-    public void testFailOnMissingWebXmlTrue() throws Exception {
+    @Test
+    void failOnMissingWebXmlTrue() throws Exception {
 
         String testId = "SimpleWarMissingWebXmlTrue";
         MavenProject4CopyConstructor project = new MavenProject4CopyConstructor();
@@ -416,7 +435,8 @@ public class WarMojoTest extends AbstractWarMojoTest {
         }
     }
 
-    public void testFailOnMissingWebXmlNotSpecifiedAndServlet30Used() throws Exception {
+    @Test
+    void failOnMissingWebXmlNotSpecifiedAndServlet30Used() throws Exception {
         String testId = "SimpleWarUnderServlet30";
         MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         String outputDir = getTestDirectory().getAbsolutePath() + "/" + testId + "-output";
@@ -454,10 +474,11 @@ public class WarMojoTest extends AbstractWarMojoTest {
                 },
                 new String[] {null, null, null, null, null});
 
-        assertFalse("web.xml should be missing", jarContent.containsKey("WEB-INF/web.xml"));
+        assertFalse(jarContent.containsKey("WEB-INF/web.xml"), "web.xml should be missing");
     }
 
-    public void testFailOnMissingWebXmlNotSpecifiedAndServlet30NotUsed() throws Exception {
+    @Test
+    void failOnMissingWebXmlNotSpecifiedAndServlet30NotUsed() throws Exception {
         String testId = "SimpleWarNotUnderServlet30";
         MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         String outputDir = getTestDirectory().getAbsolutePath() + "/" + testId + "-output";
@@ -482,7 +503,8 @@ public class WarMojoTest extends AbstractWarMojoTest {
         }
     }
 
-    public void testAttachClasses() throws Exception {
+    @Test
+    void attachClasses() throws Exception {
         String testId = "AttachClasses";
         MavenProject4CopyConstructor project = new MavenProject4CopyConstructor();
         String outputDir = getTestDirectory().getAbsolutePath() + "/" + testId + "-output";
@@ -510,7 +532,8 @@ public class WarMojoTest extends AbstractWarMojoTest {
                 });
     }
 
-    public void testAttachClassesWithCustomClassifier() throws Exception {
+    @Test
+    void attachClassesWithCustomClassifier() throws Exception {
         String testId = "AttachClassesCustomClassifier";
         MavenProject4CopyConstructor project = new MavenProject4CopyConstructor();
         String outputDir = getTestDirectory().getAbsolutePath() + "/" + testId + "-output";
@@ -550,32 +573,32 @@ public class WarMojoTest extends AbstractWarMojoTest {
             final String[] mustNotBeInJar)
             throws IOException {
         // Sanity check
-        assertEquals("Could not test, files and filesContent length does not match", files.length, filesContent.length);
+        assertEquals(files.length, filesContent.length, "Could not test, files and filesContent length does not match");
 
-        assertTrue("war file not created: " + expectedJarFile.toString(), expectedJarFile.exists());
+        assertTrue(expectedJarFile.exists(), "war file not created: " + expectedJarFile.toString());
         final Map<String, JarEntry> jarContent = new HashMap<>();
         try (JarFile jarFile = new JarFile(expectedJarFile)) {
             Enumeration<JarEntry> enumeration = jarFile.entries();
             while (enumeration.hasMoreElements()) {
                 JarEntry entry = enumeration.nextElement();
                 Object previousValue = jarContent.put(entry.getName(), entry);
-                assertNull("Duplicate Entry in Jar File: " + entry.getName(), previousValue);
+                assertNull(previousValue, "Duplicate Entry in Jar File: " + entry.getName());
             }
 
             for (int i = 0; i < files.length; i++) {
                 String file = files[i];
 
-                assertTrue("File[" + file + "] not found in archive", jarContent.containsKey(file));
+                assertTrue(jarContent.containsKey(file), "File[" + file + "] not found in archive");
                 if (filesContent[i] != null) {
                     assertEquals(
-                            "Content of file[" + file + "] does not match",
                             filesContent[i],
-                            IOUtil.toString(jarFile.getInputStream(jarContent.get(file))));
+                            IOUtil.toString(jarFile.getInputStream(jarContent.get(file))),
+                            "Content of file[" + file + "] does not match");
                 }
             }
             if (mustNotBeInJar != null) {
                 for (String file : mustNotBeInJar) {
-                    assertFalse("File[" + file + "]  found in archive", jarContent.containsKey(file));
+                    assertFalse(jarContent.containsKey(file), "File[" + file + "]  found in archive");
                 }
             }
             return jarContent;

@@ -29,22 +29,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * @author Stephane Nicoll
  */
-public class WebappStructureTest {
+class WebappStructureTest {
     @Test
-    public void testUnknownFileNotAvailable() {
+    void unknownFileNotAvailable() {
         final WebappStructure structure = new WebappStructure(new ArrayList<>());
         assertFalse(structure.isRegistered("/foo/bar.txt"));
     }
 
     @Test
-    public void testRegisterSamePathTwice() {
+    void registerSamePathTwice() {
         final WebappStructure structure = new WebappStructure(new ArrayList<>());
         structure.registerFile("overlay1", "WEB-INF/web.xml");
         assertFalse(structure.registerFile("currentBuild", "WEB-INF/web.xml"));
     }
 
     @Test
-    public void testRegisterForced() {
+    void registerForced() {
         final String path = "WEB-INF/web.xml";
         final WebappStructure structure = new WebappStructure(new ArrayList<>());
         assertFalse(structure.registerFileForced("overlay1", path), "New file should return false");
@@ -52,7 +52,7 @@ public class WebappStructureTest {
     }
 
     @Test
-    public void testRegisterSamePathTwiceForced() {
+    void registerSamePathTwiceForced() {
         final String path = "WEB-INF/web.xml";
         final WebappStructure structure = new WebappStructure(new ArrayList<>());
         structure.registerFile("overlay1", path);
