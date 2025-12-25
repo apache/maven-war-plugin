@@ -1,0 +1,1 @@
+target/test-classes/unit/warmojotest/SimpleWarPackagingExcludeWithIncludesRegEx-test-data/source/pansit.jsp
