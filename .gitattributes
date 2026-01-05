@@ -14,5 +14,4 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-
-*   text=auto eol=lf
+*.jsp text eol=lf
