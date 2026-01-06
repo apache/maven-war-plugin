@@ -20,55 +20,52 @@ package org.apache.maven.plugins.war;
 
 import java.io.File;
 
+import org.apache.maven.api.plugin.testing.InjectMojo;
+import org.apache.maven.api.plugin.testing.MojoParameter;
+import org.apache.maven.api.plugin.testing.MojoTest;
 import org.apache.maven.plugins.war.stub.MavenProjectBasicStub;
 import org.apache.maven.plugins.war.stub.ResourceStub;
+import org.junit.jupiter.api.Test;
 
-public class WarInPlaceMojoTest extends AbstractWarMojoTest {
-    protected static final String POM_FILE_PATH =
-            getBasedir() + "/target/test-classes/unit/warexplodedinplacemojo/plugin-config.xml";
+import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-    protected File getTestDirectory() throws Exception {
-        return new File(getBasedir(), "target/test-classes/unit/warexplodedinplacemojo/test-dir");
-    }
+@MojoTest
+public class WarInPlaceMojoTest {
 
-    private WarInPlaceMojo mojo;
-
-    public void setUp() throws Exception {
-        super.setUp();
-
-        mojo = (WarInPlaceMojo) lookupMojo("inplace", POM_FILE_PATH);
-        assertNotNull(mojo);
-    }
-
-    public void testSimpleExplodedInplaceWar() throws Exception {
-        // setup test data
-        String testId = "SimpleExplodedInplaceWar";
-        MavenProjectBasicStub project = new MavenProjectBasicStub();
-        File webAppSource = createWebAppSource(testId);
-        File classesDir = createClassesDir(testId, true);
-        File webAppResource = new File(getTestDirectory(), "resources");
-        File sampleResource = new File(webAppResource, "pix/panis_na.jpg");
-        ResourceStub[] resources = new ResourceStub[] {new ResourceStub()};
-
-        createFile(sampleResource);
-
+    @InjectMojo(goal = "inplace", pom = "src/test/resources/unit/warexplodedinplacemojo/plugin-config.xml")
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warexplodedinplacemojo/SimpleExplodedInplaceWar-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warexplodedinplacemojo/SimpleExplodedInplaceWar-test-data/source/")
+    @MojoParameter(
+            name = "webappDirectory",
+            value = "target/test-classes/unit/warexplodedinplacemojo/SimpleExplodedInplaceWar")
+    @Test
+    public void testSimpleExplodedInplaceWar(WarInPlaceMojo mojo) throws Exception {
         // configure mojo
-        resources[0].setDirectory(webAppResource.getAbsolutePath());
-        this.configureMojo(mojo, classesDir, webAppSource, null, project);
-        setVariableValueToObject(mojo, "webResources", resources);
+        ResourceStub[] resources = new ResourceStub[] {new ResourceStub()};
+        resources[0].setDirectory(getBasedir()
+                + "/target/test-classes/unit/warexplodedinplacemojo/SimpleExplodedInplaceWar-test-data/resources");
+        mojo.setWebResources(resources);
+        MavenProjectBasicStub project = new MavenProjectBasicStub();
+        mojo.setProject(project);
         mojo.execute();
 
         // validate operation
+        File webAppSource = mojo.getWarSourceDirectory();
         File expectedWebSourceFile = new File(webAppSource, "pansit.jsp");
         File expectedWebSource2File = new File(webAppSource, "org/web/app/last-exile.jsp");
         File expectedWebResourceFile = new File(webAppSource, "pix/panis_na.jpg");
         File expectedWEBINFDir = new File(webAppSource, "WEB-INF");
         File expectedMETAINFDir = new File(webAppSource, "META-INF");
 
-        assertTrue("source files not found: " + expectedWebSourceFile.toString(), expectedWebSourceFile.exists());
-        assertTrue("source files not found: " + expectedWebSource2File.toString(), expectedWebSource2File.exists());
-        assertTrue("resources doesn't exist: " + expectedWebResourceFile, expectedWebResourceFile.exists());
-        assertTrue("WEB-INF not found", expectedWEBINFDir.exists());
-        assertTrue("META-INF not found", expectedMETAINFDir.exists());
+        assertTrue(expectedWebSourceFile.exists(), "source files not found: " + expectedWebSourceFile);
+        assertTrue(expectedWebSource2File.exists(), "source files not found: " + expectedWebSource2File);
+        assertTrue(expectedWebResourceFile.exists(), "resources doesn't exist: " + expectedWebResourceFile);
+        assertTrue(expectedWEBINFDir.exists(), "WEB-INF not found");
+        assertTrue(expectedMETAINFDir.exists(), "META-INF not found");
     }
 }

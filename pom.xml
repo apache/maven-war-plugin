@@ -209,12 +209,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.13.2</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
       <scope>test</scope>
@@ -250,6 +244,7 @@
                 ! No possibilities to add license information into a MANIFEST
               -->
               <exclude>src/it/MWAR-167/src/main/resources/MANIFEST.MF</exclude>
+              <exclude>src/test/resources/**</exclude>
             </excludes>
           </configuration>
         </plugin>
