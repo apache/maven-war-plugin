@@ -145,6 +145,7 @@ public class WarOverlaysTest {
         assertedFiles.addAll(assertCustomContent(
                 webAppDirectory, new String[] {"index.jsp", "login.jsp", "admin.jsp"}, "overlay file not found"));
 
+        System.out.println("---------testdefaultoverlayNow");
         // index and login come from overlay1
         assertOverlayedFile(webAppDirectory, "overlay-one", "index.jsp");
         assertOverlayedFile(webAppDirectory, "overlay-one", "login.jsp");
@@ -533,9 +534,17 @@ public class WarOverlaysTest {
     private void assertOverlayedFile(File webAppDirectory, String overlayId, String filePath) throws IOException {
         final File webAppFile = new File(webAppDirectory, filePath);
         final File overlayFile = getOverlayFile(overlayId, filePath);
+
+        // The predefined files contain only "new line" file endings.
+        // This tests fail on Windows as the new created files also contain "carriage return".
+        final String webAppFileWithReplacedLineEndings =
+                FileUtils.fileRead(webAppFile).replaceAll("\\r\\n", "\n");
+        final String overlayFileWithReplacedLineEndings =
+                FileUtils.fileRead(overlayFile).replaceAll("\\r\\n", "\n");
+
         assertEquals(
-                FileUtils.fileRead(overlayFile),
-                FileUtils.fileRead(webAppFile),
+                overlayFileWithReplacedLineEndings,
+                webAppFileWithReplacedLineEndings,
                 "Wrong content for overlayed file " + filePath);
     }
 
