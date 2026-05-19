@@ -144,7 +144,7 @@ public class WarOverlaysTest {
         assertedFiles.addAll(assertWebXml(webAppDirectory));
         assertedFiles.addAll(assertCustomContent(
                 webAppDirectory, new String[] {"index.jsp", "login.jsp", "admin.jsp"}, "overlay file not found"));
-        
+
         // index and login come from overlay1
         assertOverlayedFile(webAppDirectory, "overlay-one", "index.jsp");
         assertOverlayedFile(webAppDirectory, "overlay-one", "login.jsp");
