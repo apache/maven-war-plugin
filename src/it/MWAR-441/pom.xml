@@ -45,7 +45,7 @@ under the License.
       <plugin>
         <groupId>org.codehaus.gmaven</groupId>
         <artifactId>groovy-maven-plugin</artifactId>
-        <version>2.1.1</version>
+        <version>@version.groovy-maven-plugin@</version>
         <configuration>
           <source>
             def fileToModify = new File(project.basedir, 'pom.xml')
@@ -63,7 +63,7 @@ under the License.
           <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
-            <version>2.4.21</version>
+            <version>@version.groovy-all@</version>
           </dependency>
         </dependencies>
       </plugin>
