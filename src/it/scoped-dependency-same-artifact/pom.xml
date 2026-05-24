@@ -47,7 +47,7 @@
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
       <classifier>sources</classifier>
-      <version>3.0.24</version>
+      <version>@plexusUtilVersion@</version>
     </dependency>
   </dependencies>
 </project>
