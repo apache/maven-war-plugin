@@ -80,8 +80,8 @@
     <mavenVersion>3.9.16</mavenVersion>
     <javaVersion>8</javaVersion>
 
-    <!-- Used in IT -->
-    <plexusUtilVersion>4.0.3</plexusUtilVersion>
+    <!-- Used in IT-->
+    <plexusUtilVersion>${version.plexus-utils}</plexusUtilVersion>
     <version.groovy-maven-plugin>2.1.1</version.groovy-maven-plugin>
     <version.groovy-all>2.4.21</version.groovy-all>
 
@@ -282,7 +282,7 @@
                 <goal>package</goal>
               </goals>
               <scriptVariables>
-                <plexusUtilVersion>${plexusUtilVersion}</plexusUtilVersion>
+                <plexusUtilVersion>${version.plexus-utils}</plexusUtilVersion>
               </scriptVariables>
             </configuration>
           </plugin>
