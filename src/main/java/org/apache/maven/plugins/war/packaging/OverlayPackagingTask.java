@@ -114,8 +114,8 @@ public class OverlayPackagingTask extends AbstractWarPackagingTask {
      */
     protected File getOverlayTempDirectory(WarPackagingContext context, Overlay overlay) throws MojoExecutionException {
         final File groupIdDir = new File(context.getOverlaysWorkDirectory(), overlay.getGroupId());
-        if (!groupIdDir.exists() && !groupIdDir.mkdir()) {
-            throw new MojoExecutionException("Failed to create directory: " + groupIdDir.getAbsolutePath());
+        if (!groupIdDir.exists()) {
+            groupIdDir.mkdir();
         }
         String directoryName = overlay.getArtifactId();
         if (overlay.getClassifier() != null) {
