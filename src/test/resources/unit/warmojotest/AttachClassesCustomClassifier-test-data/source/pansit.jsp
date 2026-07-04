@@ -1,0 +1,1 @@
+target/test-classes/unit/warmojotest/AttachClassesCustomClassifier-test-data/source/pansit.jsp

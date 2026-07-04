@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-plugins</artifactId>
-    <version>45</version>
+    <version>49</version>
     <relativePath />
   </parent>
 
@@ -75,13 +75,16 @@
   </distributionManagement>
 
   <properties>
-    <mavenArchiverVersion>3.6.5</mavenArchiverVersion>
-    <mavenFilteringVersion>3.4.0</mavenFilteringVersion>
-    <mavenVersion>3.9.11</mavenVersion>
+    <mavenArchiverVersion>3.6.6</mavenArchiverVersion>
+    <mavenFilteringVersion>3.5.0</mavenFilteringVersion>
+    <mavenVersion>3.9.16</mavenVersion>
     <javaVersion>8</javaVersion>
 
-    <!-- TODO remove with next parent version bump -->
-    <version.maven-invoker-plugin>3.9.1</version.maven-invoker-plugin>
+    <!-- Used in IT-->
+    <plexusUtilVersion>${version.plexus-utils}</plexusUtilVersion>
+    <version.groovy-maven-plugin>2.1.1</version.groovy-maven-plugin>
+    <version.groovy-all>2.4.21</version.groovy-all>
+
     <project.build.outputTimestamp>2025-11-24T07:29:33Z</project.build.outputTimestamp>
   </properties>
 
@@ -153,7 +156,7 @@
     <dependency>
       <groupId>org.apache.maven.resolver</groupId>
       <artifactId>maven-resolver-api</artifactId>
-      <version>1.9.24</version>
+      <version>1.9.27</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -169,12 +172,12 @@
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>2.21.0</version>
+      <version>2.22.0</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-archiver</artifactId>
-      <version>4.10.4</version>
+      <version>4.12.0</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -209,12 +212,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.13.2</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
       <scope>test</scope>
@@ -227,7 +224,7 @@
     <dependency>
       <groupId>org.apache.maven.plugin-testing</groupId>
       <artifactId>maven-plugin-testing-harness</artifactId>
-      <version>3.4.0</version>
+      <version>3.5.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -250,6 +247,7 @@
                 ! No possibilities to add license information into a MANIFEST
               -->
               <exclude>src/it/MWAR-167/src/main/resources/MANIFEST.MF</exclude>
+              <exclude>src/test/resources/**</exclude>
             </excludes>
           </configuration>
         </plugin>
@@ -283,6 +281,9 @@
                 <goal>clean</goal>
                 <goal>package</goal>
               </goals>
+              <scriptVariables>
+                <plexusUtilVersion>${version.plexus-utils}</plexusUtilVersion>
+              </scriptVariables>
             </configuration>
           </plugin>
         </plugins>

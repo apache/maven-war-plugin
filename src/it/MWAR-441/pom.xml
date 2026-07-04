@@ -29,6 +29,8 @@ under the License.
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- Pass the variable into the test project to be able to read them -->
+    <testPlexusUtilVersion>@plexusUtilVersion@</testPlexusUtilVersion>
   </properties>
 
   <build>
@@ -45,12 +47,13 @@ under the License.
       <plugin>
         <groupId>org.codehaus.gmaven</groupId>
         <artifactId>groovy-maven-plugin</artifactId>
-        <version>2.1.1</version>
+        <version>@version.groovy-maven-plugin@</version>
         <configuration>
           <source>
+            def plexusUtilVersion = project.properties['testPlexusUtilVersion']
             def fileToModify = new File(project.basedir, 'pom.xml')
             processFileInplace(fileToModify) { text ->
-              text.replaceAll(/3.0.24/,'3.0.23')
+              text.replaceAll(plexusUtilVersion,'3.0.23')
             }
             def processFileInplace(file, Closure processText) {
               file.write(processText(file.text))
@@ -63,7 +66,7 @@ under the License.
           <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
-            <version>2.4.21</version>
+            <version>@version.groovy-all@</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -80,7 +83,7 @@ under the License.
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
-      <version>3.0.24</version>
+      <version>@plexusUtilVersion@</version>
     </dependency>
   </dependencies>
   

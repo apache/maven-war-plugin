@@ -1,0 +1,1 @@
+target/test-classes/unit/warexplodedmojo/test-dir/ExplodedWarWithResourceFiltering-test-data/source/pansit.jsp

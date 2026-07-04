@@ -1,0 +1,1 @@
+target/test-classes/unit/warmojotest/SimpleWarWithMetaInfContent-test-data/source/pansit.jsp
