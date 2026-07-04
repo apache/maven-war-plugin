@@ -126,6 +126,25 @@ class OverlayManagerTest {
     }
 
     @Test
+    void testNullClassifierMatchesEmptyClassifier() throws Exception {
+        final MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
+        final ArtifactStub artifact = newWarArtifact("test", "test-webapp", "");
+        project.addArtifact(artifact);
+
+        final List<Overlay> overlays = new ArrayList<>();
+        Overlay overlay = new Overlay("test", "test-webapp");
+        overlay.setClassifier(null);
+        overlay.setType("war");
+        overlays.add(overlay);
+
+        final Overlay currentProjectOverlay = Overlay.createInstance();
+        OverlayManager manager =
+                new OverlayManager(overlays, project, DEFAULT_INCLUDES, DEFAULT_EXCLUDES, currentProjectOverlay);
+        assertNotNull(manager.getOverlays());
+        assertEquals(2, manager.getOverlays().size());
+    }
+
+    @Test
     void testOverlaysWithSameArtifactAndGroupId() throws Exception {
 
         final MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
