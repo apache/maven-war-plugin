@@ -66,16 +66,16 @@ public class WarUtils {
         if (!Objects.equals(artifact.getArtifactId(), dependency.getArtifactId())) {
             return false;
         }
-        if (Objects.equals(artifact.getVersion(), dependency.getVersion())) {
+        if (!Objects.equals(artifact.getVersion(), dependency.getVersion())) {
             return false;
         }
-        if (Objects.equals(artifact.getType(), dependency.getType())) {
+        if (!Objects.equals(artifact.getType(), dependency.getType())) {
             return false;
         }
-        if (Objects.equals(artifact.getClassifier(), dependency.getClassifier())) {
+        if (!Objects.equals(artifact.getClassifier(), dependency.getClassifier())) {
             return false;
         }
-        if (Objects.equals(artifact.getScope(), dependency.getScope())) {
+        if (!Objects.equals(artifact.getScope(), dependency.getScope())) {
             return false;
         }
         if (artifact.isOptional() != dependency.isOptional()) {
