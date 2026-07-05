@@ -112,7 +112,7 @@ public class OverlayPackagingTask extends AbstractWarPackagingTask {
      * @param overlay the overlay
      * @return the temp directory for the overlay
      */
-    protected File getOverlayTempDirectory(WarPackagingContext context, Overlay overlay) throws MojoExecutionException {
+    protected File getOverlayTempDirectory(WarPackagingContext context, Overlay overlay) {
         final File groupIdDir = new File(context.getOverlaysWorkDirectory(), overlay.getGroupId());
         if (!groupIdDir.exists()) {
             groupIdDir.mkdir();
@@ -122,8 +122,8 @@ public class OverlayPackagingTask extends AbstractWarPackagingTask {
             directoryName = directoryName + "-" + overlay.getClassifier();
         }
         final File result = new File(groupIdDir, directoryName);
-        if (!result.exists() && !result.mkdirs()) {
-            throw new MojoExecutionException("Failed to create directory: " + result.getAbsolutePath());
+        if (!result.exists()) {
+            result.mkdirs();
         }
         return result;
     }
