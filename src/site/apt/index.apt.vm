@@ -38,7 +38,7 @@ ${project.name}
    <<<package>>> phase for projects with a packaging type of <<<war>>>. 
    It builds a WAR file.
 
- * {{{./exploded-mojo.html}war:exploded}} is generally used to speed up 
+ * {{{./exploded-mojo.html}war:exploded}} speeds up 
    testing during the development phase by creating an exploded webapp 
    in a specified directory.
 
