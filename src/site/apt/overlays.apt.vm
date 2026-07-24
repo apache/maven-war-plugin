@@ -255,7 +255,7 @@ documentedprojectdependency-1.0-SNAPSHOT.war
   since they have not been configured in the <<<\<overlays\>>>> element.
 
   To perform an even more fine grained overwriting policy, overlays can be packaged multiple times
-  with different includes/excludes. For instance if the <<<index.jsp>>> file of the
+  with different includes/excludes. For example, if the <<<index.jsp>>> file of the
   overlay <<<my-webapp>>> <<must>> be set in the webapp but other files can be controlled in the
   regular way, define two overlay configurations for <<<my-webapp>>>:
 
