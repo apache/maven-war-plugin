@@ -204,12 +204,13 @@ public class OverlayManager {
      * @return boolean true if equals
      */
     private boolean compareOverlayWithArtifact(Overlay overlay, DownloadedArtifact artifact) {
+        String oc = overlay.getClassifier() == null ? "" : overlay.getClassifier();
+        String ac = artifact.getClassifier() == null ? "" : artifact.getClassifier();
         return (Objects.equals(overlay.getGroupId(), artifact.getGroupId())
                 && Objects.equals(overlay.getArtifactId(), artifact.getArtifactId())
                 && Objects.equals(overlay.getType(), artifact.getExtension())
                 // MWAR-241 Make sure to treat null and "" as equal when comparing the classifier
-                && Objects.equals(
-                        Objects.toString(overlay.getClassifier()), Objects.toString(artifact.getClassifier())));
+                && Objects.equals(oc, ac));
     }
 
     /**
@@ -219,21 +220,9 @@ public class OverlayManager {
      */
     private List<DownloadedArtifact> getOverlaysAsArtifacts() {
         final List<DownloadedArtifact> result = new ArrayList<>();
-        try {
-            Node root = session.collectDependencies(project, PathScope.MAIN_RUNTIME);
-            List<Node> nodes = session.flattenDependencies(root, PathScope.MAIN_RUNTIME);
-            for (Node node : nodes) {
-                org.apache.maven.api.Dependency dep = node.getDependency();
-                if (dep != null
-                        && !dep.isOptional()
-                        && isRuntimeScope(dep.getScope())
-                        && "war".equals(dep.getExtension())) {
-                    DownloadedArtifact resolved = session.resolveArtifact(dep);
-                    result.add(resolved);
-                }
-            }
-        } catch (Exception e) {
-            // If dependency resolution fails, return empty list
+        Node root = session.collectDependencies(project, PathScope.MAIN_RUNTIME);
+        if (root != null) {
+            collectArtifacts(root, result, true);
         }
         return result;
     }
@@ -243,20 +232,43 @@ public class OverlayManager {
      */
     private List<DownloadedArtifact> getAllResolvedArtifacts() {
         final List<DownloadedArtifact> result = new ArrayList<>();
-        try {
-            Node root = session.collectDependencies(project, PathScope.MAIN_RUNTIME);
-            List<Node> nodes = session.flattenDependencies(root, PathScope.MAIN_RUNTIME);
-            for (Node node : nodes) {
-                org.apache.maven.api.Dependency dep = node.getDependency();
-                if (dep != null) {
-                    DownloadedArtifact resolved = session.resolveArtifact(dep);
-                    result.add(resolved);
-                }
-            }
-        } catch (Exception e) {
-            // If dependency resolution fails, return empty list
+        Node root = session.collectDependencies(project, PathScope.MAIN_RUNTIME);
+        if (root != null) {
+            collectArtifacts(root, result, false);
         }
         return result;
+    }
+
+    /**
+     * Walks the dependency tree and collects resolved artifacts.
+     * Uses manual tree walking instead of {@code flattenDependencies} because the latter
+     * filters out non-classpath types (like war), which we need for overlay resolution.
+     *
+     * @param node the root node
+     * @param result the list to collect into
+     * @param warOnly if true, only collect WAR artifacts with runtime-compatible scope
+     */
+    private void collectArtifacts(Node node, List<DownloadedArtifact> result, boolean warOnly) {
+        org.apache.maven.api.Dependency dep = node.getDependency();
+        if (dep != null) {
+            boolean include = !warOnly
+                    || (!dep.isOptional() && isRuntimeScope(dep.getScope()) && "war".equals(dep.getExtension()));
+            if (include) {
+                try {
+                    DownloadedArtifact resolved = session.resolveArtifact(dep);
+                    result.add(resolved);
+                } catch (Exception e) {
+                    // Skip unresolvable artifacts
+                }
+            }
+        }
+        if (node.getChildren() != null) {
+            for (Node child : node.getChildren()) {
+                if (child != null) {
+                    collectArtifacts(child, result, warOnly);
+                }
+            }
+        }
     }
 
     /**

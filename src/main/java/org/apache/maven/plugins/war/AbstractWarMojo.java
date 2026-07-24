@@ -135,7 +135,7 @@ public abstract class AbstractWarMojo implements Mojo {
     /**
      * Single directory for extra files to include in the WAR. This is where you place your JSP files.
      */
-    @Parameter(defaultValue = "${basedir}/src/main/webapp", required = true)
+    @Parameter(defaultValue = "${project.basedir}/src/main/webapp", required = true)
     private File warSourceDirectory;
 
     /**

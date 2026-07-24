@@ -18,9 +18,7 @@
  */
 package org.apache.maven.plugins.war;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.apache.maven.api.DownloadedArtifact;
 
@@ -183,13 +181,6 @@ public class Overlay {
     /**
      * @param includes {@link #includes}
      */
-    public void setIncludes(String includes) {
-        this.includes = parse(includes);
-    }
-
-    /**
-     * @param includes {@link #includes}
-     */
     public void setIncludes(String[] includes) {
         this.includes = includes;
     }
@@ -199,13 +190,6 @@ public class Overlay {
      */
     public String[] getExcludes() {
         return excludes;
-    }
-
-    /**
-     * @param excludes {@link #excludes}
-     */
-    public void setExcludes(String excludes) {
-        this.excludes = parse(excludes);
     }
 
     /**
@@ -321,16 +305,5 @@ public class Overlay {
         result = 31 * result + (includes != null ? Arrays.hashCode(includes) : 0);
         result = 31 * result + (excludes != null ? Arrays.hashCode(excludes) : 0);
         return result;
-    }
-
-    private String[] parse(String s) {
-        final List<String> result = new ArrayList<>();
-        if (s != null) {
-            String[] tokens = s.split(",");
-            for (String token : tokens) {
-                result.add(token.trim());
-            }
-        }
-        return result.toArray(new String[0]);
     }
 }

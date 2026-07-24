@@ -155,6 +155,7 @@ class OverlayManagerTest {
 
     /**
      * Creates a mock Session that returns the given artifacts as resolved war dependencies.
+     * The root node's children are set up for tree walking (used by OverlayManager).
      */
     @SuppressWarnings("unchecked")
     private Session createMockSession(List<? extends DownloadedArtifact> artifacts) {
@@ -165,7 +166,7 @@ class OverlayManagerTest {
             when(session.collectDependencies(any(Project.class), any(PathScope.class)))
                     .thenReturn(rootNode);
 
-            List<Node> nodes = new ArrayList<>();
+            List<Node> childNodes = new ArrayList<>();
             for (DownloadedArtifact artifact : artifacts) {
                 Node node = mock(Node.class);
                 org.apache.maven.api.Dependency dep = mock(org.apache.maven.api.Dependency.class);
@@ -176,12 +177,13 @@ class OverlayManagerTest {
                 when(dep.getScope()).thenReturn(DependencyScope.COMPILE);
                 when(dep.isOptional()).thenReturn(false);
                 when(node.getDependency()).thenReturn(dep);
+                when(node.getChildren()).thenReturn(Collections.emptyList());
                 when(session.resolveArtifact(eq(dep))).thenReturn(artifact);
-                nodes.add(node);
+                childNodes.add(node);
             }
 
-            when(session.flattenDependencies(eq(rootNode), any(PathScope.class)))
-                    .thenReturn((List) nodes);
+            // Set up root node's children for tree walking
+            when(rootNode.getChildren()).thenReturn(childNodes);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -405,14 +405,14 @@ public class WarOverlaysTest {
         mojo.setProject(project);
 
         Overlay over1 = new DefaultOverlay(overlay3);
-        over1.setExcludes("**/a.*,**/c.*,**/*.xml");
+        over1.setExcludes(new String[] {"**/a.*", "**/c.*", "**/*.xml"});
 
         Overlay over2 = new DefaultOverlay(overlay1);
-        over2.setIncludes("jsp/d/*");
-        over2.setExcludes("jsp/d/a.jsp");
+        over2.setIncludes(new String[] {"jsp/d/*"});
+        over2.setExcludes(new String[] {"jsp/d/a.jsp"});
 
         Overlay over3 = new DefaultOverlay(overlay3);
-        over3.setIncludes("**/*.jsp");
+        over3.setIncludes(new String[] {"**/*.jsp"});
 
         Overlay over4 = new DefaultOverlay(overlay2);
 
@@ -493,15 +493,15 @@ public class WarOverlaysTest {
         mojo.setProject(project);
 
         Overlay over1 = new DefaultOverlay(overlay3);
-        over1.setExcludes("**/a.*,**/c.*,**/*.xml,jsp/b.jsp");
+        over1.setExcludes(new String[] {"**/a.*", "**/c.*", "**/*.xml", "jsp/b.jsp"});
 
         Overlay over2 = new DefaultOverlay(overlay1);
-        over2.setIncludes("jsp/d/*");
-        over2.setExcludes("jsp/d/a.jsp");
+        over2.setIncludes(new String[] {"jsp/d/*"});
+        over2.setExcludes(new String[] {"jsp/d/a.jsp"});
 
         Overlay over3 = new DefaultOverlay(overlay3);
-        over3.setIncludes("**/*.jsp");
-        over3.setExcludes("jsp/b.jsp");
+        over3.setIncludes(new String[] {"**/*.jsp"});
+        over3.setExcludes(new String[] {"jsp/b.jsp"});
 
         Overlay over4 = new DefaultOverlay(overlay2);
 

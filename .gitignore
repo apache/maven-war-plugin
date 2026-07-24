@@ -16,3 +16,4 @@ out/
 .checkstyle
 *.versionsBackup
 
+.claude/

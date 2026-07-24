@@ -19,6 +19,7 @@
 package org.apache.maven.plugins.war.stub;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,12 +80,16 @@ public final class MockSessionHelper {
             lenient().when(dep.isOptional()).thenReturn(artifact.isOptional());
 
             lenient().when(node.getDependency()).thenReturn(dep);
+            lenient().when(node.getChildren()).thenReturn(Collections.emptyList());
 
             // Track this mock -> artifact mapping for resolveArtifact
             resolveMap.put(dep, artifact);
 
             nodes.add(node);
         }
+        // Set up root node's children for tree walking (used by OverlayManager)
+        lenient().when(rootNode.getChildren()).thenReturn(nodes);
+
         lenient()
                 .when(session.flattenDependencies(any(Node.class), any(PathScope.class)))
                 .thenReturn((List) nodes);
