@@ -347,9 +347,11 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
                 // preserve timestamp
                 destination.setLastModified(readAttributes.lastModifiedTime().toMillis());
                 // normalize permissions: remove executable bits for files copied to the webapp
-                destination.setExecutable(false, false);
-                destination.setReadable(true, false);
-                destination.setWritable(true, true);
+                if (!destination.setExecutable(false, false)
+                        || !destination.setReadable(true, false)
+                        || !destination.setWritable(true, true)) {
+                    context.getLog().debug("Could not normalize permissions for " + targetFilename);
+                }
                 context.getLog().debug(" + " + targetFilename + " has been copied.");
             }
             return true;
