@@ -42,7 +42,7 @@ ${project.name}
    testing during the development phase by creating an exploded webapp 
    in a specified directory.
 
- * {{{./inplace-mojo.html}war:inplace}} another variation of <<<war:exploded>>> 
+  * {{{./inplace-mojo.html}war:inplace}} is another variation of <<<war:exploded>>> 
    where the webapp is instead generated in the web application source directory, 
    which is <<<src/main/webapp>>> by default.
 
