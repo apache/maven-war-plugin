@@ -72,4 +72,4 @@ Rapid Testing Using the Jetty Plugin
 
  The command will block with Jetty listening on port 8080.
 
- Check the {{{http://docs.codehaus.org/display/JETTY/Maven+Jetty+Plugin}Jetty Plugin documentation}} for more details.
+  Check the {{{https://jetty.org/docs/jetty/12/programming-guide/maven-jetty/jetty-maven-plugin.html}Jetty Plugin documentation}} for more details.

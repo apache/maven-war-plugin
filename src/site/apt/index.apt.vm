@@ -38,11 +38,11 @@ ${project.name}
    <<<package>>> phase for projects with a packaging type of <<<war>>>. 
    It builds a WAR file.
 
- * {{{./exploded-mojo.html}war:exploded}} is generally used to speed up 
-   testing during the developement phase by creating an exploded webapp 
+ * {{{./exploded-mojo.html}war:exploded}} speeds up 
+   testing during the development phase by creating an exploded webapp 
    in a specified directory.
 
- * {{{./inplace-mojo.html}war:inplace}} another variation of <<<war:explode>>> 
+  * {{{./inplace-mojo.html}war:inplace}} is another variation of <<<war:exploded>>> 
    where the webapp is instead generated in the web application source directory, 
    which is <<<src/main/webapp>>> by default.
 
