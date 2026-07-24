@@ -20,89 +20,21 @@ package org.apache.maven.plugins.war.stub;
 
 import java.io.File;
 
-import org.apache.maven.artifact.handler.ArtifactHandler;
-
 public class JarArtifactStub extends AbstractArtifactStub {
-
-    protected String groupId;
-
-    protected String artifactId;
-
-    protected String version;
-
-    protected boolean optional = false;
-
-    protected String scope;
 
     private File file;
 
-    private ArtifactHandler artifactHandler;
+    private String fileExtension;
 
-    public JarArtifactStub(String basedir, ArtifactHandler artifactHandler) {
+    public JarArtifactStub(String basedir, String fileExtension) {
         super(basedir);
-        this.artifactHandler = artifactHandler;
+        this.fileExtension = fileExtension;
+        setGroupId("org.sample.jar");
+        setArtifactId("jarartifact");
+        setExtension("jar");
     }
 
-    public void setGroupId(String id) {
-        groupId = id;
-    }
-
-    public String getGroupId() {
-        if (groupId != null) {
-            return groupId;
-        } else {
-            return "org.sample.jar";
-        }
-    }
-
-    public String getType() {
-        return "jar";
-    }
-
-    public void setArtifactId(String artifactId) {
-        this.artifactId = artifactId;
-    }
-
-    public String getArtifactId() {
-        if (artifactId != null) {
-            return artifactId;
-        } else {
-            return "jarartifact";
-        }
-    }
-
-    public String getVersion() {
-        if (version != null) {
-            return version;
-        } else {
-            return super.getVersion();
-        }
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public boolean isOptional() {
-        return optional;
-    }
-
-    public void setOptional(boolean optional) {
-        this.optional = optional;
-    }
-
-    public String getScope() {
-        if (scope != null) {
-            return scope;
-        } else {
-            return super.getScope();
-        }
-    }
-
-    public void setScope(String scope) {
-        this.scope = scope;
-    }
-
+    @Override
     public File getFile() {
         if (file == null) {
             return new File(basedir, "/target/test-classes/unit/sample_wars/simple.jar");
@@ -110,11 +42,17 @@ public class JarArtifactStub extends AbstractArtifactStub {
         return file;
     }
 
+    @Override
     public void setFile(File file) {
         this.file = file;
     }
 
-    public ArtifactHandler getArtifactHandler() {
-        return artifactHandler;
+    /**
+     * Returns the file extension used when packaging this artifact.
+     * In Maven 3, this came from ArtifactHandler.getExtension().
+     * This is the extension used for the output file name.
+     */
+    public String getFileExtension() {
+        return fileExtension;
     }
 }

@@ -20,46 +20,27 @@ package org.apache.maven.plugins.war.stub;
 
 import java.io.File;
 
-import org.apache.maven.artifact.handler.ArtifactHandler;
-
 /**
  * @author Auke Schrijnen
  */
 public class XarArtifactStub extends AbstractArtifactStub {
-    protected String groupId;
 
-    private ArtifactHandler artifactHandler;
+    private String fileExtension;
 
-    public XarArtifactStub(String basedir, ArtifactHandler artifactHandler) {
+    public XarArtifactStub(String basedir, String fileExtension) {
         super(basedir);
-        this.artifactHandler = artifactHandler;
+        this.fileExtension = fileExtension;
+        setGroupId("org.sample.xar");
+        setArtifactId("xarartifact");
+        setExtension("xar");
     }
 
-    public void setGroupId(String id) {
-        groupId = id;
-    }
-
-    public String getGroupId() {
-        if (groupId != null) {
-            return groupId;
-        } else {
-            return "org.sample.xar";
-        }
-    }
-
-    public String getType() {
-        return "xar";
-    }
-
-    public String getArtifactId() {
-        return "xarartifact";
-    }
-
+    @Override
     public File getFile() {
         return new File(basedir, "/target/test-classes/unit/sample_wars/simple.xar");
     }
 
-    public ArtifactHandler getArtifactHandler() {
-        return artifactHandler;
+    public String getFileExtension() {
+        return fileExtension;
     }
 }

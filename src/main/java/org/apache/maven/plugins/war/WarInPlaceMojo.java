@@ -18,36 +18,16 @@
  */
 package org.apache.maven.plugins.war;
 
-import javax.inject.Inject;
-
-import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
-import org.apache.maven.execution.MavenSession;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.apache.maven.shared.filtering.MavenFileFilter;
-import org.apache.maven.shared.filtering.MavenResourcesFiltering;
-import org.codehaus.plexus.archiver.manager.ArchiverManager;
+import org.apache.maven.api.plugin.annotations.Mojo;
 
 /**
  * Generate the webapp in the WAR source directory.
  */
-@Mojo(name = "inplace", requiresDependencyResolution = ResolutionScope.RUNTIME, threadSafe = true)
+@Mojo(name = "inplace")
 public class WarInPlaceMojo extends AbstractWarMojo {
 
-    @Inject
-    public WarInPlaceMojo(
-            ArtifactHandlerManager artifactHandlerManager,
-            ArchiverManager archiverManager,
-            MavenFileFilter mavenFileFilter,
-            MavenResourcesFiltering mavenResourcesFiltering,
-            MavenSession session) {
-        super(artifactHandlerManager, archiverManager, mavenFileFilter, mavenResourcesFiltering, session);
-    }
-
     @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
+    public void execute() {
         getLog().info("Generating webapp in source directory [" + getWarSourceDirectory() + "]");
 
         buildExplodedWebapp(getWarSourceDirectory());

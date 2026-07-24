@@ -18,34 +18,27 @@
  */
 package org.apache.maven.plugins.war;
 
-import javax.inject.Inject;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.maven.archiver.MavenArchiver;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.DependencyResolutionRequiredException;
-import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
-import org.apache.maven.execution.MavenSession;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.api.PathScope;
+import org.apache.maven.api.ProducedArtifact;
+import org.apache.maven.api.di.Inject;
+import org.apache.maven.api.plugin.MojoException;
+import org.apache.maven.api.plugin.annotations.Mojo;
+import org.apache.maven.api.plugin.annotations.Parameter;
+import org.apache.maven.api.services.ProjectManager;
 import org.apache.maven.plugins.war.util.ClassesPackager;
-import org.apache.maven.project.MavenProjectHelper;
-import org.apache.maven.shared.filtering.MavenFileFilter;
-import org.apache.maven.shared.filtering.MavenResourcesFiltering;
+import org.apache.maven.shared.archiver.MavenArchiver;
+import org.apache.maven.shared.archiver.MavenArchiverException;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.ManifestException;
-import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
 import org.codehaus.plexus.archiver.war.WarArchiver;
 import org.codehaus.plexus.util.FileUtils;
@@ -55,11 +48,7 @@ import org.codehaus.plexus.util.FileUtils;
  *
  * @author <a href="evenisse@apache.org">Emmanuel Venisse</a>
  */
-@Mojo(
-        name = "war",
-        defaultPhase = LifecyclePhase.PACKAGE,
-        threadSafe = true,
-        requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
+@Mojo(name = "war", defaultPhase = "package")
 public class WarMojo extends AbstractWarMojo {
     /**
      * The directory for the generated WAR.
@@ -129,19 +118,8 @@ public class WarMojo extends AbstractWarMojo {
     @Parameter(property = "maven.war.skip", defaultValue = "false")
     private boolean skip;
 
-    private final MavenProjectHelper projectHelper;
-
     @Inject
-    public WarMojo(
-            ArtifactHandlerManager artifactHandlerManager,
-            ArchiverManager archiverManager,
-            MavenFileFilter mavenFileFilter,
-            MavenResourcesFiltering mavenResourcesFiltering,
-            MavenProjectHelper projectHelper,
-            MavenSession session) {
-        super(artifactHandlerManager, archiverManager, mavenFileFilter, mavenResourcesFiltering, session);
-        this.projectHelper = projectHelper;
-    }
+    private ProjectManager projectManager;
 
     // ----------------------------------------------------------------------
     // Implementation
@@ -150,11 +128,10 @@ public class WarMojo extends AbstractWarMojo {
     /**
      * Executes the WarMojo on the current project.
      *
-     * @throws MojoExecutionException if an error occurred while building the webapp
-     * @throws MojoFailureException if an error
+     * @throws MojoException if an error occurred while building the webapp
      */
     @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
+    public void execute() {
 
         if (isSkip()) {
             getLog().info("Skipping the execution.");
@@ -165,10 +142,10 @@ public class WarMojo extends AbstractWarMojo {
 
         try {
             performPackaging(warFile);
-        } catch (DependencyResolutionRequiredException | ArchiverException e) {
-            throw new MojoExecutionException("Error assembling WAR: " + e.getMessage(), e);
+        } catch (MavenArchiverException | ArchiverException e) {
+            throw new MojoException("Error assembling WAR: " + e.getMessage(), e);
         } catch (ManifestException | IOException e) {
-            throw new MojoExecutionException("Error assembling WAR", e);
+            throw new MojoException("Error assembling WAR", e);
         }
     }
 
@@ -177,15 +154,13 @@ public class WarMojo extends AbstractWarMojo {
      *
      * @param warFile the target WAR file
      * @throws ArchiverException if the archive could not be created
-     * @throws DependencyResolutionRequiredException if an error occurred while resolving the dependencies
+     * @throws MavenArchiverException if an error occurred while creating the archive
      * @throws IOException if an error occurred while copying files
      * @throws ManifestException if the manifest could not be created
-     * @throws MojoExecutionException if the execution failed
-     * @throws MojoFailureException if a fatal exception occurred
+     * @throws MojoException if the execution failed
      */
     private void performPackaging(File warFile)
-            throws IOException, ManifestException, DependencyResolutionRequiredException, MojoExecutionException,
-                    MojoFailureException {
+            throws IOException, ManifestException, MavenArchiverException, MojoException {
         getLog().info("Packaging webapp");
 
         buildExplodedWebapp(getWebappDirectory());
@@ -200,7 +175,7 @@ public class WarMojo extends AbstractWarMojo {
         archiver.setOutputFile(warFile);
 
         // configure for Reproducible Builds based on outputTimestamp value
-        archiver.configureReproducible(outputTimestamp);
+        archiver.configureReproducibleBuild(outputTimestamp);
 
         getLog().debug("Excluding " + Arrays.asList(getPackagingExcludes()) + " from the generated webapp archive.");
         getLog().debug("Including " + Arrays.asList(getPackagingIncludes()) + " in the generated webapp archive.");
@@ -231,7 +206,15 @@ public class WarMojo extends AbstractWarMojo {
                 // special handling in case of archived classes: MWAR-240
                 File targetClassesFile = getTargetClassesFile();
                 FileUtils.copyFile(getJarArchiver().getDestFile(), targetClassesFile);
-                projectHelper.attachArtifact(getProject(), "jar", getClassesClassifier(), targetClassesFile);
+                ProducedArtifact classesArtifact = getSession()
+                        .createProducedArtifact(
+                                getProject().getGroupId(),
+                                getProject().getArtifactId(),
+                                getProject().getVersion(),
+                                getClassesClassifier(),
+                                "jar",
+                                null);
+                projectManager.attachArtifact(getProject(), classesArtifact, targetClassesFile.toPath());
             } else {
                 ClassesPackager packager = new ClassesPackager();
                 final File classesDirectory = packager.getClassesDirectory(getWebappDirectory());
@@ -245,20 +228,40 @@ public class WarMojo extends AbstractWarMojo {
                             getProject(),
                             getArchive(),
                             outputTimestamp);
-                    projectHelper.attachArtifact(getProject(), "jar", getClassesClassifier(), getTargetClassesFile());
+                    ProducedArtifact classesArtifact = getSession()
+                            .createProducedArtifact(
+                                    getProject().getGroupId(),
+                                    getProject().getArtifactId(),
+                                    getProject().getVersion(),
+                                    getClassesClassifier(),
+                                    "jar",
+                                    null);
+                    projectManager.attachArtifact(
+                            getProject(),
+                            classesArtifact,
+                            getTargetClassesFile().toPath());
                 }
             }
         }
 
         if (this.classifier != null) {
-            projectHelper.attachArtifact(getProject(), "war", this.classifier, warFile);
+            ProducedArtifact warArtifact = getSession()
+                    .createProducedArtifact(
+                            getProject().getGroupId(),
+                            getProject().getArtifactId(),
+                            getProject().getVersion(),
+                            this.classifier,
+                            "war",
+                            null);
+            projectManager.attachArtifact(getProject(), warArtifact, warFile.toPath());
         } else {
-            Artifact artifact = getProject().getArtifact();
-            if (primaryArtifact) {
-                artifact.setFile(warFile);
-            } else if (artifact.getFile() == null || artifact.getFile().isDirectory()) {
-                artifact.setFile(warFile);
-            }
+            ProducedArtifact artifact = getSession()
+                    .createProducedArtifact(
+                            getProject().getGroupId(),
+                            getProject().getArtifactId(),
+                            getProject().getVersion(),
+                            "war");
+            getSession().setArtifactPath(artifact, warFile.toPath());
         }
     }
 
@@ -273,15 +276,16 @@ public class WarMojo extends AbstractWarMojo {
      *
      * @return <code>true</code> if the project being built depends on Servlet 3.0 API or Jakarta Servlet API,
      *         <code>false</code> otherwise
-     * @throws DependencyResolutionRequiredException if the compile elements can't be resolved
-     * @throws MalformedURLException if the path to a dependency file can't be transformed to a URL
      */
-    private boolean isProjectUsingAtLeastServlet30()
-            throws DependencyResolutionRequiredException, MalformedURLException {
-        List<String> classpathElements = getProject().getCompileClasspathElements();
+    private boolean isProjectUsingAtLeastServlet30() {
+        List<Path> classpathElements = getSession().resolveDependencies(getProject(), PathScope.MAIN_COMPILE);
         URL[] urls = new URL[classpathElements.size()];
         for (int i = 0; i < urls.length; i++) {
-            urls[i] = new File(classpathElements.get(i)).toURI().toURL();
+            try {
+                urls[i] = classpathElements.get(i).toUri().toURL();
+            } catch (MalformedURLException e) {
+                // skip
+            }
         }
         URLClassLoader loader = new URLClassLoader(urls, Thread.currentThread().getContextClassLoader());
         try {
@@ -393,10 +397,10 @@ public class WarMojo extends AbstractWarMojo {
     }
 
     /**
-     * @return {@link #projectHelper}
+     * @return {@link #projectManager}
      */
-    public MavenProjectHelper getProjectHelper() {
-        return projectHelper;
+    public ProjectManager getProjectManager() {
+        return projectManager;
     }
 
     /**

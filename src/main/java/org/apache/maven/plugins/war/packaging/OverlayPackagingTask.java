@@ -21,7 +21,7 @@ package org.apache.maven.plugins.war.packaging;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.api.plugin.MojoException;
 import org.apache.maven.plugins.war.Overlay;
 import org.apache.maven.plugins.war.util.PathSet;
 import org.codehaus.plexus.util.FileUtils;
@@ -49,7 +49,7 @@ public class OverlayPackagingTask extends AbstractWarPackagingTask {
     }
 
     @Override
-    public void performPackaging(WarPackagingContext context) throws MojoExecutionException {
+    public void performPackaging(WarPackagingContext context) throws MojoException {
         context.getLog()
                 .debug("OverlayPackagingTask performPackaging overlay.getTargetPath() " + overlay.getTargetPath());
         if (overlay.shouldSkip()) {
@@ -77,7 +77,7 @@ public class OverlayPackagingTask extends AbstractWarPackagingTask {
                     copyFiles(overlay.getId(), context, tmpDir, includes, targetPath, overlay.isFiltered());
                 }
             } catch (IOException e) {
-                throw new MojoExecutionException("Failed to copy file for overlay [" + overlay + "]", e);
+                throw new MojoException("Failed to copy file for overlay [" + overlay + "]", e);
             }
         }
     }
@@ -90,15 +90,15 @@ public class OverlayPackagingTask extends AbstractWarPackagingTask {
      * @param context the packaging context
      * @param overlay the overlay
      * @return the directory containing the unpacked overlay
-     * @throws MojoExecutionException if an error occurred while unpacking the overlay
+     * @throws MojoException if an error occurred while unpacking the overlay
      */
-    protected File unpackOverlay(WarPackagingContext context, Overlay overlay) throws MojoExecutionException {
+    protected File unpackOverlay(WarPackagingContext context, Overlay overlay) throws MojoException {
         final File tmpDir = getOverlayTempDirectory(context, overlay);
 
         // TODO: not sure it's good, we should reuse the markers of the dependency plugin
         if (FileUtils.sizeOfDirectory(tmpDir) == 0
-                || overlay.getArtifact().getFile().lastModified() > tmpDir.lastModified()) {
-            doUnpack(context, overlay.getArtifact().getFile(), tmpDir);
+                || overlay.getArtifact().getPath().toFile().lastModified() > tmpDir.lastModified()) {
+            doUnpack(context, overlay.getArtifact().getPath().toFile(), tmpDir);
         } else {
             context.getLog().debug("Overlay [" + overlay + "] was already unpacked");
         }

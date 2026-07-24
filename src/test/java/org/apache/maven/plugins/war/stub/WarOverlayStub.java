@@ -25,9 +25,7 @@ import java.io.File;
  */
 public class WarOverlayStub extends AbstractArtifactStub {
 
-    private final String artifactId;
-
-    private File file;
+    private final File file;
 
     public WarOverlayStub(String basedir, String artifactId, File warFile) {
         super(basedir);
@@ -36,26 +34,16 @@ public class WarOverlayStub extends AbstractArtifactStub {
         }
         if (warFile == null) {
             throw new NullPointerException("warFile could not be null.");
-
         } else if (!warFile.exists()) {
-            throw new IllegalStateException("warFile[" + file.getAbsolutePath() + "] should exist.");
+            throw new IllegalStateException("warFile[" + warFile.getAbsolutePath() + "] should exist.");
         }
-        this.artifactId = artifactId;
+        setArtifactId(artifactId);
+        setGroupId("wartests");
+        setExtension("war");
         this.file = warFile;
     }
 
-    public String getType() {
-        return "war";
-    }
-
-    public String getArtifactId() {
-        return artifactId;
-    }
-
-    public String getGroupId() {
-        return "wartests";
-    }
-
+    @Override
     public File getFile() {
         return file;
     }

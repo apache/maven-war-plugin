@@ -21,18 +21,14 @@ package org.apache.maven.plugins.war.stub;
 import java.io.File;
 
 public class TLDArtifactStub extends AbstractArtifactStub {
+
     public TLDArtifactStub(String basedir) {
         super(basedir);
+        setArtifactId("tldartifact");
+        setExtension("tld");
     }
 
-    public String getType() {
-        return "tld";
-    }
-
-    public String getArtifactId() {
-        return "tldartifact";
-    }
-
+    @Override
     public File getFile() {
         return new File(basedir, "/target/test-classes/unit/sample_wars/tld.jar");
     }

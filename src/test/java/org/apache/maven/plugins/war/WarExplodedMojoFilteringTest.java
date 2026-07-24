@@ -18,44 +18,36 @@
  */
 package org.apache.maven.plugins.war;
 
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
-
-import javax.inject.Inject;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.StringReader;
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.apache.maven.api.Project;
 import org.apache.maven.api.di.Provides;
 import org.apache.maven.api.plugin.testing.Basedir;
 import org.apache.maven.api.plugin.testing.InjectMojo;
 import org.apache.maven.api.plugin.testing.MojoExtension;
 import org.apache.maven.api.plugin.testing.MojoParameter;
 import org.apache.maven.api.plugin.testing.MojoTest;
-import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugins.war.stub.MavenProjectBasicStub;
 import org.apache.maven.plugins.war.stub.ResourceStub;
-import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.archiver.Archiver;
+import org.codehaus.plexus.archiver.UnArchiver;
+import org.codehaus.plexus.archiver.dir.DirectoryArchiver;
+import org.codehaus.plexus.archiver.jar.JarArchiver;
+import org.codehaus.plexus.archiver.jar.JarUnArchiver;
+import org.codehaus.plexus.archiver.manager.ArchiverManager;
+import org.codehaus.plexus.archiver.manager.DefaultArchiverManager;
+import org.codehaus.plexus.archiver.war.WarArchiver;
+import org.codehaus.plexus.archiver.war.WarUnArchiver;
+import org.codehaus.plexus.archiver.zip.ZipArchiver;
+import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.jupiter.api.Test;
+import org.sonatype.plexus.build.incremental.BuildContext;
+import org.sonatype.plexus.build.incremental.DefaultBuildContext;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -68,14 +60,32 @@ import static org.mockito.Mockito.when;
 @MojoTest
 public class WarExplodedMojoFilteringTest {
 
-    @Inject
-    private MavenProject project;
-
-    @Inject
-    private MavenSession mavenSession;
+    // Note: @Inject Session does not work with Maven 4 MojoExtension test framework.
+    // Use mojo.getSession() instead.
 
     @Provides
-    MavenProject project() throws Exception {
+    @SuppressWarnings("unused")
+    ArchiverManager archiverManager() {
+        Map<String, javax.inject.Provider<Archiver>> archivers = new HashMap<>();
+        archivers.put("war", WarArchiver::new);
+        archivers.put("jar", JarArchiver::new);
+        archivers.put("zip", ZipArchiver::new);
+        archivers.put("dir", DirectoryArchiver::new);
+        Map<String, javax.inject.Provider<UnArchiver>> unArchivers = new HashMap<>();
+        unArchivers.put("war", WarUnArchiver::new);
+        unArchivers.put("jar", JarUnArchiver::new);
+        unArchivers.put("zip", ZipUnArchiver::new);
+        return new DefaultArchiverManager(archivers, unArchivers, new HashMap<>());
+    }
+
+    @Provides
+    @SuppressWarnings("unused")
+    BuildContext buildContext() {
+        return new DefaultBuildContext();
+    }
+
+    @Provides
+    Project project() throws Exception {
         MavenProjectBasicStub project = new MavenProjectBasicStub();
         project.addProperty("is_this_simple", "i_think_so");
         return project;
@@ -96,9 +106,12 @@ public class WarExplodedMojoFilteringTest {
     @MojoParameter(name = "outdatedCheckPath", value = "WEB-INF/lib/")
     @Test
     public void testExplodedWarWithResourceFiltering(WarExplodedMojo mojo) throws Exception {
-        Properties systemProperties = System.getProperties();
+        Map<String, String> systemProperties = new HashMap<>();
+        for (Map.Entry<Object, Object> entry : System.getProperties().entrySet()) {
+            systemProperties.put(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
+        }
         systemProperties.put("system.property", "system-property-value");
-        when(mavenSession.getSystemProperties()).thenReturn(systemProperties);
+        when(mojo.getSession().getSystemProperties()).thenReturn(systemProperties);
 
         ResourceStub[] resources = new ResourceStub[] {new ResourceStub()};
         resources[0].setDirectory(
@@ -151,7 +164,7 @@ public class WarExplodedMojoFilteringTest {
 
         // update property, and generate again
         systemProperties.put("system.property", "new-system-property-value");
-        when(mavenSession.getSystemProperties()).thenReturn(systemProperties);
+        when(mojo.getSession().getSystemProperties()).thenReturn(systemProperties);
 
         mojo.execute();
 
@@ -205,9 +218,12 @@ public class WarExplodedMojoFilteringTest {
                     "target/test-classes/unit/warexplodedmojo/ExplodedWarWithResourceFileFiltering-test-data/filters/filter.properties")
     @Test
     public void testExplodedWarWithResourceFileFiltering(WarExplodedMojo mojo) throws Exception {
-        Properties systemProperties = System.getProperties();
+        Map<String, String> systemProperties = new HashMap<>();
+        for (Map.Entry<Object, Object> entry : System.getProperties().entrySet()) {
+            systemProperties.put(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
+        }
         systemProperties.put("system.property", "system-property-value");
-        when(mavenSession.getSystemProperties()).thenReturn(systemProperties);
+        when(mojo.getSession().getSystemProperties()).thenReturn(systemProperties);
 
         ResourceStub[] resources = new ResourceStub[] {new ResourceStub()};
         resources[0].setDirectory(

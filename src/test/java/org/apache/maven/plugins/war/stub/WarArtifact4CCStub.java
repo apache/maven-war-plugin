@@ -18,9 +18,6 @@
  */
 package org.apache.maven.plugins.war.stub;
 
-import org.apache.maven.artifact.handler.ArtifactHandler;
-import org.apache.maven.artifact.handler.DefaultArtifactHandler;
-
 /**
  * stub for copy constructor
  * to prevent the copy constructor from blowing up
@@ -28,17 +25,7 @@ import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 public class WarArtifact4CCStub extends WarArtifactStub {
     public WarArtifact4CCStub(String basedir) {
         super(basedir);
-    }
-
-    public String getGroupId() {
-        return "org.maven.plugin.test";
-    }
-
-    public String getClassifier() {
-        return "testclassifier";
-    }
-
-    public ArtifactHandler getArtifactHandler() {
-        return new DefaultArtifactHandler();
+        setGroupId("org.maven.plugin.test");
+        setClassifier("testclassifier");
     }
 }

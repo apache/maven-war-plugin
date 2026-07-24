@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.model.Dependency;
+import org.apache.maven.api.Artifact;
+import org.apache.maven.api.model.Dependency;
 
 /**
  * Represents the structure of a web application composed of multiple overlays. Each overlay is registered within this

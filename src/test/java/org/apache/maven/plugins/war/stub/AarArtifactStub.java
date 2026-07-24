@@ -20,46 +20,27 @@ package org.apache.maven.plugins.war.stub;
 
 import java.io.File;
 
-import org.apache.maven.artifact.handler.ArtifactHandler;
-
 /**
  * @author Stephane Nicoll
  */
 public class AarArtifactStub extends AbstractArtifactStub {
-    protected String groupId;
 
-    private ArtifactHandler artifactHandler;
+    private String fileExtension;
 
-    public AarArtifactStub(String basedir, ArtifactHandler artifactHandler) {
+    public AarArtifactStub(String basedir, String fileExtension) {
         super(basedir);
-        this.artifactHandler = artifactHandler;
+        this.fileExtension = fileExtension;
+        setGroupId("org.sample.aar");
+        setArtifactId("aarartifact");
+        setExtension("aar");
     }
 
-    public void setGroupId(String id) {
-        groupId = id;
-    }
-
-    public String getGroupId() {
-        if (groupId != null) {
-            return groupId;
-        } else {
-            return "org.sample.aar";
-        }
-    }
-
-    public String getType() {
-        return "aar";
-    }
-
-    public String getArtifactId() {
-        return "aarartifact";
-    }
-
+    @Override
     public File getFile() {
         return new File(basedir, "/target/test-classes/unit/sample_wars/simple.aar");
     }
 
-    public ArtifactHandler getArtifactHandler() {
-        return artifactHandler;
+    public String getFileExtension() {
+        return fileExtension;
     }
 }

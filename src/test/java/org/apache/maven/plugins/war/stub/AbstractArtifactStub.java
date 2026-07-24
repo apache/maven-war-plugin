@@ -18,121 +18,82 @@
  */
 package org.apache.maven.plugins.war.stub;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.Objects;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.handler.ArtifactHandler;
-import org.apache.maven.artifact.handler.DefaultArtifactHandler;
-import org.apache.maven.artifact.versioning.VersionRange;
-import org.apache.maven.plugin.testing.stubs.ArtifactStub;
+import org.apache.maven.api.DownloadedArtifact;
+import org.apache.maven.api.plugin.testing.stubs.ArtifactStub;
 
-public abstract class AbstractArtifactStub extends ArtifactStub {
+public abstract class AbstractArtifactStub extends ArtifactStub implements DownloadedArtifact {
     protected String basedir;
+
+    private String scope = "runtime";
+
+    private boolean optional = false;
 
     public AbstractArtifactStub(String basedir) {
         this.basedir = basedir;
+        setVersion("0.0-Test");
     }
 
-    public String getVersion() {
-        return "0.0-Test";
+    /**
+     * Returns the type/extension of this artifact. Subclasses should override.
+     */
+    public String getType() {
+        return getExtension();
+    }
+
+    /**
+     * Returns the file for this artifact. Subclasses should override.
+     */
+    public File getFile() {
+        return null;
     }
 
     @Override
-    public String getBaseVersion() {
-        return getVersion();
+    public Path getPath() {
+        File f = getFile();
+        return f != null ? f.toPath() : null;
     }
 
     public String getScope() {
-        return Artifact.SCOPE_RUNTIME;
+        return scope;
     }
 
-    public VersionRange getVersionRange() {
-        return VersionRange.createFromVersion(getVersion());
+    public void setScope(String scope) {
+        this.scope = scope;
     }
 
     public boolean isOptional() {
-        return false;
+        return optional;
     }
 
-    public ArtifactHandler getArtifactHandler() {
-        return new DefaultArtifactHandler(getType());
+    public void setOptional(boolean optional) {
+        this.optional = optional;
     }
 
-    /*
-     * TODO: Copied from org/apache/maven/artifact/DefaultArtifact.java; Consider merging...
-     */
-    public int compareTo(Artifact a) {
-        /* -- We need to support groupId=null (it is missing in DefaultArtifact.java) */
-        int result;
-        if (a.getGroupId() != null) {
-            result = getGroupId().compareTo(a.getGroupId());
-        } else {
-            result = (getGroupId() == null ? 0 : -1);
-        }
-        /* -- */
-
-        if (result == 0) {
-            result = getArtifactId().compareTo(a.getArtifactId());
-            if (result == 0) {
-                result = getType().compareTo(a.getType());
-                if (result == 0) {
-                    if (getClassifier() == null) {
-                        if (a.getClassifier() != null) {
-                            result = 1;
-                        }
-                    } else {
-                        if (a.getClassifier() != null) {
-                            result = getClassifier().compareTo(a.getClassifier());
-                        } else {
-                            result = -1;
-                        }
-                    }
-                    if (result == 0) {
-                        // We don't consider the version range in the comparison, just the resolved version
-                        result = getVersion().compareTo(a.getVersion());
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
-    /*
-     * TODO: Copied from org/apache/maven/artifact/DefaultArtifact.java; Consider merging...
-     */
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        }
-
-        if (!(o instanceof Artifact)) {
-            return false;
-        }
-
-        Artifact a = (Artifact) o;
-
-        /* -- We need to support groupId=null (it is missing in DefaultArtifact.java) */
-        if (a.getGroupId() == null ? (getGroupId() != null) : a.getGroupId().equals(getGroupId())) {
-            return false;
-        } else if (!a.getArtifactId().equals(getArtifactId())) {
-            return false;
-        } else if (!a.getVersion().equals(getVersion())) {
-            return false;
-        } else if (!a.getType().equals(getType())) {
-            return false;
-        } else if (a.getClassifier() == null
-                ? getClassifier() != null
-                : !a.getClassifier().equals(getClassifier())) {
-            return false;
-        }
-
-        // We don't consider the version range in the comparison, just the resolved version
-
-        return true;
+    public void setFile(File file) {
+        // Default no-op, subclasses with mutable file override this
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(basedir);
+        return Objects.hash(getGroupId(), getArtifactId(), getExtension(), getClassifier());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof AbstractArtifactStub)) {
+            return false;
+        }
+        AbstractArtifactStub a = (AbstractArtifactStub) o;
+        return Objects.equals(getGroupId(), a.getGroupId())
+                && Objects.equals(getArtifactId(), a.getArtifactId())
+                && Objects.equals(getExtension(), a.getExtension())
+                && Objects.equals(getClassifier(), a.getClassifier());
     }
 }

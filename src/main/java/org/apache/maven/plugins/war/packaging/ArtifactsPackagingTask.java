@@ -21,11 +21,12 @@ package org.apache.maven.plugins.war.packaging;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
-import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.api.DependencyScope;
+import org.apache.maven.api.DownloadedArtifact;
+import org.apache.maven.api.Node;
+import org.apache.maven.api.PathScope;
+import org.apache.maven.api.plugin.MojoException;
 import org.apache.maven.plugins.war.Overlay;
 import org.codehaus.plexus.interpolation.InterpolationException;
 
@@ -56,26 +57,35 @@ public class ArtifactsPackagingTask extends AbstractWarPackagingTask {
      */
     public static final String EXTENSIONS_PATH = "WEB-INF/extensions/";
 
-    private final Set<Artifact> artifacts;
-
     private final String id;
 
     /**
-     * @param artifacts {@link #artifacts}
      * @param currentProjectOverlay {@link #id}
      */
-    public ArtifactsPackagingTask(Set<Artifact> artifacts, Overlay currentProjectOverlay) {
-        this.artifacts = artifacts;
+    public ArtifactsPackagingTask(Overlay currentProjectOverlay) {
         this.id = currentProjectOverlay.getId();
     }
 
     @Override
-    public void performPackaging(WarPackagingContext context) throws MojoExecutionException {
+    public void performPackaging(WarPackagingContext context) throws MojoException {
         try {
-            final ScopeArtifactFilter filter = new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME);
+            // Collect and flatten dependencies
+            Node root = context.getSession().collectDependencies(context.getProject(), PathScope.MAIN_RUNTIME);
+            List<Node> nodes = context.getSession().flattenDependencies(root, PathScope.MAIN_RUNTIME);
+
+            // Resolve all dependency artifacts
+            List<DownloadedArtifact> artifacts = new ArrayList<>();
+            for (Node node : nodes) {
+                org.apache.maven.api.Dependency dep = node.getDependency();
+                if (dep != null) {
+                    DownloadedArtifact resolved = context.getSession().resolveArtifact(dep);
+                    artifacts.add(resolved);
+                }
+            }
+
             final List<String> duplicates = findDuplicates(context, artifacts);
 
-            for (Artifact artifact : artifacts) {
+            for (DownloadedArtifact artifact : artifacts) {
                 String targetFileName = getArtifactFinalName(context, artifact);
 
                 context.getLog().debug("Processing: " + targetFileName);
@@ -87,26 +97,31 @@ public class ArtifactsPackagingTask extends AbstractWarPackagingTask {
                 }
                 context.getWebappStructure().registerTargetFileName(artifact, targetFileName);
 
-                if (!artifact.isOptional() && filter.include(artifact)) {
+                // Check scope and optional status via the dependency info
+                org.apache.maven.api.Dependency dep = getDependencyForArtifact(nodes, artifact);
+                boolean isOptional = dep != null && dep.isOptional();
+                boolean isRuntimeScope = dep == null || isRuntimeScope(dep.getScope());
+
+                if (!isOptional && isRuntimeScope) {
                     try {
-                        String type = artifact.getType();
+                        String type = artifact.getExtension();
                         if ("tld".equals(type)) {
-                            copyFile(id, context, artifact.getFile(), TLD_PATH + targetFileName);
+                            copyFile(id, context, artifact.getPath().toFile(), TLD_PATH + targetFileName);
                         } else if ("aar".equals(type)) {
-                            copyFile(id, context, artifact.getFile(), SERVICES_PATH + targetFileName);
+                            copyFile(id, context, artifact.getPath().toFile(), SERVICES_PATH + targetFileName);
                         } else if ("mar".equals(type)) {
-                            copyFile(id, context, artifact.getFile(), MODULES_PATH + targetFileName);
+                            copyFile(id, context, artifact.getPath().toFile(), MODULES_PATH + targetFileName);
                         } else if ("xar".equals(type)) {
-                            copyFile(id, context, artifact.getFile(), EXTENSIONS_PATH + targetFileName);
+                            copyFile(id, context, artifact.getPath().toFile(), EXTENSIONS_PATH + targetFileName);
                         } else if ("jar".equals(type)
                                 || "ejb".equals(type)
                                 || "ejb-client".equals(type)
                                 || "test-jar".equals(type)
                                 || "bundle".equals(type)) {
-                            copyFile(id, context, artifact.getFile(), LIB_PATH + targetFileName);
+                            copyFile(id, context, artifact.getPath().toFile(), LIB_PATH + targetFileName);
                         } else if ("par".equals(type)) {
                             targetFileName = targetFileName.substring(0, targetFileName.lastIndexOf('.')) + ".jar";
-                            copyFile(id, context, artifact.getFile(), LIB_PATH + targetFileName);
+                            copyFile(id, context, artifact.getPath().toFile(), LIB_PATH + targetFileName);
                         } else if ("war".equals(type)) {
                             // Nothing to do here, it is an overlay and it's already handled
                             context.getLog()
@@ -121,27 +136,49 @@ public class ArtifactsPackagingTask extends AbstractWarPackagingTask {
                                             + "]");
                         }
                     } catch (IOException e) {
-                        throw new MojoExecutionException("Failed to copy file for artifact [" + artifact + "]", e);
+                        throw new MojoException("Failed to copy file for artifact [" + artifact + "]", e);
                     }
                 }
             }
         } catch (InterpolationException e) {
-            throw new MojoExecutionException(e.getMessage(), e);
+            throw new MojoException(e.getMessage(), e);
         }
+    }
+
+    /**
+     * Returns the Dependency associated with a given artifact from the resolved nodes.
+     */
+    private org.apache.maven.api.Dependency getDependencyForArtifact(List<Node> nodes, DownloadedArtifact artifact) {
+        for (Node node : nodes) {
+            org.apache.maven.api.Dependency dep = node.getDependency();
+            if (dep != null
+                    && dep.getGroupId().equals(artifact.getGroupId())
+                    && dep.getArtifactId().equals(artifact.getArtifactId())) {
+                return dep;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Checks if the given scope is a runtime-compatible scope.
+     */
+    private boolean isRuntimeScope(DependencyScope scope) {
+        return scope == DependencyScope.COMPILE || scope == DependencyScope.RUNTIME || scope == DependencyScope.SYSTEM;
     }
 
     /**
      * Searches a set of artifacts for duplicate filenames and returns a list of duplicates.
      *
      * @param context the packaging context
-     * @param artifacts set of artifacts
+     * @param artifacts list of artifacts
      * @return list of duplicated artifacts as bundling file names
      */
-    private List<String> findDuplicates(WarPackagingContext context, Set<Artifact> artifacts)
+    private List<String> findDuplicates(WarPackagingContext context, List<DownloadedArtifact> artifacts)
             throws InterpolationException {
         List<String> duplicates = new ArrayList<>();
         List<String> identifiers = new ArrayList<>();
-        for (Artifact artifact : artifacts) {
+        for (DownloadedArtifact artifact : artifacts) {
             String candidate = getArtifactFinalName(context, artifact);
             if (identifiers.contains(candidate)) {
                 duplicates.add(candidate);

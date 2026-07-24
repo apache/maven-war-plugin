@@ -25,18 +25,18 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 
 import org.apache.commons.io.input.XmlStreamReader;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.api.Artifact;
+import org.apache.maven.api.plugin.MojoException;
 import org.apache.maven.plugins.war.util.PathSet;
 import org.apache.maven.plugins.war.util.WebappStructure;
 import org.apache.maven.shared.filtering.MavenFilteringException;
-import org.apache.maven.shared.mapping.MappingUtils;
-import org.apache.maven.shared.utils.StringUtils;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
 import org.codehaus.plexus.interpolation.InterpolationException;
+import org.codehaus.plexus.interpolation.ObjectBasedValueSource;
+import org.codehaus.plexus.interpolation.StringSearchInterpolator;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.SelectorUtils;
@@ -87,7 +87,7 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
      * @param targetPrefix the prefix to add to the target file name
      * @param filtered filter or not
      * @throws IOException if an error occurred while copying the files
-     * @throws MojoExecutionException if an error occurs
+     * @throws MojoException if an error occurs
      */
     protected void copyFiles(
             String sourceId,
@@ -96,7 +96,7 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
             PathSet sourceFilesSet,
             String targetPrefix,
             boolean filtered)
-            throws IOException, MojoExecutionException {
+            throws IOException, MojoException {
         for (String fileToCopyName : sourceFilesSet.paths()) {
             final File sourceFile = new File(sourceBaseDir, fileToCopyName);
 
@@ -127,11 +127,11 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
      * @param sourceFilesSet the files to be copied
      * @param filtered filter or not
      * @throws IOException if an error occurred while copying the files
-     * @throws MojoExecutionException break the build
+     * @throws MojoException break the build
      */
     protected void copyFiles(
             String sourceId, WarPackagingContext context, File sourceBaseDir, PathSet sourceFilesSet, boolean filtered)
-            throws IOException, MojoExecutionException {
+            throws IOException, MojoException {
         copyFiles(sourceId, context, sourceBaseDir, sourceFilesSet, null, filtered);
     }
 
@@ -233,11 +233,11 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
      * @param targetFilename the relative path according to the root of the webapp
      * @return true if the file has been copied, false otherwise
      * @throws IOException if an error occurred while copying
-     * @throws MojoExecutionException if an error occurred while retrieving the filter properties
+     * @throws MojoException if an error occurred while retrieving the filter properties
      */
     protected boolean copyFilteredFile(
             String sourceId, final WarPackagingContext context, File file, String targetFilename)
-            throws IOException, MojoExecutionException {
+            throws IOException, MojoException {
         context.addResource(targetFilename);
 
         if (context.getWebappStructure().registerFile(sourceId, targetFilename)) {
@@ -247,7 +247,9 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
                 if (isXmlFile(file)) {
                     // For xml-files we extract the encoding from the files
                     encoding = getEncoding(file);
-                } else if (isPropertiesFile(file) && StringUtils.isNotEmpty(context.getPropertiesEncoding())) {
+                } else if (isPropertiesFile(file)
+                        && context.getPropertiesEncoding() != null
+                        && !context.getPropertiesEncoding().isEmpty()) {
                     encoding = context.getPropertiesEncoding();
                 } else {
                     // For all others we use the configured encoding
@@ -256,9 +258,10 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
                 // fix for MWAR-36, ensures that the parent dir are created first
                 targetFile.getParentFile().mkdirs();
 
-                context.getMavenFileFilter().copyFile(file, targetFile, true, context.getFilterWrappers(), encoding);
+                context.getMavenFileFilter()
+                        .copyFile(file.toPath(), targetFile.toPath(), true, context.getFilterWrappers(), encoding);
             } catch (MavenFilteringException e) {
-                throw new MojoExecutionException(e.getMessage(), e);
+                throw new MojoException(e.getMessage(), e);
             }
             // CHECKSTYLE_OFF: LineLength
             // Add the file to the protected list
@@ -278,10 +281,9 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
      * @param context the packaging context
      * @param file the file to unpack
      * @param unpackDirectory the directory to use for th unpacked file
-     * @throws MojoExecutionException if an error occurred while unpacking the file
+     * @throws MojoException if an error occurred while unpacking the file
      */
-    protected void doUnpack(WarPackagingContext context, File file, File unpackDirectory)
-            throws MojoExecutionException {
+    protected void doUnpack(WarPackagingContext context, File file, File unpackDirectory) throws MojoException {
         String archiveExt = FileUtils.getExtension(file.getAbsolutePath()).toLowerCase();
 
         try {
@@ -291,7 +293,7 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
             unArchiver.setOverwrite(true);
             unArchiver.extract();
         } catch (ArchiverException e) {
-            throw new MojoExecutionException(
+            throw new MojoException(
                     "Error unpacking file [" + file.getAbsolutePath() + "]" + " to ["
                             + unpackDirectory.getAbsolutePath() + "]",
                     e);
@@ -416,6 +418,11 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
         return pathSet;
     }
 
+    private static final String DEFAULT_FILE_NAME_MAPPING = "@{artifactId}-@{version}@{dashClassifier?}.@{extension}";
+
+    private static final String DEFAULT_FILE_NAME_MAPPING_CLASSIFIER =
+            "@{artifactId}-@{version}-@{classifier}.@{extension}";
+
     /**
      * Returns the final name of the specified artifact.
      *
@@ -428,16 +435,44 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
      */
     protected String getArtifactFinalName(WarPackagingContext context, Artifact artifact)
             throws InterpolationException {
+        String mapping;
         if (context.getOutputFileNameMapping() != null) {
-            return MappingUtils.evaluateFileNameMapping(context.getOutputFileNameMapping(), artifact);
-        }
-
-        String classifier = artifact.getClassifier();
-        if (classifier != null && !(classifier.trim().isEmpty())) {
-            return MappingUtils.evaluateFileNameMapping(MappingUtils.DEFAULT_FILE_NAME_MAPPING_CLASSIFIER, artifact);
+            mapping = context.getOutputFileNameMapping();
         } else {
-            return MappingUtils.evaluateFileNameMapping(MappingUtils.DEFAULT_FILE_NAME_MAPPING, artifact);
+            String classifier = artifact.getClassifier();
+            if (classifier != null && !(classifier.trim().isEmpty())) {
+                mapping = DEFAULT_FILE_NAME_MAPPING_CLASSIFIER;
+            } else {
+                mapping = DEFAULT_FILE_NAME_MAPPING;
+            }
         }
+        return evaluateFileNameMapping(mapping, artifact);
+    }
+
+    /**
+     * Evaluates a file name mapping expression against a Maven 4 API artifact.
+     * This replaces the use of MappingUtils.evaluateFileNameMapping which requires the old Artifact type.
+     */
+    private static String evaluateFileNameMapping(String expression, Artifact artifact) throws InterpolationException {
+        StringSearchInterpolator interpolator = new StringSearchInterpolator("@{", "}");
+        interpolator.addValueSource(new ObjectBasedValueSource(artifact) {
+            @Override
+            public Object getValue(String expr) {
+                if ("dashClassifier".equals(expr) || "dashClassifier?".equals(expr)) {
+                    String classifier = artifact.getClassifier();
+                    if (classifier != null && !classifier.isEmpty()) {
+                        return "-" + classifier;
+                    }
+                    return "";
+                } else if ("version".equals(expr)) {
+                    return artifact.getVersion().toString();
+                } else if ("baseVersion".equals(expr)) {
+                    return artifact.getBaseVersion().toString();
+                }
+                return super.getValue(expr);
+            }
+        });
+        return interpolator.interpolate(expression);
     }
 
     /**

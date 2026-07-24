@@ -21,18 +21,14 @@ package org.apache.maven.plugins.war.stub;
 import java.io.File;
 
 public class PARArtifactStub extends AbstractArtifactStub {
+
     public PARArtifactStub(String basedir) {
         super(basedir);
+        setArtifactId("parartifact");
+        setExtension("par");
     }
 
-    public String getType() {
-        return "par";
-    }
-
-    public String getArtifactId() {
-        return "parartifact";
-    }
-
+    @Override
     public File getFile() {
         return new File(basedir, "/target/test-classes/unit/sample_wars/sample.par");
     }

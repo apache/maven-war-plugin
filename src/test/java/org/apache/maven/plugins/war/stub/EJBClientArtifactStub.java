@@ -20,49 +20,25 @@ package org.apache.maven.plugins.war.stub;
 
 import java.io.File;
 
-import org.apache.maven.artifact.handler.ArtifactHandler;
-import org.apache.maven.artifact.handler.DefaultArtifactHandler;
-
 public class EJBClientArtifactStub extends AbstractArtifactStub {
-    protected String groupId;
 
     public EJBClientArtifactStub(String basedir) {
         super(basedir);
+        setGroupId("org.sample.ejb");
+        setArtifactId("ejbclientartifact");
+        setExtension("ejb-client");
+        setClassifier("client");
     }
 
-    public void setGroupId(String id) {
-        groupId = id;
-    }
-
-    public String getGroupId() {
-        if (groupId != null) {
-            return groupId;
-        } else {
-            return "org.sample.ejb";
-        }
-    }
-
-    public String getType() {
-        return "ejb-client";
-    }
-
-    public String getClassifier() {
-        return "client";
-    }
-
-    public String getArtifactId() {
-        return "ejbclientartifact";
-    }
-
+    @Override
     public File getFile() {
         return new File(basedir, "/target/test-classes/unit/sample_wars/ejbclient.jar");
     }
 
-    public ArtifactHandler getArtifactHandler() {
-        return new DefaultArtifactHandler() {
-            public String getExtension() {
-                return "jar";
-            }
-        };
+    /**
+     * Returns the file extension for packaging. EJB client artifacts use .jar extension.
+     */
+    public String getFileExtension() {
+        return "jar";
     }
 }

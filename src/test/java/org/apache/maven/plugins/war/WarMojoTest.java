@@ -20,25 +20,40 @@ package org.apache.maven.plugins.war;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.apache.maven.api.PathScope;
+import org.apache.maven.api.Project;
+import org.apache.maven.api.di.Provides;
+import org.apache.maven.api.plugin.MojoException;
 import org.apache.maven.api.plugin.testing.InjectMojo;
 import org.apache.maven.api.plugin.testing.MojoExtension;
 import org.apache.maven.api.plugin.testing.MojoParameter;
 import org.apache.maven.api.plugin.testing.MojoTest;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.handler.DefaultArtifactHandler;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.war.stub.JarArtifactStub;
 import org.apache.maven.plugins.war.stub.MavenProject4CopyConstructor;
 import org.apache.maven.plugins.war.stub.MavenProjectArtifactsStub;
 import org.apache.maven.plugins.war.stub.WarArtifact4CCStub;
+import org.codehaus.plexus.archiver.Archiver;
+import org.codehaus.plexus.archiver.UnArchiver;
+import org.codehaus.plexus.archiver.dir.DirectoryArchiver;
+import org.codehaus.plexus.archiver.jar.JarArchiver;
+import org.codehaus.plexus.archiver.jar.JarUnArchiver;
+import org.codehaus.plexus.archiver.manager.ArchiverManager;
+import org.codehaus.plexus.archiver.manager.DefaultArchiverManager;
+import org.codehaus.plexus.archiver.war.WarArchiver;
+import org.codehaus.plexus.archiver.war.WarUnArchiver;
+import org.codehaus.plexus.archiver.zip.ZipArchiver;
+import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.codehaus.plexus.util.IOUtil;
 import org.junit.jupiter.api.Test;
+import org.sonatype.plexus.build.incremental.BuildContext;
+import org.sonatype.plexus.build.incremental.DefaultBuildContext;
 
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,12 +61,35 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 
 /**
  * comprehensive test on buildExplodedWebApp is done on WarExplodedMojoTest
  */
 @MojoTest
 public class WarMojoTest {
+
+    @Provides
+    @SuppressWarnings("unused")
+    ArchiverManager archiverManager() {
+        Map<String, javax.inject.Provider<Archiver>> archivers = new HashMap<>();
+        archivers.put("war", WarArchiver::new);
+        archivers.put("jar", JarArchiver::new);
+        archivers.put("zip", ZipArchiver::new);
+        archivers.put("dir", DirectoryArchiver::new);
+        Map<String, javax.inject.Provider<UnArchiver>> unArchivers = new HashMap<>();
+        unArchivers.put("war", WarUnArchiver::new);
+        unArchivers.put("jar", JarUnArchiver::new);
+        unArchivers.put("zip", ZipUnArchiver::new);
+        return new DefaultArchiverManager(archivers, unArchivers, new HashMap<>());
+    }
+
+    @Provides
+    @SuppressWarnings("unused")
+    BuildContext buildContext() {
+        return new DefaultBuildContext();
+    }
 
     @InjectMojo(goal = "war", pom = "src/test/resources/unit/warmojotest/plugin-config-primary-artifact.xml")
     @MojoParameter(
@@ -462,7 +500,7 @@ public class WarMojoTest {
         try {
             mojo.execute();
             fail("Building of the war isn't possible because web.xml is missing");
-        } catch (MojoExecutionException e) {
+        } catch (MojoException e) {
             // expected behaviour
         }
     }
@@ -482,12 +520,14 @@ public class WarMojoTest {
     @Test
     public void testFailOnMissingWebXmlNotSpecifiedAndServlet30Used(WarMojo mojo) throws Exception {
         JarArtifactStub jarArtifactStub = createServletApi3JarArtifact();
-        WarArtifact4CCStub warArtifact = new WarArtifact4CCStub(getBasedir());
         MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         project.addArtifact(jarArtifactStub);
-        project.setArtifact(warArtifact);
-        project.setFile(warArtifact.getFile());
         mojo.setProject(project);
+
+        // Mock resolveDependencies so the mojo can detect Servlet 3.0 on the classpath
+        lenient()
+                .when(mojo.getSession().resolveDependencies(any(Project.class), any(PathScope.class)))
+                .thenReturn(Collections.singletonList(jarArtifactStub.getPath()));
 
         mojo.execute();
 
@@ -510,12 +550,10 @@ public class WarMojoTest {
     }
 
     private JarArtifactStub createServletApi3JarArtifact() {
-        DefaultArtifactHandler jarArtifactHandler = new DefaultArtifactHandler("jar");
-        jarArtifactHandler.setAddedToClasspath(true);
-        JarArtifactStub jarArtifactStub = new JarArtifactStub(getBasedir(), jarArtifactHandler);
+        JarArtifactStub jarArtifactStub = new JarArtifactStub(getBasedir(), "jar");
         jarArtifactStub.setFile(
                 new File(getBasedir(), "/target/test-classes/unit/sample_wars/javax.servlet-api-3.0.1.jar"));
-        jarArtifactStub.setScope(Artifact.SCOPE_PROVIDED);
+        jarArtifactStub.setScope("provided");
         return jarArtifactStub;
     }
 
@@ -533,17 +571,14 @@ public class WarMojoTest {
     @MojoParameter(name = "warName", value = "simple")
     @Test
     public void testFailOnMissingWebXmlNotSpecifiedAndServlet30NotUsed(WarMojo mojo) throws Exception {
-        WarArtifact4CCStub warArtifact = new WarArtifact4CCStub(getBasedir());
         MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
-        project.setArtifact(warArtifact);
-        project.setFile(warArtifact.getFile());
         mojo.setProject(project);
 
         try {
             mojo.execute();
             fail("Building of the war isn't possible because no 'failOnMissingWebXml' policy was set and the project "
                     + "does not depend on Servlet 3.0");
-        } catch (MojoExecutionException e) {
+        } catch (MojoException e) {
             // expected behaviour
         }
     }

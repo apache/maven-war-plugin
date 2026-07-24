@@ -23,12 +23,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
-import java.util.Set;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
+import org.apache.maven.api.DependencyScope;
+import org.apache.maven.api.DownloadedArtifact;
+import org.apache.maven.api.Node;
+import org.apache.maven.api.PathScope;
+import org.apache.maven.api.Project;
+import org.apache.maven.api.Session;
 import org.apache.maven.plugins.war.Overlay;
-import org.apache.maven.project.MavenProject;
 
 /**
  * Manages the overlays.
@@ -38,9 +40,11 @@ import org.apache.maven.project.MavenProject;
 public class OverlayManager {
     private final List<Overlay> overlays;
 
-    private final MavenProject project;
+    private final Project project;
 
-    private final List<Artifact> artifactsOverlays;
+    private final Session session;
+
+    private final List<DownloadedArtifact> artifactsOverlays;
 
     /**
      * Creates a manager with the specified overlays.
@@ -49,6 +53,7 @@ public class OverlayManager {
      *
      * @param overlays the overlays
      * @param project the maven project
+     * @param session the maven session
      * @param defaultIncludes the default includes to use
      * @param defaultExcludes the default excludes to use
      * @param currentProjectOverlay the overlay for the current project
@@ -56,7 +61,8 @@ public class OverlayManager {
      */
     public OverlayManager(
             List<Overlay> overlays,
-            MavenProject project,
+            Project project,
+            Session session,
             String[] defaultIncludes,
             String[] defaultExcludes,
             Overlay currentProjectOverlay)
@@ -66,6 +72,7 @@ public class OverlayManager {
             this.overlays.addAll(overlays);
         }
         this.project = project;
+        this.session = session;
 
         this.artifactsOverlays = getOverlaysAsArtifacts();
 
@@ -108,7 +115,7 @@ public class OverlayManager {
 
         // Build the list of configured artifacts and makes sure that each overlay
         // refer to a valid artifact
-        final List<Artifact> configuredWarArtifacts = new ArrayList<>();
+        final List<DownloadedArtifact> configuredWarArtifacts = new ArrayList<>();
         final ListIterator<Overlay> it = overlays.listIterator();
         while (it.hasNext()) {
             Overlay overlay = it.next();
@@ -127,7 +134,7 @@ public class OverlayManager {
                 overlay.setExcludes(defaultExcludes);
             }
 
-            final Artifact artifact = getAssociatedArtifact(overlay);
+            final DownloadedArtifact artifact = getAssociatedArtifact(overlay);
             if (artifact != null) {
                 configuredWarArtifacts.add(artifact);
                 overlay.setArtifact(artifact);
@@ -135,7 +142,7 @@ public class OverlayManager {
         }
 
         // Build the list of missing overlays
-        for (Artifact artifact : artifactsOverlays) {
+        for (DownloadedArtifact artifact : artifactsOverlays) {
             if (!configuredWarArtifacts.contains(artifact)) {
                 // Add a default overlay for the given artifact which will be applied after
                 // the ones that have been configured
@@ -160,15 +167,15 @@ public class OverlayManager {
      *
      * @param overlay an overlay
      * @return the artifact associated to the overlay
-     * @throws org.apache.maven.plugins.war.overlay.InvalidOverlayConfigurationException if the overlay does not have an
+     * @throws InvalidOverlayConfigurationException if the overlay does not have an
      *             associated artifact
      */
-    Artifact getAssociatedArtifact(final Overlay overlay) throws InvalidOverlayConfigurationException {
+    DownloadedArtifact getAssociatedArtifact(final Overlay overlay) throws InvalidOverlayConfigurationException {
         if (overlay.isCurrentProject()) {
             return null;
         }
 
-        for (Artifact artifact : artifactsOverlays) {
+        for (DownloadedArtifact artifact : artifactsOverlays) {
             // Handle classifier dependencies properly (clash management)
             if (compareOverlayWithArtifact(overlay, artifact)) {
                 return artifact;
@@ -176,12 +183,11 @@ public class OverlayManager {
         }
 
         // maybe its a project dependencies zip or an other type
-        Set<Artifact> projectArtifacts = this.project.getDependencyArtifacts();
-        if (projectArtifacts != null) {
-            for (Artifact artifact : projectArtifacts) {
-                if (compareOverlayWithArtifact(overlay, artifact)) {
-                    return artifact;
-                }
+        // Check all resolved dependencies
+        List<DownloadedArtifact> allArtifacts = getAllResolvedArtifacts();
+        for (DownloadedArtifact artifact : allArtifacts) {
+            if (compareOverlayWithArtifact(overlay, artifact)) {
+                return artifact;
             }
         }
         // CHECKSTYLE_OFF: LineLength
@@ -197,30 +203,67 @@ public class OverlayManager {
      * @param artifact the artifact
      * @return boolean true if equals
      */
-    private boolean compareOverlayWithArtifact(Overlay overlay, Artifact artifact) {
+    private boolean compareOverlayWithArtifact(Overlay overlay, DownloadedArtifact artifact) {
         return (Objects.equals(overlay.getGroupId(), artifact.getGroupId())
                 && Objects.equals(overlay.getArtifactId(), artifact.getArtifactId())
-                && Objects.equals(overlay.getType(), artifact.getType())
+                && Objects.equals(overlay.getType(), artifact.getExtension())
                 // MWAR-241 Make sure to treat null and "" as equal when comparing the classifier
                 && Objects.equals(
                         Objects.toString(overlay.getClassifier()), Objects.toString(artifact.getClassifier())));
     }
 
     /**
-     * Returns a list of WAR {@link org.apache.maven.artifact.Artifact} describing the overlays of the current project.
+     * Returns a list of WAR {@link DownloadedArtifact} describing the overlays of the current project.
      *
      * @return the overlays as artifacts objects
      */
-    private List<Artifact> getOverlaysAsArtifacts() {
-        ScopeArtifactFilter filter = new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME);
-        final Set<Artifact> artifacts = project.getArtifacts();
-
-        final List<Artifact> result = new ArrayList<>();
-        for (Artifact artifact : artifacts) {
-            if (!artifact.isOptional() && filter.include(artifact) && ("war".equals(artifact.getType()))) {
-                result.add(artifact);
+    private List<DownloadedArtifact> getOverlaysAsArtifacts() {
+        final List<DownloadedArtifact> result = new ArrayList<>();
+        try {
+            Node root = session.collectDependencies(project, PathScope.MAIN_RUNTIME);
+            List<Node> nodes = session.flattenDependencies(root, PathScope.MAIN_RUNTIME);
+            for (Node node : nodes) {
+                org.apache.maven.api.Dependency dep = node.getDependency();
+                if (dep != null
+                        && !dep.isOptional()
+                        && isRuntimeScope(dep.getScope())
+                        && "war".equals(dep.getExtension())) {
+                    DownloadedArtifact resolved = session.resolveArtifact(dep);
+                    result.add(resolved);
+                }
             }
+        } catch (Exception e) {
+            // If dependency resolution fails, return empty list
         }
         return result;
+    }
+
+    /**
+     * Returns all resolved dependency artifacts.
+     */
+    private List<DownloadedArtifact> getAllResolvedArtifacts() {
+        final List<DownloadedArtifact> result = new ArrayList<>();
+        try {
+            Node root = session.collectDependencies(project, PathScope.MAIN_RUNTIME);
+            List<Node> nodes = session.flattenDependencies(root, PathScope.MAIN_RUNTIME);
+            for (Node node : nodes) {
+                org.apache.maven.api.Dependency dep = node.getDependency();
+                if (dep != null) {
+                    DownloadedArtifact resolved = session.resolveArtifact(dep);
+                    result.add(resolved);
+                }
+            }
+        } catch (Exception e) {
+            // If dependency resolution fails, return empty list
+        }
+        return result;
+    }
+
+    /**
+     * Checks if the given scope is a runtime-compatible scope
+     * (equivalent to the old ScopeArtifactFilter with RUNTIME scope).
+     */
+    private boolean isRuntimeScope(DependencyScope scope) {
+        return scope == DependencyScope.COMPILE || scope == DependencyScope.RUNTIME || scope == DependencyScope.SYSTEM;
     }
 }

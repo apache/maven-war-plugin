@@ -28,7 +28,7 @@
   </parent>
 
   <artifactId>maven-war-plugin</artifactId>
-  <version>3.5.2-SNAPSHOT</version>
+  <version>4.0.0-beta-2-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
   <name>Apache Maven WAR Plugin</name>
@@ -50,7 +50,7 @@
   </contributors>
 
   <prerequisites>
-    <maven>3.6.3</maven>
+    <maven>${mavenVersion}</maven>
   </prerequisites>
 
   <scm>
@@ -75,10 +75,14 @@
   </distributionManagement>
 
   <properties>
-    <mavenArchiverVersion>3.6.6</mavenArchiverVersion>
-    <mavenFilteringVersion>3.5.1</mavenFilteringVersion>
-    <mavenVersion>3.9.16</mavenVersion>
-    <javaVersion>8</javaVersion>
+    <mavenArchiverVersion>4.0.0-beta-5</mavenArchiverVersion>
+    <mavenFilteringVersion>4.0.0-beta-1</mavenFilteringVersion>
+    <mavenVersion>4.0.0-rc-4</mavenVersion>
+    <javaVersion>17</javaVersion>
+    <guiceVersion>5.1.0</guiceVersion>
+    <plexusArchiverVersion>4.12.0</plexusArchiverVersion>
+    <version.maven-plugin-tools>4.0.0-beta-1</version.maven-plugin-tools>
+    <version.plexus-xml>4.0.3</version.plexus-xml>
 
     <!-- Used in IT-->
     <plexusUtilVersion>${version.plexus-utils}</plexusUtilVersion>
@@ -90,25 +94,6 @@
 
   <dependencyManagement>
     <dependencies>
-      <!-- change scope for transitive dependency -->
-      <dependency>
-        <groupId>org.apache.maven</groupId>
-        <artifactId>maven-core</artifactId>
-        <version>${mavenVersion}</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.maven</groupId>
-        <artifactId>maven-settings</artifactId>
-        <version>${mavenVersion}</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>javax.inject</groupId>
-        <artifactId>javax.inject</artifactId>
-        <version>1</version>
-        <scope>provided</scope>
-      </dependency>
       <!-- manage versions for transitive dependencies -->
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -119,54 +104,43 @@
   </dependencyManagement>
 
   <dependencies>
+    <!-- Maven 4 API dependencies -->
     <dependency>
       <groupId>org.apache.maven</groupId>
-      <artifactId>maven-plugin-api</artifactId>
+      <artifactId>maven-api-core</artifactId>
       <version>${mavenVersion}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
-      <artifactId>maven-core</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-model</artifactId>
+      <artifactId>maven-api-di</artifactId>
       <version>${mavenVersion}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
-      <artifactId>maven-artifact</artifactId>
+      <artifactId>maven-api-model</artifactId>
       <version>${mavenVersion}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
-      <artifactId>maven-archiver</artifactId>
-      <version>${mavenArchiverVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.plugin-tools</groupId>
-      <artifactId>maven-plugin-annotations</artifactId>
-      <version>${version.maven-plugin-tools}</version>
+      <artifactId>maven-api-plugin</artifactId>
+      <version>${mavenVersion}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.resolver</groupId>
-      <artifactId>maven-resolver-api</artifactId>
-      <version>1.9.27</version>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-api-annotations</artifactId>
+      <version>${mavenVersion}</version>
       <scope>provided</scope>
     </dependency>
+
+    <!-- Shared libraries -->
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
-      <artifactId>maven-shared-utils</artifactId>
-      <version>3.4.2</version>
-    </dependency>
-    <dependency>
-      <groupId>javax.inject</groupId>
-      <artifactId>javax.inject</artifactId>
+      <artifactId>maven-archiver</artifactId>
+      <version>${mavenArchiverVersion}</version>
     </dependency>
 
     <dependency>
@@ -177,7 +151,7 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-archiver</artifactId>
-      <version>4.12.0</version>
+      <version>${plexusArchiverVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -193,49 +167,29 @@
       <artifactId>maven-filtering</artifactId>
       <version>${mavenFilteringVersion}</version>
     </dependency>
-    <dependency>
-      <groupId>org.apache.maven.shared</groupId>
-      <artifactId>maven-mapping</artifactId>
-      <version>3.0.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.sisu</groupId>
-      <artifactId>org.eclipse.sisu.plexus</artifactId>
-      <scope>provided</scope>
-    </dependency>
 
-    <dependency>
-      <!-- looks up RepositorySystem -->
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-compat</artifactId>
-      <version>${mavenVersion}</version>
-      <scope>test</scope>
-    </dependency>
+    <!-- Test dependencies -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.junit.vintage</groupId>
-      <artifactId>junit-vintage-engine</artifactId>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-testing</artifactId>
+      <version>${mavenVersion}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.plugin-testing</groupId>
-      <artifactId>maven-plugin-testing-harness</artifactId>
-      <version>3.5.1</version>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+      <version>${guiceVersion}</version>
+      <classifier>classes</classifier>
       <scope>test</scope>
     </dependency>
   </dependencies>
 
   <build>
-    <resources>
-      <resource>
-        <filtering>true</filtering>
-        <directory>src/main/resources-filtered</directory>
-      </resource>
-    </resources>
     <pluginManagement>
       <plugins>
         <plugin>

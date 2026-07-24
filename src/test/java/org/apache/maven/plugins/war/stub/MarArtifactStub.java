@@ -20,46 +20,27 @@ package org.apache.maven.plugins.war.stub;
 
 import java.io.File;
 
-import org.apache.maven.artifact.handler.ArtifactHandler;
-
 /**
  * @author Stephane Nicoll
  */
 public class MarArtifactStub extends AbstractArtifactStub {
-    protected String groupId;
 
-    private ArtifactHandler artifactHandler;
+    private String fileExtension;
 
-    public MarArtifactStub(String basedir, ArtifactHandler artifactHandler) {
+    public MarArtifactStub(String basedir, String fileExtension) {
         super(basedir);
-        this.artifactHandler = artifactHandler;
+        this.fileExtension = fileExtension;
+        setGroupId("org.sample.mar");
+        setArtifactId("marartifact");
+        setExtension("mar");
     }
 
-    public void setGroupId(String id) {
-        groupId = id;
-    }
-
-    public String getGroupId() {
-        if (groupId != null) {
-            return groupId;
-        } else {
-            return "org.sample.mar";
-        }
-    }
-
-    public String getType() {
-        return "mar";
-    }
-
-    public String getArtifactId() {
-        return "marartifact";
-    }
-
+    @Override
     public File getFile() {
         return new File(basedir, "/target/test-classes/unit/sample_wars/simple.mar");
     }
 
-    public ArtifactHandler getArtifactHandler() {
-        return artifactHandler;
+    public String getFileExtension() {
+        return fileExtension;
     }
 }

@@ -24,21 +24,38 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.maven.api.Session;
+import org.apache.maven.api.di.Provides;
 import org.apache.maven.api.plugin.testing.InjectMojo;
 import org.apache.maven.api.plugin.testing.MojoExtension;
 import org.apache.maven.api.plugin.testing.MojoParameter;
 import org.apache.maven.api.plugin.testing.MojoTest;
-import org.apache.maven.plugin.testing.stubs.ArtifactStub;
 import org.apache.maven.plugins.war.overlay.DefaultOverlay;
+import org.apache.maven.plugins.war.stub.AbstractArtifactStub;
 import org.apache.maven.plugins.war.stub.MavenProjectArtifactsStub;
+import org.apache.maven.plugins.war.stub.MockSessionHelper;
 import org.apache.maven.plugins.war.stub.WarOverlayStub;
+import org.codehaus.plexus.archiver.Archiver;
 import org.codehaus.plexus.archiver.ArchiverException;
+import org.codehaus.plexus.archiver.UnArchiver;
+import org.codehaus.plexus.archiver.dir.DirectoryArchiver;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
+import org.codehaus.plexus.archiver.jar.JarUnArchiver;
+import org.codehaus.plexus.archiver.manager.ArchiverManager;
+import org.codehaus.plexus.archiver.manager.DefaultArchiverManager;
+import org.codehaus.plexus.archiver.war.WarArchiver;
+import org.codehaus.plexus.archiver.war.WarUnArchiver;
+import org.codehaus.plexus.archiver.zip.ZipArchiver;
+import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.jupiter.api.Test;
+import org.sonatype.plexus.build.incremental.BuildContext;
+import org.sonatype.plexus.build.incremental.DefaultBuildContext;
 
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
 import static org.apache.maven.api.plugin.testing.MojoExtension.getVariableValueFromObject;
@@ -52,10 +69,36 @@ import static org.junit.jupiter.api.Assertions.fail;
 @MojoTest
 public class WarOverlaysTest {
 
-    private static final File OVERLAYS_TEMP_DIR =
-            new File(getBasedir(), "target/test-classes/unit/waroverlays/test-overlays/");
-    private static final File OVERLAYS_ROOT_DIR = new File(getBasedir(), "target/test-classes/overlays/");
     private static final String MANIFEST_PATH = "META-INF" + File.separator + "MANIFEST.MF";
+
+    @Provides
+    @SuppressWarnings("unused")
+    ArchiverManager archiverManager() {
+        Map<String, javax.inject.Provider<Archiver>> archivers = new HashMap<>();
+        archivers.put("war", WarArchiver::new);
+        archivers.put("jar", JarArchiver::new);
+        archivers.put("zip", ZipArchiver::new);
+        archivers.put("dir", DirectoryArchiver::new);
+        Map<String, javax.inject.Provider<UnArchiver>> unArchivers = new HashMap<>();
+        unArchivers.put("war", WarUnArchiver::new);
+        unArchivers.put("jar", JarUnArchiver::new);
+        unArchivers.put("zip", ZipUnArchiver::new);
+        return new DefaultArchiverManager(archivers, unArchivers, new HashMap<>());
+    }
+
+    @Provides
+    @SuppressWarnings("unused")
+    BuildContext buildContext() {
+        return new DefaultBuildContext();
+    }
+
+    private File getOverlaysTempDir() {
+        return new File(getBasedir(), "target/test-classes/unit/waroverlays/test-overlays/");
+    }
+
+    private File getOverlaysRootDir() {
+        return new File(getBasedir(), "target/test-classes/overlays/");
+    }
 
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/waroverlays/default.xml")
     @MojoParameter(name = "workDirectory", value = "target/test-classes/unit/waroverlays/war/work-no-overlay")
@@ -91,13 +134,13 @@ public class WarOverlaysTest {
     @Test
     public void testDefaultOverlay(WarExplodedMojo mojo) throws Exception {
         // Create war file
-        final File destFile = new File(OVERLAYS_TEMP_DIR, "overlay-one" + ".war");
+        final File destFile = new File(getOverlaysTempDir(), "overlay-one" + ".war");
         if (!destFile.exists()) {
-            createArchive(new File(OVERLAYS_ROOT_DIR, "overlay-one"), destFile);
+            createArchive(new File(getOverlaysRootDir(), "overlay-one"), destFile);
         }
 
-        final ArtifactStub overlay = new WarOverlayStub(MojoExtension.getBasedir(), "overlay-one", destFile);
-        final MavenProjectArtifactsStub project = createProjectWithOverlays(overlay);
+        final AbstractArtifactStub overlay = new WarOverlayStub(MojoExtension.getBasedir(), "overlay-one", destFile);
+        final MavenProjectArtifactsStub project = createProjectWithOverlays(mojo.getSession(), overlay);
 
         mojo.setProject(project);
 
@@ -130,9 +173,9 @@ public class WarOverlaysTest {
     @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/waroverlays/default-overlays")
     @Test
     public void testDefaultOverlays(WarExplodedMojo mojo) throws Exception {
-        final ArtifactStub overlay = buildWarOverlayStub("overlay-one");
-        final ArtifactStub overlay2 = buildWarOverlayStub("overlay-two");
-        final MavenProjectArtifactsStub project = createProjectWithOverlays(overlay, overlay2);
+        final AbstractArtifactStub overlay = buildWarOverlayStub("overlay-one");
+        final AbstractArtifactStub overlay2 = buildWarOverlayStub("overlay-two");
+        final MavenProjectArtifactsStub project = createProjectWithOverlays(mojo.getSession(), overlay, overlay2);
 
         mojo.setProject(project);
 
@@ -181,11 +224,12 @@ public class WarOverlaysTest {
     @Test
     public void testScenarioOneWithDefaulSettings(WarExplodedMojo mojo) throws Exception {
         // Add an overlay
-        final ArtifactStub overlay1 = buildWarOverlayStub("overlay-full-1");
-        final ArtifactStub overlay2 = buildWarOverlayStub("overlay-full-2");
-        final ArtifactStub overlay3 = buildWarOverlayStub("overlay-full-3");
+        final AbstractArtifactStub overlay1 = buildWarOverlayStub("overlay-full-1");
+        final AbstractArtifactStub overlay2 = buildWarOverlayStub("overlay-full-2");
+        final AbstractArtifactStub overlay3 = buildWarOverlayStub("overlay-full-3");
 
-        final MavenProjectArtifactsStub project = createProjectWithOverlays(overlay1, overlay2, overlay3);
+        final MavenProjectArtifactsStub project =
+                createProjectWithOverlays(mojo.getSession(), overlay1, overlay2, overlay3);
 
         mojo.setProject(project);
 
@@ -218,11 +262,12 @@ public class WarOverlaysTest {
     @Test
     public void testScenarioOneWithOverlaySettings(WarExplodedMojo mojo) throws Exception {
         // Add an overlay
-        final ArtifactStub overlay1 = buildWarOverlayStub("overlay-full-1");
-        final ArtifactStub overlay2 = buildWarOverlayStub("overlay-full-2");
-        final ArtifactStub overlay3 = buildWarOverlayStub("overlay-full-3");
+        final AbstractArtifactStub overlay1 = buildWarOverlayStub("overlay-full-1");
+        final AbstractArtifactStub overlay2 = buildWarOverlayStub("overlay-full-2");
+        final AbstractArtifactStub overlay3 = buildWarOverlayStub("overlay-full-3");
 
-        final MavenProjectArtifactsStub project = createProjectWithOverlays(overlay1, overlay2, overlay3);
+        final MavenProjectArtifactsStub project =
+                createProjectWithOverlays(mojo.getSession(), overlay1, overlay2, overlay3);
         mojo.setProject(project);
 
         // Add the tags
@@ -259,11 +304,12 @@ public class WarOverlaysTest {
     @Test
     public void testScenarioOneWithFullSettings(WarExplodedMojo mojo) throws Exception {
         // Add an overlay
-        final ArtifactStub overlay1 = buildWarOverlayStub("overlay-full-1");
-        final ArtifactStub overlay2 = buildWarOverlayStub("overlay-full-2");
-        final ArtifactStub overlay3 = buildWarOverlayStub("overlay-full-3");
+        final AbstractArtifactStub overlay1 = buildWarOverlayStub("overlay-full-1");
+        final AbstractArtifactStub overlay2 = buildWarOverlayStub("overlay-full-2");
+        final AbstractArtifactStub overlay3 = buildWarOverlayStub("overlay-full-3");
 
-        final MavenProjectArtifactsStub project = createProjectWithOverlays(overlay1, overlay2, overlay3);
+        final MavenProjectArtifactsStub project =
+                createProjectWithOverlays(mojo.getSession(), overlay1, overlay2, overlay3);
         mojo.setProject(project);
 
         // Add the tags
@@ -350,11 +396,12 @@ public class WarOverlaysTest {
     @Test
     public void testOverlaysIncludesExcludesWithMultipleDefinitions(WarExplodedMojo mojo) throws Exception {
         // Add an overlay
-        final ArtifactStub overlay1 = buildWarOverlayStub("overlay-full-1");
-        final ArtifactStub overlay2 = buildWarOverlayStub("overlay-full-2");
-        final ArtifactStub overlay3 = buildWarOverlayStub("overlay-full-3");
+        final AbstractArtifactStub overlay1 = buildWarOverlayStub("overlay-full-1");
+        final AbstractArtifactStub overlay2 = buildWarOverlayStub("overlay-full-2");
+        final AbstractArtifactStub overlay3 = buildWarOverlayStub("overlay-full-3");
 
-        final MavenProjectArtifactsStub project = createProjectWithOverlays(overlay1, overlay2, overlay3);
+        final MavenProjectArtifactsStub project =
+                createProjectWithOverlays(mojo.getSession(), overlay1, overlay2, overlay3);
         mojo.setProject(project);
 
         Overlay over1 = new DefaultOverlay(overlay3);
@@ -437,11 +484,12 @@ public class WarOverlaysTest {
     @Test
     public void testOverlaysIncludesExcludesWithMultipleDefinitions2(WarExplodedMojo mojo) throws Exception {
         // Add an overlay
-        final ArtifactStub overlay1 = buildWarOverlayStub("overlay-full-1");
-        final ArtifactStub overlay2 = buildWarOverlayStub("overlay-full-2");
-        final ArtifactStub overlay3 = buildWarOverlayStub("overlay-full-3");
+        final AbstractArtifactStub overlay1 = buildWarOverlayStub("overlay-full-1");
+        final AbstractArtifactStub overlay2 = buildWarOverlayStub("overlay-full-2");
+        final AbstractArtifactStub overlay3 = buildWarOverlayStub("overlay-full-3");
 
-        final MavenProjectArtifactsStub project = createProjectWithOverlays(overlay1, overlay2, overlay3);
+        final MavenProjectArtifactsStub project =
+                createProjectWithOverlays(mojo.getSession(), overlay1, overlay2, overlay3);
         mojo.setProject(project);
 
         Overlay over1 = new DefaultOverlay(overlay3);
@@ -511,11 +559,14 @@ public class WarOverlaysTest {
 
     // Helpers
 
-    private MavenProjectArtifactsStub createProjectWithOverlays(ArtifactStub... artifactStubs) throws Exception {
+    private MavenProjectArtifactsStub createProjectWithOverlays(Session session, AbstractArtifactStub... artifactStubs)
+            throws Exception {
         final MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
-        for (ArtifactStub artifactStub : artifactStubs) {
+        for (AbstractArtifactStub artifactStub : artifactStubs) {
             project.addArtifact(artifactStub);
         }
+        // Register artifacts in the mock session so dependency resolution works
+        MockSessionHelper.registerArtifacts(session, project.getArtifactStubs());
         return project;
     }
 
@@ -681,18 +732,18 @@ public class WarOverlaysTest {
      * @param id the id of the overlay (see test/resources/overlays)
      * @return a test war artifact with the content of the given test overlay
      */
-    private ArtifactStub buildWarOverlayStub(String id) {
+    private AbstractArtifactStub buildWarOverlayStub(String id) {
         // Create war file
-        final File destFile = new File(OVERLAYS_TEMP_DIR, id + ".war");
+        final File destFile = new File(getOverlaysTempDir(), id + ".war");
         if (!destFile.exists()) {
-            createArchive(new File(OVERLAYS_ROOT_DIR, id), destFile);
+            createArchive(new File(getOverlaysRootDir(), id), destFile);
         }
 
         return new WarOverlayStub(getBasedir(), id, destFile);
     }
 
     private File getOverlayFile(String id, String filePath) {
-        final File overlayDir = new File(OVERLAYS_ROOT_DIR, id);
+        final File overlayDir = new File(getOverlaysRootDir(), id);
         final File file = new File(overlayDir, filePath);
 
         // Make sure the file exists

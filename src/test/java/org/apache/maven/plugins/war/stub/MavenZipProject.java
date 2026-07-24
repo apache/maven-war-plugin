@@ -18,32 +18,28 @@
  */
 package org.apache.maven.plugins.war.stub;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.maven.artifact.Artifact;
+import org.apache.maven.api.DownloadedArtifact;
 
 /**
  * @author Olivier Lamy
  * @since 9 juin 07
  */
 public class MavenZipProject extends MavenProject4CopyConstructor {
-    private Set<Artifact> artifacts;
+    private List<DownloadedArtifact> artifacts;
 
     public MavenZipProject() throws Exception {
         super();
-        this.artifacts = new HashSet<>();
+        this.artifacts = new ArrayList<>();
     }
 
-    public Set<Artifact> getArtifacts() {
+    public List<DownloadedArtifact> getDownloadedArtifacts() {
         return this.artifacts;
     }
 
-    public Set<Artifact> getDependencyArtifacts() {
-        return this.artifacts;
-    }
-
-    public void addArtifact(Artifact artifact) {
+    public void addArtifact(DownloadedArtifact artifact) {
         this.artifacts.add(artifact);
     }
 }

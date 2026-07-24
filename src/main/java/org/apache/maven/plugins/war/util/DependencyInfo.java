@@ -20,7 +20,7 @@ package org.apache.maven.plugins.war.util;
 
 import java.util.Objects;
 
-import org.apache.maven.model.Dependency;
+import org.apache.maven.api.model.Dependency;
 
 /**
  * Holds a dependency and packaging information.

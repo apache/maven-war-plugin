@@ -21,16 +21,16 @@ package org.apache.maven.plugins.war.packaging;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.api.plugin.MojoException;
 
 /**
  * @author Haikal Saadh
  */
 public class CopyUserManifestTask extends AbstractWarPackagingTask {
 
-    public void performPackaging(WarPackagingContext context) throws MojoExecutionException, MojoFailureException {
-        File userManifest = context.getArchive().getManifestFile();
+    public void performPackaging(WarPackagingContext context) throws MojoException {
+        java.nio.file.Path manifestPath = context.getArchive().getManifestFile();
+        File userManifest = manifestPath != null ? manifestPath.toFile() : null;
         if (userManifest != null) {
 
             try {
@@ -39,7 +39,7 @@ public class CopyUserManifestTask extends AbstractWarPackagingTask {
                 copyFile(context, userManifest, new File(metainfDir, "MANIFEST.MF"), "META-INF/MANIFEST.MF", true);
 
             } catch (IOException e) {
-                throw new MojoExecutionException("Error copying user manifest", e);
+                throw new MojoException("Error copying user manifest", e);
             }
         }
     }

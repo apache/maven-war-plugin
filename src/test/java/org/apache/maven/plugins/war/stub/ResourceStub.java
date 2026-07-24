@@ -18,32 +18,12 @@
  */
 package org.apache.maven.plugins.war.stub;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.maven.model.Resource;
+import org.apache.maven.shared.filtering.Resource;
 
 public class ResourceStub extends Resource {
-    /**
-     *
-     */
-    private static final long serialVersionUID = 7685068931840967662L;
-
-    private String directory;
-
-    public List<String> getIncludes() {
-        return new ArrayList<>();
-    }
-
-    public List<String> getExcludes() {
-        return new ArrayList<>();
-    }
-
-    public void setDirectory(String directory) {
-        this.directory = directory;
-    }
-
-    public String getDirectory() {
-        return directory;
-    }
+    // Resource from maven-filtering is a mutable bean with
+    // getDirectory/setDirectory, getIncludes/setIncludes,
+    // getExcludes/setExcludes, isFiltering/setFiltering,
+    // getTargetPath/setTargetPath.
+    // No additional methods needed.
 }

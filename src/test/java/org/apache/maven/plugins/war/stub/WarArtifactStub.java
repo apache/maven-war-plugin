@@ -25,46 +25,16 @@ import java.io.File;
  */
 public class WarArtifactStub extends AbstractArtifactStub {
 
-    private String groupId;
-
-    private String artifactId;
-
-    private String classifier;
-
     private File file;
 
     public WarArtifactStub(String basedir) {
         super(basedir);
+        setGroupId("wartests");
+        setArtifactId("simple");
+        setExtension("war");
     }
 
-    public String getType() {
-        return "war";
-    }
-
-    public String getArtifactId() {
-        if (artifactId == null) {
-            return "simple";
-        } else {
-            return artifactId;
-        }
-    }
-
-    public void setArtifactId(String artifactId) {
-        this.artifactId = artifactId;
-    }
-
-    public String getGroupId() {
-        if (groupId == null) {
-            return "wartests";
-        } else {
-            return groupId;
-        }
-    }
-
-    public void setGroupId(String groupId) {
-        this.groupId = groupId;
-    }
-
+    @Override
     public File getFile() {
         if (file == null) {
             return new File(basedir, "/target/test-classes/unit/sample_wars/simple.war");
@@ -73,19 +43,12 @@ public class WarArtifactStub extends AbstractArtifactStub {
         }
     }
 
+    @Override
     public void setFile(File file) {
         this.file = file;
     }
 
-    public String getClassifier() {
-        return classifier;
-    }
-
-    public void setClassifier(String classifier) {
-        this.classifier = classifier;
-    }
-
     public boolean hasClassifier() {
-        return classifier != null;
+        return getClassifier() != null;
     }
 }

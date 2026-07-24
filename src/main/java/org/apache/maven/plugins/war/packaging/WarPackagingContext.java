@@ -21,12 +21,11 @@ package org.apache.maven.plugins.war.packaging;
 import java.io.File;
 import java.util.List;
 
-import org.apache.maven.archiver.MavenArchiveConfiguration;
-import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
-import org.apache.maven.execution.MavenSession;
-import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.api.Project;
+import org.apache.maven.api.Session;
+import org.apache.maven.api.plugin.Log;
 import org.apache.maven.plugins.war.util.WebappStructure;
-import org.apache.maven.project.MavenProject;
+import org.apache.maven.shared.archiver.MavenArchiveConfiguration;
 import org.apache.maven.shared.filtering.FilterWrapper;
 import org.apache.maven.shared.filtering.MavenFileFilter;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
@@ -43,7 +42,7 @@ public interface WarPackagingContext {
      *
      * @return the project
      */
-    MavenProject getProject();
+    Project getProject();
 
     /**
      * Returns the webapp directory. Packaging tasks should use this directory to generate the webapp.
@@ -186,19 +185,12 @@ public interface WarPackagingContext {
     boolean isFilteringDeploymentDescriptors();
 
     /**
-     * Returns the artifact handler manager.
-     *
-     * @return the artifact handler manager
-     */
-    ArtifactHandlerManager getArtifactHandlerManager();
-
-    /**
      * Returns the Maven session.
      *
      * @return the Maven session
      * @since 2.2
      */
-    MavenSession getSession();
+    Session getSession();
 
     /**
      * Returns the encoding to use for resources.

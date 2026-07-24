@@ -19,19 +19,56 @@
 package org.apache.maven.plugins.war;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.apache.maven.api.di.Provides;
 import org.apache.maven.api.plugin.testing.InjectMojo;
 import org.apache.maven.api.plugin.testing.MojoParameter;
 import org.apache.maven.api.plugin.testing.MojoTest;
 import org.apache.maven.plugins.war.stub.MavenProjectBasicStub;
 import org.apache.maven.plugins.war.stub.ResourceStub;
+import org.codehaus.plexus.archiver.Archiver;
+import org.codehaus.plexus.archiver.UnArchiver;
+import org.codehaus.plexus.archiver.dir.DirectoryArchiver;
+import org.codehaus.plexus.archiver.jar.JarArchiver;
+import org.codehaus.plexus.archiver.jar.JarUnArchiver;
+import org.codehaus.plexus.archiver.manager.ArchiverManager;
+import org.codehaus.plexus.archiver.manager.DefaultArchiverManager;
+import org.codehaus.plexus.archiver.war.WarArchiver;
+import org.codehaus.plexus.archiver.war.WarUnArchiver;
+import org.codehaus.plexus.archiver.zip.ZipArchiver;
+import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.junit.jupiter.api.Test;
+import org.sonatype.plexus.build.incremental.BuildContext;
+import org.sonatype.plexus.build.incremental.DefaultBuildContext;
 
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @MojoTest
 public class WarInPlaceMojoTest {
+
+    @Provides
+    @SuppressWarnings("unused")
+    ArchiverManager archiverManager() {
+        Map<String, javax.inject.Provider<Archiver>> archivers = new HashMap<>();
+        archivers.put("war", WarArchiver::new);
+        archivers.put("jar", JarArchiver::new);
+        archivers.put("zip", ZipArchiver::new);
+        archivers.put("dir", DirectoryArchiver::new);
+        Map<String, javax.inject.Provider<UnArchiver>> unArchivers = new HashMap<>();
+        unArchivers.put("war", WarUnArchiver::new);
+        unArchivers.put("jar", JarUnArchiver::new);
+        unArchivers.put("zip", ZipUnArchiver::new);
+        return new DefaultArchiverManager(archivers, unArchivers, new HashMap<>());
+    }
+
+    @Provides
+    @SuppressWarnings("unused")
+    BuildContext buildContext() {
+        return new DefaultBuildContext();
+    }
 
     @InjectMojo(goal = "inplace", pom = "src/test/resources/unit/warexplodedinplacemojo/plugin-config.xml")
     @MojoParameter(

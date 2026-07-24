@@ -18,8 +18,7 @@
  */
 package org.apache.maven.plugins.war.packaging;
 
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.api.plugin.MojoException;
 
 /**
  * The base packaging task.
@@ -34,8 +33,7 @@ public interface WarPackagingTask {
      * The task is responsible to update the packaging context, namely with the files that have been copied.
      *
      * @param context the packaging context
-     * @throws MojoExecutionException if an error occurred
-     * @throws MojoFailureException if the project configuration is invalid
+     * @throws MojoException if an error occurred
      */
-    void performPackaging(WarPackagingContext context) throws MojoExecutionException, MojoFailureException;
+    void performPackaging(WarPackagingContext context) throws MojoException;
 }

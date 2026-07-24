@@ -20,14 +20,15 @@ package org.apache.maven.plugins.war;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
+import org.apache.maven.api.di.Provides;
 import org.apache.maven.api.plugin.testing.InjectMojo;
 import org.apache.maven.api.plugin.testing.MojoExtension;
 import org.apache.maven.api.plugin.testing.MojoParameter;
 import org.apache.maven.api.plugin.testing.MojoTest;
-import org.apache.maven.artifact.handler.DefaultArtifactHandler;
-import org.apache.maven.plugin.testing.stubs.ArtifactStub;
 import org.apache.maven.plugins.war.stub.AarArtifactStub;
 import org.apache.maven.plugins.war.stub.EJBArtifactStub;
 import org.apache.maven.plugins.war.stub.EJBArtifactStubWithClassifier;
@@ -37,13 +38,27 @@ import org.apache.maven.plugins.war.stub.JarArtifactStub;
 import org.apache.maven.plugins.war.stub.MarArtifactStub;
 import org.apache.maven.plugins.war.stub.MavenProjectArtifactsStub;
 import org.apache.maven.plugins.war.stub.MavenProjectBasicStub;
+import org.apache.maven.plugins.war.stub.MockSessionHelper;
 import org.apache.maven.plugins.war.stub.PARArtifactStub;
 import org.apache.maven.plugins.war.stub.ResourceStub;
 import org.apache.maven.plugins.war.stub.TLDArtifactStub;
 import org.apache.maven.plugins.war.stub.WarArtifactStub;
 import org.apache.maven.plugins.war.stub.XarArtifactStub;
+import org.codehaus.plexus.archiver.Archiver;
+import org.codehaus.plexus.archiver.UnArchiver;
+import org.codehaus.plexus.archiver.dir.DirectoryArchiver;
+import org.codehaus.plexus.archiver.jar.JarArchiver;
+import org.codehaus.plexus.archiver.jar.JarUnArchiver;
+import org.codehaus.plexus.archiver.manager.ArchiverManager;
+import org.codehaus.plexus.archiver.manager.DefaultArchiverManager;
+import org.codehaus.plexus.archiver.war.WarArchiver;
+import org.codehaus.plexus.archiver.war.WarUnArchiver;
+import org.codehaus.plexus.archiver.zip.ZipArchiver;
+import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.jupiter.api.Test;
+import org.sonatype.plexus.build.incremental.BuildContext;
+import org.sonatype.plexus.build.incremental.DefaultBuildContext;
 
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -53,6 +68,27 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @MojoTest
 public class WarExplodedMojoTest {
+
+    @Provides
+    @SuppressWarnings("unused")
+    ArchiverManager archiverManager() {
+        Map<String, javax.inject.Provider<Archiver>> archivers = new HashMap<>();
+        archivers.put("war", WarArchiver::new);
+        archivers.put("jar", JarArchiver::new);
+        archivers.put("zip", ZipArchiver::new);
+        archivers.put("dir", DirectoryArchiver::new);
+        Map<String, javax.inject.Provider<UnArchiver>> unArchivers = new HashMap<>();
+        unArchivers.put("war", WarUnArchiver::new);
+        unArchivers.put("jar", JarUnArchiver::new);
+        unArchivers.put("zip", ZipUnArchiver::new);
+        return new DefaultArchiverManager(archivers, unArchivers, new HashMap<>());
+    }
+
+    @Provides
+    @SuppressWarnings("unused")
+    BuildContext buildContext() {
+        return new DefaultBuildContext();
+    }
 
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/warexplodedmojo/plugin-config.xml")
     @MojoParameter(
@@ -238,6 +274,7 @@ public class WarExplodedMojoTest {
         MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         project.addArtifact(warArtifact);
         mojo.setProject(project);
+        MockSessionHelper.registerArtifacts(mojo.getSession(), project.getArtifactStubs());
         mojo.execute();
 
         // validate operation - META-INF is automatically excluded so remove the file from the list
@@ -284,6 +321,7 @@ public class WarExplodedMojoTest {
         MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
         project.addArtifact(warArtifact);
         mojo.setProject(project);
+        MockSessionHelper.registerArtifacts(mojo.getSession(), project.getArtifactStubs());
         mojo.execute();
 
         // validate operation
@@ -325,14 +363,16 @@ public class WarExplodedMojoTest {
         EJBArtifactStub ejbArtifact = new EJBArtifactStub(getBasedir());
         project.addArtifact(ejbArtifact);
         mojo.setProject(project);
+        MockSessionHelper.registerArtifacts(mojo.getSession(), project.getArtifactStubs());
         mojo.execute();
 
         // validate operation
         File webAppDirectory = mojo.getWebappDirectory();
         File expectedWebSourceFile = new File(webAppDirectory, "pansit.jsp");
         File expectedWebSource2File = new File(webAppDirectory, "org/web/app/last-exile.jsp");
-        // final name form is <artifactId>-<version>.<type>
-        File expectedEJBArtifact = new File(webAppDirectory, "WEB-INF/lib/ejbartifact-0.0-Test.jar");
+        // final name form is <artifactId>-<version>.<extension>
+        // In Maven 4, extension is the artifact's extension (e.g., "ejb"), not the handler extension ("jar")
+        File expectedEJBArtifact = new File(webAppDirectory, "WEB-INF/lib/ejbartifact-0.0-Test.ejb");
 
         assertTrue(expectedWebSourceFile.exists(), "source files not found: " + expectedWebSourceFile);
         assertTrue(expectedWebSource2File.exists(), "source files not found: " + expectedWebSource2File);
@@ -356,9 +396,10 @@ public class WarExplodedMojoTest {
     public void testExplodedWarWithJar(WarExplodedMojo mojo) throws Exception {
         // configure mojo
         MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
-        ArtifactStub jarArtifact = new JarArtifactStub(getBasedir(), new DefaultArtifactHandler("jar"));
+        JarArtifactStub jarArtifact = new JarArtifactStub(getBasedir(), "jar");
         project.addArtifact(jarArtifact);
         mojo.setProject(project);
+        MockSessionHelper.registerArtifacts(mojo.getSession(), project.getArtifactStubs());
         mojo.execute();
 
         // validate operation
@@ -396,6 +437,7 @@ public class WarExplodedMojoTest {
         EJBClientArtifactStub ejbArtifact = new EJBClientArtifactStub(getBasedir());
         project.addArtifact(ejbArtifact);
         mojo.setProject(project);
+        MockSessionHelper.registerArtifacts(mojo.getSession(), project.getArtifactStubs());
         mojo.execute();
 
         // validate operation
@@ -403,7 +445,9 @@ public class WarExplodedMojoTest {
         File expectedWebSourceFile = new File(webAppDirectory, "pansit.jsp");
         File expectedWebSource2File = new File(webAppDirectory, "org/web/app/last-exile.jsp");
         // final name form is <artifactId>-<version>.<type>
-        File expectedEJBArtifact = new File(webAppDirectory, "WEB-INF/lib/ejbclientartifact-0.0-Test-client.jar");
+        // In Maven 4, extension is the artifact's extension ("ejb-client")
+        File expectedEJBArtifact =
+                new File(webAppDirectory, "WEB-INF/lib/ejbclientartifact-0.0-Test-client.ejb-client");
 
         assertTrue(expectedWebSourceFile.exists(), "source files not found: " + expectedWebSourceFile);
         assertTrue(expectedWebSource2File.exists(), "source files not found: " + expectedWebSource2File);
@@ -433,6 +477,7 @@ public class WarExplodedMojoTest {
         TLDArtifactStub tldArtifact = new TLDArtifactStub(getBasedir());
         project.addArtifact(tldArtifact);
         mojo.setProject(project);
+        MockSessionHelper.registerArtifacts(mojo.getSession(), project.getArtifactStubs());
         mojo.execute();
 
         // validate operation
@@ -467,6 +512,7 @@ public class WarExplodedMojoTest {
         PARArtifactStub parartifact = new PARArtifactStub(getBasedir());
         project.addArtifact(parartifact);
         mojo.setProject(project);
+        MockSessionHelper.registerArtifacts(mojo.getSession(), project.getArtifactStubs());
         mojo.execute();
 
         // validate operation
@@ -498,9 +544,10 @@ public class WarExplodedMojoTest {
     public void testExplodedWarWithAar(WarExplodedMojo mojo) throws Exception {
         // configure mojo
         MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
-        ArtifactStub aarArtifact = new AarArtifactStub(getBasedir(), new DefaultArtifactHandler("jar"));
+        AarArtifactStub aarArtifact = new AarArtifactStub(getBasedir(), "jar");
         project.addArtifact(aarArtifact);
         mojo.setProject(project);
+        MockSessionHelper.registerArtifacts(mojo.getSession(), project.getArtifactStubs());
         mojo.execute();
 
         // validate operation
@@ -508,7 +555,8 @@ public class WarExplodedMojoTest {
         File expectedWebSourceFile = new File(webAppDirectory, "pansit.jsp");
         File expectedWebSource2File = new File(webAppDirectory, "org/web/app/last-exile.jsp");
         // final name form is <artifactId>-<version>.<type>
-        File expectedJarArtifact = new File(webAppDirectory, "WEB-INF/services/aarartifact-0.0-Test.jar");
+        // In Maven 4, extension is the artifact's extension ("aar")
+        File expectedJarArtifact = new File(webAppDirectory, "WEB-INF/services/aarartifact-0.0-Test.aar");
 
         assertTrue(expectedWebSourceFile.exists(), "source files not found: " + expectedWebSourceFile);
         assertTrue(expectedWebSource2File.exists(), "source files not found: " + expectedWebSource2File);
@@ -532,9 +580,10 @@ public class WarExplodedMojoTest {
     public void testExplodedWarWithMar(WarExplodedMojo mojo) throws Exception {
         // configure mojo
         MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
-        ArtifactStub marArtifact = new MarArtifactStub(getBasedir(), new DefaultArtifactHandler("jar"));
+        MarArtifactStub marArtifact = new MarArtifactStub(getBasedir(), "jar");
         project.addArtifact(marArtifact);
         mojo.setProject(project);
+        MockSessionHelper.registerArtifacts(mojo.getSession(), project.getArtifactStubs());
         mojo.execute();
 
         // validate operation
@@ -542,7 +591,8 @@ public class WarExplodedMojoTest {
         File expectedWebSourceFile = new File(webAppDirectory, "pansit.jsp");
         File expectedWebSource2File = new File(webAppDirectory, "org/web/app/last-exile.jsp");
         // final name form is <artifactId>-<version>.<type>
-        File expectedJarArtifact = new File(webAppDirectory, "WEB-INF/modules/marartifact-0.0-Test.jar");
+        // In Maven 4, extension is the artifact's extension ("mar")
+        File expectedJarArtifact = new File(webAppDirectory, "WEB-INF/modules/marartifact-0.0-Test.mar");
 
         assertTrue(expectedWebSourceFile.exists(), "source files not found: " + expectedWebSourceFile);
         assertTrue(expectedWebSource2File.exists(), "source files not found: " + expectedWebSource2File);
@@ -566,9 +616,10 @@ public class WarExplodedMojoTest {
     public void testExplodedWarWithXar(WarExplodedMojo mojo) throws Exception {
         // configure mojo
         MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
-        ArtifactStub xarArtifact = new XarArtifactStub(getBasedir(), new DefaultArtifactHandler("jar"));
+        XarArtifactStub xarArtifact = new XarArtifactStub(getBasedir(), "jar");
         project.addArtifact(xarArtifact);
         mojo.setProject(project);
+        MockSessionHelper.registerArtifacts(mojo.getSession(), project.getArtifactStubs());
         mojo.execute();
 
         // validate operation
@@ -576,7 +627,8 @@ public class WarExplodedMojoTest {
         File expectedWebSourceFile = new File(webAppDirectory, "pansit.jsp");
         File expectedWebSource2File = new File(webAppDirectory, "org/web/app/last-exile.jsp");
         // final name form is <artifactId>-<version>.<type>
-        File expectedJarArtifact = new File(webAppDirectory, "WEB-INF/extensions/xarartifact-0.0-Test.jar");
+        // In Maven 4, extension is the artifact's extension ("xar")
+        File expectedJarArtifact = new File(webAppDirectory, "WEB-INF/extensions/xarartifact-0.0-Test.xar");
 
         assertTrue(expectedWebSourceFile.exists(), "source files not found: " + expectedWebSourceFile);
         assertTrue(expectedWebSource2File.exists(), "source files not found: " + expectedWebSource2File);
@@ -609,6 +661,7 @@ public class WarExplodedMojoTest {
         project.addArtifact(ejbArtifact);
         project.addArtifact(ejbArtifactDup);
         mojo.setProject(project);
+        MockSessionHelper.registerArtifacts(mojo.getSession(), project.getArtifactStubs());
         mojo.execute();
 
         // validate operation
@@ -616,8 +669,9 @@ public class WarExplodedMojoTest {
         File expectedWebSourceFile = new File(webAppDirectory, "pansit.jsp");
         File expectedWebSource2File = new File(webAppDirectory, "org/web/app/last-exile.jsp");
         // final name form is <artifactId>-<version>.<type>
-        File expectedEJBArtifact = new File(webAppDirectory, "WEB-INF/lib/org.sample.ejb-ejbartifact-0.0-Test.jar");
-        File expectedEJBDupArtifact = new File(webAppDirectory, "WEB-INF/lib/org.dup.ejb-ejbartifact-0.0-Test.jar");
+        // In Maven 4, extension is the artifact's extension ("ejb")
+        File expectedEJBArtifact = new File(webAppDirectory, "WEB-INF/lib/org.sample.ejb-ejbartifact-0.0-Test.ejb");
+        File expectedEJBDupArtifact = new File(webAppDirectory, "WEB-INF/lib/org.dup.ejb-ejbartifact-0.0-Test.ejb");
 
         assertTrue(expectedWebSourceFile.exists(), "source files not found: " + expectedWebSourceFile);
         assertTrue(expectedWebSource2File.exists(), "source files not found: " + expectedWebSource2File);
@@ -656,6 +710,7 @@ public class WarExplodedMojoTest {
         project.addArtifact(ejbArtifact);
         project.addArtifact(ejbArtifactDup);
         mojo.setProject(project);
+        MockSessionHelper.registerArtifacts(mojo.getSession(), project.getArtifactStubs());
         mojo.execute();
 
         // validate operation
@@ -663,8 +718,9 @@ public class WarExplodedMojoTest {
         File expectedWebSourceFile = new File(webAppDirectory, "pansit.jsp");
         File expectedWebSource2File = new File(webAppDirectory, "org/web/app/last-exile.jsp");
         // final name form is <artifactId>-<version>.<type>
-        File expectedEJBArtifact = new File(webAppDirectory, "WEB-INF/lib/ejbartifact-0.0-Test.jar");
-        File expectedEJBDupArtifact = new File(webAppDirectory, "WEB-INF/lib/ejbartifact-0.0-Test-classifier.jar");
+        // In Maven 4, extension is the artifact's extension ("ejb")
+        File expectedEJBArtifact = new File(webAppDirectory, "WEB-INF/lib/ejbartifact-0.0-Test.ejb");
+        File expectedEJBDupArtifact = new File(webAppDirectory, "WEB-INF/lib/ejbartifact-0.0-Test-classifier.ejb");
 
         assertTrue(expectedWebSourceFile.exists(), "source files not found: " + expectedWebSourceFile);
         assertTrue(expectedWebSource2File.exists(), "source files not found: " + expectedWebSource2File);
@@ -776,6 +832,7 @@ public class WarExplodedMojoTest {
         IncludeExcludeWarArtifactStub includeexcludeWarArtifact = new IncludeExcludeWarArtifactStub(getBasedir());
         project.addArtifact(includeexcludeWarArtifact);
         mojo.setProject(project);
+        MockSessionHelper.registerArtifacts(mojo.getSession(), project.getArtifactStubs());
         mojo.execute();
 
         // validate operation
@@ -861,14 +918,15 @@ public class WarExplodedMojoTest {
     @MojoParameter(
             name = "webappDirectory",
             value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithFileNameMapping")
-    @MojoParameter(name = "outputFileNameMapping", value = "@{artifactId}@.@{extension}@")
+    @MojoParameter(name = "outputFileNameMapping", value = "@{artifactId}.@{extension}")
     @Test
     public void testExplodedWarWithOutputFileNameMapping(WarExplodedMojo mojo) throws Exception {
         // configure mojo
         MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
-        ArtifactStub jarArtifact = new JarArtifactStub(getBasedir(), new DefaultArtifactHandler("jar"));
+        JarArtifactStub jarArtifact = new JarArtifactStub(getBasedir(), "jar");
         project.addArtifact(jarArtifact);
         mojo.setProject(project);
+        MockSessionHelper.registerArtifacts(mojo.getSession(), project.getArtifactStubs());
         mojo.execute();
 
         // validate operation
@@ -900,7 +958,7 @@ public class WarExplodedMojoTest {
     @MojoParameter(
             name = "webappDirectory",
             value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithFileNameMappingAndDuplicateDependencies")
-    @MojoParameter(name = "outputFileNameMapping", value = "@{artifactId}@.@{extension}@")
+    @MojoParameter(name = "outputFileNameMapping", value = "@{artifactId}.@{extension}")
     @Test
     public void testExplodedWarWithOutputFileNameMappingAndDuplicateDependencies(WarExplodedMojo mojo)
             throws Exception {
@@ -913,6 +971,7 @@ public class WarExplodedMojoTest {
         project.addArtifact(ejbArtifact);
         project.addArtifact(ejbArtifactDup);
         mojo.setProject(project);
+        MockSessionHelper.registerArtifacts(mojo.getSession(), project.getArtifactStubs());
         mojo.execute();
 
         // validate operation
@@ -920,8 +979,9 @@ public class WarExplodedMojoTest {
         File expectedWebSourceFile = new File(webAppDirectory, "pansit.jsp");
         File expectedWebSource2File = new File(webAppDirectory, "org/web/app/last-exile.jsp");
         // final name form is <artifactId>-<version>.<type>
-        File expectedEJBArtifact = new File(webAppDirectory, "WEB-INF/lib/org.sample.ejb-ejbartifact.jar");
-        File expectedEJBDupArtifact = new File(webAppDirectory, "WEB-INF/lib/org.dup.ejb-ejbartifact.jar");
+        // In Maven 4, extension is the artifact's extension ("ejb")
+        File expectedEJBArtifact = new File(webAppDirectory, "WEB-INF/lib/org.sample.ejb-ejbartifact.ejb");
+        File expectedEJBDupArtifact = new File(webAppDirectory, "WEB-INF/lib/org.dup.ejb-ejbartifact.ejb");
 
         assertTrue(expectedWebSourceFile.exists(), "source files not found: " + expectedWebSourceFile);
         assertTrue(expectedWebSource2File.exists(), "source files not found: " + expectedWebSource2File);

@@ -20,35 +20,13 @@ package org.apache.maven.plugins.war.util;
 
 import java.util.Objects;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.model.Dependency;
-import org.apache.maven.project.MavenProject;
+import org.apache.maven.api.Artifact;
+import org.apache.maven.api.model.Dependency;
 
 /**
  * @author Stephane Nicoll
  */
 public class WarUtils {
-
-    /**
-     * @param project {@link MavenProject}
-     * @param dependency {@link Dependency}
-     * @return {@link Artifact}
-     */
-    public static Artifact getArtifact(MavenProject project, Dependency dependency) {
-        for (Artifact artifact : project.getArtifacts()) {
-            if (artifact.getGroupId().equals(dependency.getGroupId())
-                    && artifact.getArtifactId().equals(dependency.getArtifactId())
-                    && artifact.getType().equals(dependency.getType())) {
-                if (artifact.getClassifier() == null && dependency.getClassifier() == null) {
-                    return artifact;
-                } else if (dependency.getClassifier() != null
-                        && dependency.getClassifier().equals(artifact.getClassifier())) {
-                    return artifact;
-                }
-            }
-        }
-        return null;
-    }
 
     /**
      * @param artifact {@link Artifact}
@@ -66,20 +44,28 @@ public class WarUtils {
         if (!Objects.equals(artifact.getArtifactId(), dependency.getArtifactId())) {
             return false;
         }
-        if (Objects.equals(artifact.getVersion(), dependency.getVersion())) {
+        if (Objects.equals(artifact.getVersion().toString(), dependency.getVersion())) {
             return false;
         }
-        if (Objects.equals(artifact.getType(), dependency.getType())) {
+        if (Objects.equals(artifact.getExtension(), dependency.getType())) {
             return false;
         }
         if (Objects.equals(artifact.getClassifier(), dependency.getClassifier())) {
             return false;
         }
-        if (Objects.equals(artifact.getScope(), dependency.getScope())) {
+        if (Objects.equals(
+                artifact instanceof org.apache.maven.api.Dependency
+                        ? ((org.apache.maven.api.Dependency) artifact)
+                                .getScope()
+                                .id()
+                        : null,
+                dependency.getScope())) {
             return false;
         }
-        if (artifact.isOptional() != dependency.isOptional()) {
-            return false;
+        if (artifact instanceof org.apache.maven.api.Dependency) {
+            if (((org.apache.maven.api.Dependency) artifact).isOptional() != dependency.isOptional()) {
+                return false;
+            }
         }
 
         return true;

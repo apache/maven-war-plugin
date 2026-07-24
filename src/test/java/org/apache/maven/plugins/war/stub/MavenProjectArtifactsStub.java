@@ -20,54 +20,25 @@ package org.apache.maven.plugins.war.stub;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.model.Dependency;
-import org.apache.maven.plugin.testing.stubs.ArtifactStub;
 
 public class MavenProjectArtifactsStub extends MavenProjectBasicStub {
-    TreeSet<Artifact> artifacts;
+    private List<AbstractArtifactStub> artifacts;
 
     public MavenProjectArtifactsStub() throws Exception {
-        artifacts = new TreeSet<>();
+        artifacts = new ArrayList<>();
     }
 
-    public void addArtifact(ArtifactStub stub) {
+    public void addArtifact(AbstractArtifactStub stub) {
         artifacts.add(stub);
     }
 
-    public Set<Artifact> getArtifacts() {
-        return artifacts;
-    }
-
-    public List<Dependency> getDependencies() {
-        if (getArtifacts() == null) {
-            return new ArrayList<>();
-        }
-        final List<Dependency> dependencies = new ArrayList<>();
-        for (Artifact a : getArtifacts()) {
-            Dependency dependency = new Dependency();
-            dependency.setArtifactId(a.getArtifactId());
-            dependency.setGroupId(a.getGroupId());
-            dependency.setVersion(a.getVersion());
-            dependency.setScope(a.getScope());
-            dependency.setType(a.getType());
-            dependency.setClassifier(a.getClassifier());
-            dependencies.add(dependency);
-        }
-        return dependencies;
-    }
-
-    public List<String> getRuntimeClasspathElements() {
-        List<String> artifacts = new ArrayList<>();
-
-        artifacts.add(
-                "src/test/resources/unit/manifest/manifest-with-classpath/sample-artifacts/maven-artifact1-1.0-SNAPSHOT.jar");
-        artifacts.add(
-                "src/test/resources/unit/manifest/manifest-with-classpath/sample-artifacts/maven-artifact2-1.0-SNAPSHOT.jar");
-
+    /**
+     * Returns the list of artifact stubs added to this project.
+     * In Maven 4, dependency artifacts are resolved through the session,
+     * not through the project. This method provides access to the stubs
+     * for configuring session mocks in tests.
+     */
+    public List<AbstractArtifactStub> getArtifactStubs() {
         return artifacts;
     }
 }

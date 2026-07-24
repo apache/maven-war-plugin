@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.maven.artifact.Artifact;
+import org.apache.maven.api.DownloadedArtifact;
 
 /**
  * <p>
@@ -65,7 +65,7 @@ public class Overlay {
 
     private boolean skip = false;
 
-    private Artifact artifact;
+    private DownloadedArtifact artifact;
 
     private String targetPath;
 
@@ -246,14 +246,14 @@ public class Overlay {
     /**
      * @return {@link #artifact}
      */
-    public Artifact getArtifact() {
+    public DownloadedArtifact getArtifact() {
         return artifact;
     }
 
     /**
      * @param artifact {@link #artifact}
      */
-    public void setArtifact(Artifact artifact) {
+    public void setArtifact(DownloadedArtifact artifact) {
         this.artifact = artifact;
     }
 

@@ -18,21 +18,35 @@
  */
 package org.apache.maven.plugins.war;
 
-import javax.inject.Inject;
-
 import java.io.File;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.apache.maven.api.di.Provides;
 import org.apache.maven.api.plugin.testing.InjectMojo;
 import org.apache.maven.api.plugin.testing.MojoExtension;
 import org.apache.maven.api.plugin.testing.MojoParameter;
 import org.apache.maven.api.plugin.testing.MojoTest;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.plugins.war.overlay.DefaultOverlay;
 import org.apache.maven.plugins.war.stub.MavenZipProject;
+import org.apache.maven.plugins.war.stub.MockSessionHelper;
 import org.apache.maven.plugins.war.stub.WarArtifactStub;
 import org.apache.maven.plugins.war.stub.ZipArtifactStub;
+import org.codehaus.plexus.archiver.Archiver;
+import org.codehaus.plexus.archiver.UnArchiver;
+import org.codehaus.plexus.archiver.dir.DirectoryArchiver;
+import org.codehaus.plexus.archiver.jar.JarArchiver;
+import org.codehaus.plexus.archiver.jar.JarUnArchiver;
+import org.codehaus.plexus.archiver.manager.ArchiverManager;
+import org.codehaus.plexus.archiver.manager.DefaultArchiverManager;
+import org.codehaus.plexus.archiver.war.WarArchiver;
+import org.codehaus.plexus.archiver.war.WarUnArchiver;
+import org.codehaus.plexus.archiver.zip.ZipArchiver;
+import org.codehaus.plexus.archiver.zip.ZipUnArchiver;
 import org.junit.jupiter.api.Test;
+import org.sonatype.plexus.build.incremental.BuildContext;
+import org.sonatype.plexus.build.incremental.DefaultBuildContext;
 
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -44,8 +58,27 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 @MojoTest
 public class WarZipTest {
-    @Inject
-    private ArtifactHandler artifactHandler;
+
+    @Provides
+    @SuppressWarnings("unused")
+    ArchiverManager archiverManager() {
+        Map<String, javax.inject.Provider<Archiver>> archivers = new HashMap<>();
+        archivers.put("war", WarArchiver::new);
+        archivers.put("jar", JarArchiver::new);
+        archivers.put("zip", ZipArchiver::new);
+        archivers.put("dir", DirectoryArchiver::new);
+        Map<String, javax.inject.Provider<UnArchiver>> unArchivers = new HashMap<>();
+        unArchivers.put("war", WarUnArchiver::new);
+        unArchivers.put("jar", JarUnArchiver::new);
+        unArchivers.put("zip", ZipUnArchiver::new);
+        return new DefaultArchiverManager(archivers, unArchivers, new HashMap<>());
+    }
+
+    @Provides
+    @SuppressWarnings("unused")
+    BuildContext buildContext() {
+        return new DefaultBuildContext();
+    }
 
     @InjectMojo(goal = "war", pom = "src/test/resources/unit/warziptest/war-with-zip.xml")
     @MojoParameter(name = "classesDirectory", value = "target/test-classes/unit/warziptest/one-zip-test-data/classes/")
@@ -57,15 +90,17 @@ public class WarZipTest {
     @MojoParameter(name = "workDirectory", value = "target/test-classes/unit/warziptest/work")
     @Test
     public void testOneZipWithNoSkip(WarMojo mojo) throws Exception {
-        Overlay overlay = new DefaultOverlay(buildZipArtifact());
+        ZipArtifactStub zipArtifact = buildZipArtifact();
+        Overlay overlay = new DefaultOverlay(zipArtifact);
         overlay.setType("zip");
         mojo.addOverlay(overlay);
 
         WarArtifactStub warArtifact = new WarArtifactStub(getBasedir());
         MavenZipProject project = new MavenZipProject();
         project.setArtifact(warArtifact);
-        project.getArtifacts().add(buildZipArtifact());
+        project.addArtifact(zipArtifact);
         mojo.setProject(project);
+        MockSessionHelper.registerArtifacts(mojo.getSession(), Arrays.asList(zipArtifact));
 
         mojo.execute();
 
@@ -101,7 +136,8 @@ public class WarZipTest {
     @MojoParameter(name = "workDirectory", value = "target/test-classes/unit/warziptest/work")
     @Test
     public void testOneZipWithTargetPathOverlay(WarMojo mojo) throws Exception {
-        Overlay overlay = new DefaultOverlay(buildZipArtifact());
+        ZipArtifactStub zipArtifact = buildZipArtifact();
+        Overlay overlay = new DefaultOverlay(zipArtifact);
         overlay.setSkip(false);
         overlay.setType("zip");
         overlay.setTargetPath("overridePath");
@@ -110,8 +146,9 @@ public class WarZipTest {
         WarArtifactStub warArtifact = new WarArtifactStub(getBasedir());
         MavenZipProject project = new MavenZipProject();
         project.setArtifact(warArtifact);
-        project.getArtifacts().add(buildZipArtifact());
+        project.addArtifact(zipArtifact);
         mojo.setProject(project);
+        MockSessionHelper.registerArtifacts(mojo.getSession(), Arrays.asList(zipArtifact));
 
         mojo.execute();
 
@@ -145,11 +182,13 @@ public class WarZipTest {
     @MojoParameter(name = "workDirectory", value = "target/test-classes/unit/warziptest/work")
     @Test
     public void testOneZipDefaultSkip(WarMojo mojo) throws Exception {
+        ZipArtifactStub zipArtifact = buildZipArtifact();
         WarArtifactStub warArtifact = new WarArtifactStub(getBasedir());
         MavenZipProject project = new MavenZipProject();
         project.setArtifact(warArtifact);
-        project.getArtifacts().add(buildZipArtifact());
+        project.addArtifact(zipArtifact);
         mojo.setProject(project);
+        MockSessionHelper.registerArtifacts(mojo.getSession(), Arrays.asList(zipArtifact));
 
         mojo.execute();
 
@@ -174,14 +213,15 @@ public class WarZipTest {
     @MojoParameter(name = "workDirectory", value = "target/test-classes/unit/warziptest/work")
     @Test
     public void testOneZipWithForceSkip(WarMojo mojo) throws Exception {
-
+        ZipArtifactStub zipArtifact = buildZipArtifact();
         WarArtifactStub warArtifact = new WarArtifactStub(getBasedir());
         MavenZipProject project = new MavenZipProject();
         project.setArtifact(warArtifact);
-        project.getArtifacts().add(buildZipArtifact());
+        project.addArtifact(zipArtifact);
         mojo.setProject(project);
+        MockSessionHelper.registerArtifacts(mojo.getSession(), Arrays.asList(zipArtifact));
 
-        Overlay overlay = new DefaultOverlay(buildZipArtifact());
+        Overlay overlay = new DefaultOverlay(zipArtifact);
         overlay.setSkip(true);
         overlay.setType("zip");
         mojo.addOverlay(overlay);
@@ -191,10 +231,10 @@ public class WarZipTest {
         assertZipContentNotHere(mojo.getWebappDirectory());
     }
 
-    private Artifact buildZipArtifact() throws Exception {
+    private ZipArtifactStub buildZipArtifact() throws Exception {
         File zipFile =
                 new File(new File(MojoExtension.getBasedir(), "target/test-classes/unit/warziptest"), "foobar.zip");
-        return new ZipArtifactStub("src/test/resources/unit/warziptest", artifactHandler, zipFile);
+        return new ZipArtifactStub("src/test/resources/unit/warziptest", "zip", zipFile);
     }
 
     private void assertZipContentNotHere(File webAppDirectory) {

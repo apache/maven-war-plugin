@@ -22,13 +22,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
-import org.apache.maven.model.Resource;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.api.plugin.MojoException;
 import org.apache.maven.plugins.war.Overlay;
 import org.apache.maven.plugins.war.util.PathSet;
 import org.apache.maven.shared.filtering.MavenFilteringException;
-import org.apache.maven.shared.utils.StringUtils;
+import org.apache.maven.shared.filtering.Resource;
 import org.codehaus.plexus.util.DirectoryScanner;
 
 /**
@@ -74,7 +72,7 @@ public class WarProjectPackagingTask extends AbstractWarPackagingTask {
     }
 
     @Override
-    public void performPackaging(WarPackagingContext context) throws MojoExecutionException, MojoFailureException {
+    public void performPackaging(WarPackagingContext context) throws MojoException {
         context.getLog().info("Processing war project");
 
         // Prepare the INF directories
@@ -110,18 +108,19 @@ public class WarProjectPackagingTask extends AbstractWarPackagingTask {
      * Handles the web resources.
      *
      * @param context the packaging context
-     * @throws MojoExecutionException if a resource could not be copied
+     * @throws MojoException if a resource could not be copied
      */
-    protected void handleWebResources(WarPackagingContext context) throws MojoExecutionException {
+    protected void handleWebResources(WarPackagingContext context) throws MojoException {
         for (Resource resource : webResources) {
 
             // MWAR-246
             if (resource.getDirectory() == null) {
-                throw new MojoExecutionException("The <directory> tag is missing from the <resource> tag.");
+                throw new MojoException("The <directory> tag is missing from the <resource> tag.");
             }
 
             if (!(new File(resource.getDirectory())).isAbsolute()) {
-                resource.setDirectory(context.getProject().getBasedir() + File.separator + resource.getDirectory());
+                resource.setDirectory(
+                        context.getProject().getBasedir().toFile() + File.separator + resource.getDirectory());
             }
 
             // Make sure that the resource directory is not the same as the webappDirectory
@@ -130,7 +129,7 @@ public class WarProjectPackagingTask extends AbstractWarPackagingTask {
                 try {
                     copyResources(context, resource);
                 } catch (IOException e) {
-                    throw new MojoExecutionException("Could not copy resource [" + resource.getDirectory() + "]", e);
+                    throw new MojoException("Could not copy resource [" + resource.getDirectory() + "]", e);
                 }
             }
         }
@@ -140,9 +139,9 @@ public class WarProjectPackagingTask extends AbstractWarPackagingTask {
      * Handles the webapp sources.
      *
      * @param context the packaging context
-     * @throws MojoExecutionException if the sources could not be copied
+     * @throws MojoException if the sources could not be copied
      */
-    protected void handleWebAppSourceDirectory(WarPackagingContext context) throws MojoExecutionException {
+    protected void handleWebAppSourceDirectory(WarPackagingContext context) throws MojoException {
         // CHECKSTYLE_OFF: LineLength
         if (!context.getWebappSourceDirectory().exists()) {
             context.getLog().debug("webapp sources directory does not exist - skipping.");
@@ -157,7 +156,7 @@ public class WarProjectPackagingTask extends AbstractWarPackagingTask {
             try {
                 copyFiles(id, context, context.getWebappSourceDirectory(), sources, false);
             } catch (IOException e) {
-                throw new MojoExecutionException(
+                throw new MojoException(
                         "Could not copy webapp sources ["
                                 + context.getWebappDirectory().getAbsolutePath() + "]",
                         e);
@@ -170,11 +169,10 @@ public class WarProjectPackagingTask extends AbstractWarPackagingTask {
      * Handles the webapp artifacts.
      *
      * @param context the packaging context
-     * @throws MojoExecutionException if the artifacts could not be packaged
+     * @throws MojoException if the artifacts could not be packaged
      */
-    protected void handleArtifacts(WarPackagingContext context) throws MojoExecutionException {
-        ArtifactsPackagingTask task =
-                new ArtifactsPackagingTask(context.getProject().getArtifacts(), currentProjectOverlay);
+    protected void handleArtifacts(WarPackagingContext context) throws MojoException {
+        ArtifactsPackagingTask task = new ArtifactsPackagingTask(currentProjectOverlay);
         task.performPackaging(context);
     }
 
@@ -182,9 +180,9 @@ public class WarProjectPackagingTask extends AbstractWarPackagingTask {
      * Handles the webapp classes.
      *
      * @param context the packaging context
-     * @throws MojoExecutionException if the classes could not be packaged
+     * @throws MojoException if the classes could not be packaged
      */
-    protected void handleClassesDirectory(WarPackagingContext context) throws MojoExecutionException {
+    protected void handleClassesDirectory(WarPackagingContext context) throws MojoException {
         ClassesPackagingTask task = new ClassesPackagingTask(currentProjectOverlay);
         task.performPackaging(context);
     }
@@ -197,16 +195,15 @@ public class WarProjectPackagingTask extends AbstractWarPackagingTask {
      * @param webinfDir the web-inf directory
      * @param metainfDir the meta-inf directory
      * @param failOnMissingWebXml if build should fail if web.xml is not found
-     * @throws MojoExecutionException if an error occurred while copying the descriptors
-     * @throws MojoFailureException if the web.xml is specified but does not exist and failOnMissingWebXml is true
+     * @throws MojoException if an error occurred while copying the descriptors
      */
     protected void handleDeploymentDescriptors(
             WarPackagingContext context, File webinfDir, File metainfDir, Boolean failOnMissingWebXml)
-            throws MojoFailureException, MojoExecutionException {
+            throws MojoException {
         try {
-            if (webXml != null && StringUtils.isNotEmpty(webXml.getName())) {
+            if (webXml != null && webXml.getName() != null && !webXml.getName().isEmpty()) {
                 if (!webXml.exists() && (failOnMissingWebXml == null || failOnMissingWebXml)) {
-                    throw new MojoFailureException("The specified web.xml file '" + webXml + "' does not exist");
+                    throw new MojoException("The specified web.xml file '" + webXml + "' does not exist");
                 }
 
                 // Making sure that it won't get overlayed
@@ -215,8 +212,8 @@ public class WarProjectPackagingTask extends AbstractWarPackagingTask {
                 if (context.isFilteringDeploymentDescriptors()) {
                     context.getMavenFileFilter()
                             .copyFile(
-                                    webXml,
-                                    new File(webinfDir, "web.xml"),
+                                    webXml.toPath(),
+                                    new File(webinfDir, "web.xml").toPath(),
                                     true,
                                     context.getFilterWrappers(),
                                     getEncoding(webXml));
@@ -231,15 +228,17 @@ public class WarProjectPackagingTask extends AbstractWarPackagingTask {
                     context.getWebappStructure().registerFile(id, WEB_INF_PATH + "/web.xml");
                     context.getMavenFileFilter()
                             .copyFile(
-                                    defaultWebXml,
-                                    new File(webinfDir, "web.xml"),
+                                    defaultWebXml.toPath(),
+                                    new File(webinfDir, "web.xml").toPath(),
                                     true,
                                     context.getFilterWrappers(),
                                     getEncoding(defaultWebXml));
                 }
             }
 
-            if (containerConfigXML != null && StringUtils.isNotEmpty(containerConfigXML.getName())) {
+            if (containerConfigXML != null
+                    && containerConfigXML.getName() != null
+                    && !containerConfigXML.getName().isEmpty()) {
                 String xmlFileName = containerConfigXML.getName();
 
                 context.getWebappStructure().registerFileForced(id, META_INF_PATH + "/" + xmlFileName);
@@ -247,8 +246,8 @@ public class WarProjectPackagingTask extends AbstractWarPackagingTask {
                 if (context.isFilteringDeploymentDescriptors()) {
                     context.getMavenFileFilter()
                             .copyFile(
-                                    containerConfigXML,
-                                    new File(metainfDir, xmlFileName),
+                                    containerConfigXML.toPath(),
+                                    new File(metainfDir, xmlFileName).toPath(),
                                     true,
                                     context.getFilterWrappers(),
                                     getEncoding(containerConfigXML));
@@ -263,10 +262,10 @@ public class WarProjectPackagingTask extends AbstractWarPackagingTask {
             }
         } catch (IOException e) {
             if (failOnMissingWebXml == null || failOnMissingWebXml) {
-                throw new MojoExecutionException("Failed to copy deployment descriptor", e);
+                throw new MojoException("Failed to copy deployment descriptor", e);
             }
         } catch (MavenFilteringException e) {
-            throw new MojoExecutionException("Failed to copy deployment descriptor", e);
+            throw new MojoException("Failed to copy deployment descriptor", e);
         }
     }
 
@@ -276,10 +275,9 @@ public class WarProjectPackagingTask extends AbstractWarPackagingTask {
      * @param context the WAR packaging context to use
      * @param resource the resource to copy
      * @throws IOException if an error occurred while copying the resources
-     * @throws MojoExecutionException if an error occurred while retrieving the filter properties
+     * @throws MojoException if an error occurred while retrieving the filter properties
      */
-    public void copyResources(WarPackagingContext context, Resource resource)
-            throws IOException, MojoExecutionException {
+    public void copyResources(WarPackagingContext context, Resource resource) throws IOException, MojoException {
         if (!context.getWebappDirectory().exists()) {
             context.getLog()
                     .warn("Not copying webapp webResources [" + resource.getDirectory()

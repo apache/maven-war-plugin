@@ -18,14 +18,14 @@
  */
 package org.apache.maven.plugins.war.overlay;
 
-import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.api.plugin.MojoException;
 
 /**
  * Thrown if the overlay configuration is invalid.
  *
  * @author Stephane Nicoll
  */
-public class InvalidOverlayConfigurationException extends MojoExecutionException {
+public class InvalidOverlayConfigurationException extends MojoException {
 
     private static final long serialVersionUID = -9048144470408031414L;
 

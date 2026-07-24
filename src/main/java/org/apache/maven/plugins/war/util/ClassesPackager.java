@@ -19,18 +19,16 @@
 package org.apache.maven.plugins.war.util;
 
 import java.io.File;
-import java.io.IOException;
 
-import org.apache.maven.archiver.MavenArchiveConfiguration;
-import org.apache.maven.archiver.MavenArchiver;
-import org.apache.maven.artifact.DependencyResolutionRequiredException;
-import org.apache.maven.execution.MavenSession;
-import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.api.Project;
+import org.apache.maven.api.Session;
+import org.apache.maven.api.plugin.MojoException;
 import org.apache.maven.plugins.war.packaging.AbstractWarPackagingTask;
-import org.apache.maven.project.MavenProject;
+import org.apache.maven.shared.archiver.MavenArchiveConfiguration;
+import org.apache.maven.shared.archiver.MavenArchiver;
+import org.apache.maven.shared.archiver.MavenArchiverException;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
-import org.codehaus.plexus.archiver.jar.ManifestException;
 
 /**
  * Packages the content of the classes directory.
@@ -49,17 +47,17 @@ public class ClassesPackager {
      * @param project the related project
      * @param archiveConfiguration the archive configuration to use
      * @param outputTimestamp the output timestamp for reproducibility
-     * @throws MojoExecutionException if an error occurred while creating the archive
+     * @throws MojoException if an error occurred while creating the archive
      */
     public void packageClasses(
             File classesDirectory,
             File targetFile,
             JarArchiver jarArchiver,
-            MavenSession session,
-            MavenProject project,
+            Session session,
+            Project project,
             MavenArchiveConfiguration archiveConfiguration,
             String outputTimestamp)
-            throws MojoExecutionException {
+            throws MojoException {
 
         try {
             final MavenArchiver archiver = new MavenArchiver();
@@ -69,8 +67,8 @@ public class ClassesPackager {
             archiver.configureReproducibleBuild(outputTimestamp);
             archiver.getArchiver().addDirectory(classesDirectory);
             archiver.createArchive(session, project, archiveConfiguration);
-        } catch (ArchiverException | ManifestException | IOException | DependencyResolutionRequiredException e) {
-            throw new MojoExecutionException("Could not create classes archive", e);
+        } catch (ArchiverException | MavenArchiverException e) {
+            throw new MojoException("Could not create classes archive", e);
         }
     }
 

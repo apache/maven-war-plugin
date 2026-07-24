@@ -20,8 +20,6 @@ package org.apache.maven.plugins.war.stub;
 
 import java.io.File;
 
-import org.apache.maven.artifact.handler.ArtifactHandler;
-
 /**
  * @author Olivier Lamy
  * @since 8 juin 07
@@ -29,33 +27,17 @@ import org.apache.maven.artifact.handler.ArtifactHandler;
 public class ZipArtifactStub extends AbstractArtifactStub {
     private File zip;
 
-    public ZipArtifactStub(String basedir, ArtifactHandler artifactHandler, File zipFile) {
+    public ZipArtifactStub(String basedir, String fileExtension, File zipFile) {
         super(basedir);
-        super.setArtifactHandler(artifactHandler);
         this.zip = zipFile;
+        setGroupId("zipGroupId");
+        setArtifactId("zipId");
+        setVersion("1.0");
+        setExtension("zip");
     }
 
-    public String getId() {
-        return null;
-    }
-
-    public String getVersion() {
-        return "1.0";
-    }
-
+    @Override
     public File getFile() {
         return this.zip;
-    }
-
-    public String getType() {
-        return "zip";
-    }
-
-    public String getArtifactId() {
-        return "zipId";
-    }
-
-    public String getGroupId() {
-        return "zipGroupId";
     }
 }

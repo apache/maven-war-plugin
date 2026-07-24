@@ -18,11 +18,11 @@
  */
 package org.apache.maven.plugins.war.overlay;
 
-import org.apache.maven.artifact.Artifact;
+import org.apache.maven.api.DownloadedArtifact;
 import org.apache.maven.plugins.war.Overlay;
 
 /**
- * A default overlay implementation based on an {@link Artifact}.
+ * A default overlay implementation based on a {@link DownloadedArtifact}.
  *
  * @author Stephane Nicoll
  */
@@ -33,13 +33,13 @@ public class DefaultOverlay extends Overlay {
      *
      * @param a the artifact
      */
-    public DefaultOverlay(Artifact a) {
+    public DefaultOverlay(DownloadedArtifact a) {
         super();
         setGroupId(a.getGroupId());
         setArtifactId(a.getArtifactId());
         setClassifier(a.getClassifier());
         setArtifact(a);
-        setType(a.getType());
+        setType(a.getExtension());
     }
 
     /**
@@ -49,7 +49,7 @@ public class DefaultOverlay extends Overlay {
      * @param includes the includes to use
      * @param excludes the excludes to use
      */
-    public DefaultOverlay(Artifact a, String[] includes, String[] excludes) {
+    public DefaultOverlay(DownloadedArtifact a, String[] includes, String[] excludes) {
         this(a);
         setIncludes(includes);
         setExcludes(excludes);

@@ -21,14 +21,12 @@ package org.apache.maven.plugins.war.packaging;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.DefaultArtifact;
-import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
-import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.api.Artifact;
+import org.apache.maven.api.Project;
+import org.apache.maven.api.plugin.MojoException;
 import org.apache.maven.plugins.war.Overlay;
 import org.apache.maven.plugins.war.util.ClassesPackager;
 import org.apache.maven.plugins.war.util.PathSet;
-import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.interpolation.InterpolationException;
 
 /**
@@ -50,7 +48,7 @@ public class ClassesPackagingTask extends AbstractWarPackagingTask {
     }
 
     @Override
-    public void performPackaging(WarPackagingContext context) throws MojoExecutionException {
+    public void performPackaging(WarPackagingContext context) throws MojoException {
         final File webappClassesDirectory = new File(context.getWebappDirectory(), CLASSES_PATH);
         if (!webappClassesDirectory.exists()) {
             webappClassesDirectory.mkdirs();
@@ -71,7 +69,7 @@ public class ClassesPackagingTask extends AbstractWarPackagingTask {
                             CLASSES_PATH,
                             false);
                 } catch (IOException e) {
-                    throw new MojoExecutionException(
+                    throw new MojoException(
                             "Could not copy webapp classes ["
                                     + context.getClassesDirectory().getAbsolutePath() + "]",
                             e);
@@ -82,24 +80,18 @@ public class ClassesPackagingTask extends AbstractWarPackagingTask {
 
     /**
      * @param context the warPackingContext
-     * @throws MojoExecutionException in case of an error
+     * @throws MojoException in case of an error
      */
-    protected void generateJarArchive(WarPackagingContext context) throws MojoExecutionException {
-        MavenProject project = context.getProject();
-        ArtifactHandlerManager artifactHandlerManager = context.getArtifactHandlerManager();
-        Artifact artifact = new DefaultArtifact(
-                project.getGroupId(),
-                project.getArtifactId(),
-                project.getVersion(),
-                null,
-                "jar",
-                "",
-                artifactHandlerManager.getArtifactHandler("jar"));
+    protected void generateJarArchive(WarPackagingContext context) throws MojoException {
+        Project project = context.getProject();
+        // Create an artifact using the session API
+        Artifact artifact = context.getSession()
+                .createArtifact(project.getGroupId(), project.getArtifactId(), project.getVersion(), "jar");
         String archiveName;
         try {
             archiveName = getArtifactFinalName(context, artifact);
         } catch (InterpolationException e) {
-            throw new MojoExecutionException(
+            throw new MojoException(
                     "Could not get the final name of the artifact [" + artifact.getGroupId() + ":"
                             + artifact.getArtifactId() + ":" + artifact.getVersion() + "]",
                     e);

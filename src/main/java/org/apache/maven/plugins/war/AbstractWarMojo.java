@@ -32,15 +32,13 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import org.apache.maven.archiver.MavenArchiveConfiguration;
-import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
-import org.apache.maven.execution.MavenSession;
-import org.apache.maven.model.Resource;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.api.Project;
+import org.apache.maven.api.Session;
+import org.apache.maven.api.di.Inject;
+import org.apache.maven.api.plugin.Log;
+import org.apache.maven.api.plugin.Mojo;
+import org.apache.maven.api.plugin.MojoException;
+import org.apache.maven.api.plugin.annotations.Parameter;
 import org.apache.maven.plugins.war.overlay.OverlayManager;
 import org.apache.maven.plugins.war.packaging.CopyUserManifestTask;
 import org.apache.maven.plugins.war.packaging.OverlayPackagingTask;
@@ -48,13 +46,13 @@ import org.apache.maven.plugins.war.packaging.WarPackagingContext;
 import org.apache.maven.plugins.war.packaging.WarPackagingTask;
 import org.apache.maven.plugins.war.packaging.WarProjectPackagingTask;
 import org.apache.maven.plugins.war.util.WebappStructure;
-import org.apache.maven.project.MavenProject;
+import org.apache.maven.shared.archiver.MavenArchiveConfiguration;
 import org.apache.maven.shared.filtering.FilterWrapper;
 import org.apache.maven.shared.filtering.MavenFileFilter;
 import org.apache.maven.shared.filtering.MavenFilteringException;
 import org.apache.maven.shared.filtering.MavenResourcesExecution;
 import org.apache.maven.shared.filtering.MavenResourcesFiltering;
-import org.apache.maven.shared.utils.StringUtils;
+import org.apache.maven.shared.filtering.Resource;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
@@ -62,7 +60,7 @@ import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
 /**
  * Contains common jobs for WAR mojos.
  */
-public abstract class AbstractWarMojo extends AbstractMojo {
+public abstract class AbstractWarMojo implements Mojo {
 
     /**
      * Whether to fail the build if the <code>web.xml</code> file is missing. Set to <code>false</code> if you
@@ -80,8 +78,20 @@ public abstract class AbstractWarMojo extends AbstractMojo {
     /**
      * The Maven project.
      */
-    @Parameter(defaultValue = "${project}", readonly = true, required = true)
-    private MavenProject project;
+    @Inject
+    private Project project;
+
+    /**
+     * The Maven session.
+     */
+    @Inject
+    private Session session;
+
+    /**
+     * The logger.
+     */
+    @Inject
+    private Log log;
 
     /**
      * The directory containing compiled classes.
@@ -356,39 +366,24 @@ public abstract class AbstractWarMojo extends AbstractMojo {
     private final Overlay currentProjectOverlay = Overlay.createInstance();
 
     /**
-     * The JAR archiver needed for archiving the classes directory into a JAR file under WEB-INF/lib.
-     */
-    private final JarArchiver jarArchiver;
-
-    private final ArtifactHandlerManager artifactHandlerManager;
-
-    /**
      * To look up Archiver/UnArchiver implementations.
      */
-    private final ArchiverManager archiverManager;
+    @Inject
+    private ArchiverManager archiverManager;
 
-    private final MavenFileFilter mavenFileFilter;
+    @Inject
+    private MavenFileFilter mavenFileFilter;
 
-    private final MavenResourcesFiltering mavenResourcesFiltering;
+    @Inject
+    private MavenResourcesFiltering mavenResourcesFiltering;
 
-    private final MavenSession session;
+    /**
+     * The JAR archiver needed for archiving the classes directory into a JAR file under WEB-INF/lib.
+     */
+    private JarArchiver jarArchiver;
 
-    protected AbstractWarMojo(
-            ArtifactHandlerManager artifactHandlerManager,
-            ArchiverManager archiverManager,
-            MavenFileFilter mavenFileFilter,
-            MavenResourcesFiltering mavenResourcesFiltering,
-            MavenSession session) {
-        this.artifactHandlerManager = artifactHandlerManager;
-        this.archiverManager = archiverManager;
-        this.mavenFileFilter = mavenFileFilter;
-        this.mavenResourcesFiltering = mavenResourcesFiltering;
-        this.session = session;
-        try {
-            this.jarArchiver = (JarArchiver) archiverManager.getArchiver("jar");
-        } catch (NoSuchArchiverException e) {
-            throw new IllegalStateException("Cannot find jar archiver", e);
-        }
+    protected Log getLog() {
+        return log;
     }
 
     public ArchiverManager getArchiverManager() {
@@ -414,12 +409,14 @@ public abstract class AbstractWarMojo extends AbstractMojo {
         }
 
         // if webXML is specified, omit the one in the source directory
-        if (webXml != null && StringUtils.isNotEmpty(webXml.getName())) {
+        if (webXml != null && webXml.getName() != null && !webXml.getName().isEmpty()) {
             excludeList.add("**/WEB-INF/web.xml");
         }
 
         // if contextXML is specified, omit the one in the source directory
-        if (containerConfigXML != null && StringUtils.isNotEmpty(containerConfigXML.getName())) {
+        if (containerConfigXML != null
+                && containerConfigXML.getName() != null
+                && !containerConfigXML.getName().isEmpty()) {
             excludeList.add("**/META-INF/" + containerConfigXML.getName());
         }
 
@@ -455,16 +452,15 @@ public abstract class AbstractWarMojo extends AbstractMojo {
 
     /**
      * @param webapplicationDirectory the web application directory
-     * @throws MojoExecutionException in case of failure
-     * @throws MojoFailureException in case of failure
+     * @throws MojoException in case of failure
      */
-    public void buildExplodedWebapp(File webapplicationDirectory) throws MojoExecutionException, MojoFailureException {
+    public void buildExplodedWebapp(File webapplicationDirectory) throws MojoException {
         webapplicationDirectory.mkdirs();
 
         try {
             buildWebapp(project, webapplicationDirectory);
         } catch (IOException e) {
-            throw new MojoExecutionException("Could not build webapp", e);
+            throw new MojoException("Could not build webapp", e);
         }
     }
 
@@ -475,20 +471,23 @@ public abstract class AbstractWarMojo extends AbstractMojo {
      * @param mavenProject the maven project
      * @param webapplicationDirectory the target directory
      * @throws IOException if an error occurred while copying the files
-     * @throws MojoExecutionException if an error occurred while packaging the webapp
-     * @throws MojoFailureException if an unexpected error occurred while packaging the webapp
+     * @throws MojoException if an error occurred while packaging the webapp
      */
-    public void buildWebapp(MavenProject mavenProject, File webapplicationDirectory)
-            throws MojoExecutionException, MojoFailureException, IOException {
+    public void buildWebapp(Project mavenProject, File webapplicationDirectory) throws MojoException, IOException {
 
-        WebappStructure structure = new WebappStructure(mavenProject.getDependencies());
+        WebappStructure structure = new WebappStructure(mavenProject.getModel().getDependencies());
 
         // CHECKSTYLE_OFF: LineLength
         final long startTime = System.currentTimeMillis();
         getLog().info("Assembling webapp [" + mavenProject.getArtifactId() + "] in [" + webapplicationDirectory + "]");
 
         final OverlayManager overlayManager = new OverlayManager(
-                overlays, mavenProject, getDependentWarIncludes(), getDependentWarExcludes(), currentProjectOverlay);
+                overlays,
+                mavenProject,
+                session,
+                getDependentWarIncludes(),
+                getDependentWarExcludes(),
+                currentProjectOverlay);
         // CHECKSTYLE_ON: LineLength
         List<FilterWrapper> defaultFilterWrappers;
         try {
@@ -505,7 +504,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
             }
 
             if (filters == null) {
-                filters = getProject().getBuild().getFilters();
+                filters = getProject().getModel().getBuild().getFilters();
             }
             mavenResourcesExecution.setFilters(filters);
             mavenResourcesExecution.setEscapedBackslashesInFilePath(escapedBackslashesInFilePath);
@@ -517,7 +516,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
 
         } catch (MavenFilteringException e) {
             getLog().error("fail to build filtering wrappers " + e.getMessage());
-            throw new MojoExecutionException(e.getMessage(), e);
+            throw new MojoException(e.getMessage(), e);
         }
 
         final WarPackagingContext context = new DefaultWarPackagingContext(
@@ -527,7 +526,6 @@ public abstract class AbstractWarMojo extends AbstractMojo {
                 defaultFilterWrappers,
                 getNonFilteredFileExtensions(),
                 filteringDeploymentDescriptors,
-                artifactHandlerManager,
                 resourceEncoding,
                 propertiesEncoding,
                 failOnMissingWebXml,
@@ -548,9 +546,9 @@ public abstract class AbstractWarMojo extends AbstractMojo {
      *
      * @param overlayManager the overlay manager
      * @return the list of packaging tasks
-     * @throws MojoExecutionException if the packaging tasks could not be built
+     * @throws MojoException if the packaging tasks could not be built
      */
-    private List<WarPackagingTask> getPackagingTasks(OverlayManager overlayManager) throws MojoExecutionException {
+    private List<WarPackagingTask> getPackagingTasks(OverlayManager overlayManager) throws MojoException {
         final List<WarPackagingTask> packagingTasks = new ArrayList<>();
 
         packagingTasks.add(new CopyUserManifestTask());
@@ -571,7 +569,6 @@ public abstract class AbstractWarMojo extends AbstractMojo {
      * WarPackagingContext default implementation.
      */
     private class DefaultWarPackagingContext implements WarPackagingContext {
-        private final ArtifactHandlerManager artifactHandlerManager;
 
         private final String resourceEncoding;
 
@@ -602,7 +599,6 @@ public abstract class AbstractWarMojo extends AbstractMojo {
          * @param filterWrappers the filter wrappers
          * @param nonFilteredFileExtensions the non filtered file extensions
          * @param filteringDeploymentDescriptors the filtering deployment descriptors
-         * @param artifactHandlerManager the artifact handler manager
          * @param resourceEncoding the resource encoding
          * @param propertiesEncoding the encoding to use for properties files
          * @param failOnMissingWebXml flag to check whether we should ignore missing web.xml or not
@@ -616,7 +612,6 @@ public abstract class AbstractWarMojo extends AbstractMojo {
                 List<FilterWrapper> filterWrappers,
                 List<String> nonFilteredFileExtensions,
                 boolean filteringDeploymentDescriptors,
-                ArtifactHandlerManager artifactHandlerManager,
                 String resourceEncoding,
                 String propertiesEncoding,
                 final Boolean failOnMissingWebXml,
@@ -625,7 +620,6 @@ public abstract class AbstractWarMojo extends AbstractMojo {
             this.webappStructure = webappStructure;
             this.overlayManager = overlayManager;
             this.filterWrappers = filterWrappers;
-            this.artifactHandlerManager = artifactHandlerManager;
             this.filteringDeploymentDescriptors = filteringDeploymentDescriptors;
             this.nonFilteredFileExtensions =
                     nonFilteredFileExtensions == null ? Collections.emptyList() : nonFilteredFileExtensions;
@@ -659,7 +653,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
                         @Override
                         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                             if (file.toFile().lastModified()
-                                    < session.getStartTime().getTime()) {
+                                    < session.getStartTime().toEpochMilli()) {
                                 String path = webappDirectory
                                         .toPath()
                                         .relativize(file)
@@ -683,7 +677,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
         }
 
         @Override
-        public MavenProject getProject() {
+        public Project getProject() {
             return project;
         }
 
@@ -749,7 +743,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
 
         @Override
         public JarArchiver getJarArchiver() {
-            return jarArchiver;
+            return getOrCreateJarArchiver();
         }
 
         @Override
@@ -788,12 +782,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
         }
 
         @Override
-        public ArtifactHandlerManager getArtifactHandlerManager() {
-            return this.artifactHandlerManager;
-        }
-
-        @Override
-        public MavenSession getSession() {
+        public Session getSession() {
             return session;
         }
 
@@ -849,17 +838,28 @@ public abstract class AbstractWarMojo extends AbstractMojo {
         }
     }
 
+    private JarArchiver getOrCreateJarArchiver() {
+        if (jarArchiver == null) {
+            try {
+                jarArchiver = (JarArchiver) archiverManager.getArchiver("jar");
+            } catch (NoSuchArchiverException e) {
+                throw new IllegalStateException("Cannot find jar archiver", e);
+            }
+        }
+        return jarArchiver;
+    }
+
     /**
      * @return the Maven Project
      */
-    public MavenProject getProject() {
+    public Project getProject() {
         return project;
     }
 
     /**
      * @param project the project to be set
      */
-    public void setProject(MavenProject project) {
+    public void setProject(Project project) {
         this.project = project;
     }
 
@@ -979,7 +979,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
      * @return {@link JarArchiver}
      */
     public JarArchiver getJarArchiver() {
-        return jarArchiver;
+        return getOrCreateJarArchiver();
     }
 
     /**
@@ -1041,7 +1041,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
     /**
      * @return {@link #session}
      */
-    protected MavenSession getSession() {
+    protected Session getSession() {
         return this.session;
     }
 
