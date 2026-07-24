@@ -129,7 +129,7 @@ documentedproject-1.0-SNAPSHOT.war
 
 *Invocation of <<<war:exploded>>> goal
 
-  To speed up testing during the development phase, <<<war:exploded>>> can be used to generate the WAR in exploded
+  To speed up testing during the development phase, <<<war:exploded>>> can generate the WAR in exploded
  form.
  Use the same project as above and invoke:
 
