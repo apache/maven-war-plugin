@@ -123,4 +123,54 @@ class WarUtilsTest {
         Dependency dependency = createDependency("g", "a", "1.0", "jar", null, "provided");
         assertFalse(WarUtils.isRelated(artifact, dependency));
     }
+
+    @Test
+    void isRelatedShouldReturnFalseWhenOptionalDiffers() {
+        Artifact artifact = new ArtifactStub() {
+            @Override
+            public String getGroupId() {
+                return "g";
+            }
+
+            @Override
+            public String getArtifactId() {
+                return "a";
+            }
+
+            @Override
+            public String getVersion() {
+                return "1.0";
+            }
+
+            @Override
+            public String getType() {
+                return "jar";
+            }
+
+            @Override
+            public String getClassifier() {
+                return null;
+            }
+
+            @Override
+            public String getScope() {
+                return "compile";
+            }
+
+            @Override
+            public boolean isOptional() {
+                return true;
+            }
+        };
+        Dependency dependency = createDependency("g", "a", "1.0", "jar", null, "compile");
+        assertFalse(WarUtils.isRelated(artifact, dependency));
+    }
+
+    @Test
+    void isRelatedShouldReturnFalseWhenArtifactOrDependencyIsNull() {
+        Artifact artifact = createArtifact("g", "a", "1.0", "jar", null, "compile");
+        Dependency dependency = createDependency("g", "a", "1.0", "jar", null, "compile");
+        assertFalse(WarUtils.isRelated(null, dependency));
+        assertFalse(WarUtils.isRelated(artifact, null));
+    }
 }
