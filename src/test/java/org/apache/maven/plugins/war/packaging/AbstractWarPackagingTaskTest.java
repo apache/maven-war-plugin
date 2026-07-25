@@ -26,6 +26,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 class AbstractWarPackagingTaskTest {
 
@@ -39,6 +40,7 @@ class AbstractWarPackagingTaskTest {
         source.setExecutable(true, false);
         source.setReadable(true, false);
         source.setWritable(true, true);
+        assumeTrue(source.canExecute(), "test requires a platform that supports executable permission");
 
         File webappDir = new File(tempDir, "webapp");
         File destination = new File(webappDir, "WEB-INF/lib/test.jar");
@@ -51,7 +53,7 @@ class AbstractWarPackagingTaskTest {
     }
 
     @Test
-    void testCopyFileKeepsNonExecutable() throws IOException {
+    void testCopyFilePreservesNonExecutable() throws IOException {
         File source = new File(tempDir, "source.jar");
         assertTrue(source.createNewFile());
         source.setExecutable(false, false);
