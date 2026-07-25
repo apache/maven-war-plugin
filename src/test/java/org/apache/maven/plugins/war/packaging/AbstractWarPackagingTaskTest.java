@@ -20,6 +20,7 @@ package org.apache.maven.plugins.war.packaging;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -33,9 +34,16 @@ class AbstractWarPackagingTaskTest {
     @TempDir
     File tempDir;
 
+    // Windows does not support POSIX executable permissions, so canExecute()
+    // may return true regardless of setExecutable(). These tests verify
+    // permission normalization which is only meaningful on POSIX systems.
+    private static boolean isWindows() {
+        return System.getProperty("os.name").toLowerCase(Locale.ROOT).startsWith("windows");
+    }
+
     @Test
     void testCopyFileRemovesExecutablePermissions() throws IOException {
-        assumeFalse(System.getProperty("os.name").toLowerCase().startsWith("windows"));
+        assumeFalse(isWindows());
         File source = new File(tempDir, "source.jar");
         assertTrue(source.createNewFile());
         source.setExecutable(true, false);
@@ -56,7 +64,7 @@ class AbstractWarPackagingTaskTest {
 
     @Test
     void testCopyFilePreservesNonExecutable() throws IOException {
-        assumeFalse(System.getProperty("os.name").toLowerCase().startsWith("windows"));
+        assumeFalse(isWindows());
         File source = new File(tempDir, "source.jar");
         assertTrue(source.createNewFile());
         source.setExecutable(false, false);
