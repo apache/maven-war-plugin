@@ -50,6 +50,8 @@ class AbstractWarPackagingTaskTest {
 
         assertTrue(destination.exists());
         assertFalse(destination.canExecute(), "copied file should not be executable");
+        assertTrue(destination.canRead(), "copied file should be readable");
+        assertTrue(destination.canWrite(), "copied file should be writable");
     }
 
     @Test
@@ -68,6 +70,8 @@ class AbstractWarPackagingTaskTest {
 
         assertTrue(destination.exists());
         assertFalse(destination.canExecute(), "copied file should not be executable");
+        assertTrue(destination.canRead(), "copied file should be readable");
+        assertTrue(destination.canWrite(), "copied file should be writable");
     }
 
     private static AbstractWarPackagingTask createTask() {
