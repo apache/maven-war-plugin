@@ -26,9 +26,25 @@ import org.junit.jupiter.api.io.TempDir;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 class AbstractWarPackagingTaskTest {
+
+    private static final boolean POSIX_PERMISSIONS_SUPPORTED;
+
+    static {
+        boolean supported = false;
+        try {
+            File tmp = File.createTempFile("permtest", ".tmp");
+            try {
+                supported = tmp.setExecutable(false, false);
+            } finally {
+                tmp.delete();
+            }
+        } catch (IOException e) {
+            // not supported
+        }
+        POSIX_PERMISSIONS_SUPPORTED = supported;
+    }
 
     @TempDir
     File tempDir;
@@ -40,7 +56,6 @@ class AbstractWarPackagingTaskTest {
         source.setExecutable(true, false);
         source.setReadable(true, false);
         source.setWritable(true, true);
-        assumeTrue(source.canExecute(), "test requires a platform that supports executable permission");
 
         File webappDir = new File(tempDir, "webapp");
         File destination = new File(webappDir, "WEB-INF/lib/test.jar");
@@ -49,9 +64,11 @@ class AbstractWarPackagingTaskTest {
         task.copyFile(new TestWarPackagingContext(webappDir), source, destination, "WEB-INF/lib/test.jar", false);
 
         assertTrue(destination.exists());
-        assertFalse(destination.canExecute(), "copied file should not be executable");
         assertTrue(destination.canRead(), "copied file should be readable");
         assertTrue(destination.canWrite(), "copied file should be writable");
+        if (POSIX_PERMISSIONS_SUPPORTED) {
+            assertFalse(destination.canExecute(), "copied file should not be executable");
+        }
     }
 
     @Test
@@ -69,9 +86,11 @@ class AbstractWarPackagingTaskTest {
         task.copyFile(new TestWarPackagingContext(webappDir), source, destination, "WEB-INF/lib/test.jar", false);
 
         assertTrue(destination.exists());
-        assertFalse(destination.canExecute(), "copied file should not be executable");
         assertTrue(destination.canRead(), "copied file should be readable");
         assertTrue(destination.canWrite(), "copied file should be writable");
+        if (POSIX_PERMISSIONS_SUPPORTED) {
+            assertFalse(destination.canExecute(), "copied file should not be executable");
+        }
     }
 
     private static AbstractWarPackagingTask createTask() {
