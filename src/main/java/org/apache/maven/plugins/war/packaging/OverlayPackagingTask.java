@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.war.Overlay;
 import org.apache.maven.plugins.war.util.PathSet;
@@ -149,9 +150,10 @@ public class OverlayPackagingTask extends AbstractWarPackagingTask {
             return;
         }
 
+        ScopeArtifactFilter filter = new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME);
         Set<String> projectArtifactIds = new HashSet<>();
         for (Artifact artifact : context.getProject().getArtifacts()) {
-            if (!artifact.isOptional() && "jar".equals(artifact.getType())) {
+            if (!artifact.isOptional() && filter.include(artifact) && "jar".equals(artifact.getType())) {
                 projectArtifactIds.add(artifact.getArtifactId());
             }
         }
