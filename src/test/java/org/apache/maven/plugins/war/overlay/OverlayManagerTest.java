@@ -31,6 +31,7 @@ import static org.apache.maven.plugins.war.Overlay.DEFAULT_EXCLUDES;
 import static org.apache.maven.plugins.war.Overlay.DEFAULT_INCLUDES;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
@@ -142,6 +143,8 @@ class OverlayManagerTest {
                 new OverlayManager(overlays, project, DEFAULT_INCLUDES, DEFAULT_EXCLUDES, currentProjectOverlay);
         assertNotNull(manager.getOverlays());
         assertEquals(2, manager.getOverlays().size());
+        assertEquals(currentProjectOverlay, manager.getOverlays().get(0));
+        assertSame(artifact, manager.getOverlays().get(1).getArtifact());
     }
 
     @Test
