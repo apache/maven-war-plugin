@@ -43,13 +43,13 @@ import org.apache.maven.plugins.war.util.ClassesPackager;
 import org.apache.maven.project.MavenProjectHelper;
 import org.apache.maven.shared.filtering.MavenFileFilter;
 import org.apache.maven.shared.filtering.MavenResourcesFiltering;
+import org.codehaus.plexus.archiver.ArchiveEntry;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.ManifestException;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
 import org.codehaus.plexus.archiver.war.WarArchiver;
 import org.codehaus.plexus.archiver.zip.ConcurrentJarCreator;
-import org.codehaus.plexus.components.io.functions.InputStreamSupplier;
 import org.codehaus.plexus.util.FileUtils;
 
 /**
@@ -411,28 +411,18 @@ public class WarMojo extends AbstractWarMojo {
         }
 
         @Override
-        // CHECKSTYLE_OFF: ParameterNumber
-        protected void zipFile(
-                InputStreamSupplier in,
-                ConcurrentJarCreator zOut,
-                String vPath,
-                long lastModified,
-                File fromArchive,
-                int mode,
-                String symlinkDestination,
-                boolean addInParallel)
+        protected void zipFile(ArchiveEntry entry, ConcurrentJarCreator zOut, String vPath)
                 throws IOException, ArchiverException {
-            // CHECKSTYLE_ON: ParameterNumber
             if (vPath.startsWith("WEB-INF/lib/") && !vPath.endsWith("/")) {
                 boolean original = isCompress();
                 setCompress(false);
                 try {
-                    super.zipFile(in, zOut, vPath, lastModified, fromArchive, mode, symlinkDestination, addInParallel);
+                    super.zipFile(entry, zOut, vPath);
                 } finally {
                     setCompress(original);
                 }
             } else {
-                super.zipFile(in, zOut, vPath, lastModified, fromArchive, mode, symlinkDestination, addInParallel);
+                super.zipFile(entry, zOut, vPath);
             }
         }
     }
