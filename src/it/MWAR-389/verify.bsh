@@ -40,7 +40,18 @@ File overlayTarget = new File( basedir, "overlay-war/target" );
 File overlayWar = new File( overlayTarget, "overlay-war-1.0-SNAPSHOT" );
 File overlayLib = new File( overlayWar, "WEB-INF/lib" );
 
+if ( !overlayLib.exists() || !overlayLib.isDirectory() )
+{
+    System.err.println( "Overlay WAR WEB-INF/lib directory missing: " + overlayLib );
+    return false;
+}
+
 String[] overlayJars = overlayLib.list();
+if ( overlayJars == null )
+{
+    System.err.println( "Failed to list overlay WAR WEB-INF/lib contents: " + overlayLib );
+    return false;
+}
 boolean overlayHasOld = false;
 boolean overlayHasManaged = false;
 
