@@ -48,6 +48,8 @@ import org.codehaus.plexus.archiver.jar.ManifestException;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
 import org.codehaus.plexus.archiver.war.WarArchiver;
+import org.codehaus.plexus.archiver.zip.ConcurrentJarCreator;
+import org.codehaus.plexus.components.io.functions.InputStreamSupplier;
 import org.codehaus.plexus.util.FileUtils;
 
 /**
@@ -386,9 +388,52 @@ public class WarMojo extends AbstractWarMojo {
 
     public WarArchiver getWarArchiver() {
         try {
-            return (WarArchiver) getArchiverManager().getArchiver("war");
+            if (isCompressLibs()) {
+                return (WarArchiver) getArchiverManager().getArchiver("war");
+            } else {
+                return new UncompressedLibsWarArchiver();
+            }
         } catch (NoSuchArchiverException e) {
             throw new IllegalStateException("Cannot find war archiver", e);
+        }
+    }
+
+    /**
+     * A {@link WarArchiver} subclass that stores dependency library JARs ({@code WEB-INF/lib/*.jar})
+     * in STORED mode (uncompressed) instead of DEFLATED mode, while still compressing all other entries.
+     * This improves servlet container startup time since the already-compressed JARs are not
+     * decompressed and recompressed during WAR creation and extraction.
+     */
+    private static class UncompressedLibsWarArchiver extends WarArchiver {
+
+        UncompressedLibsWarArchiver() {
+            super();
+        }
+
+        @Override
+        // CHECKSTYLE_OFF: ParameterNumber
+        protected void zipFile(
+                InputStreamSupplier in,
+                ConcurrentJarCreator zOut,
+                String vPath,
+                long lastModified,
+                File fromArchive,
+                int mode,
+                String symlinkDestination,
+                boolean addInParallel)
+                throws IOException, ArchiverException {
+            // CHECKSTYLE_ON: ParameterNumber
+            if (vPath.startsWith("WEB-INF/lib/") && !vPath.endsWith("/")) {
+                boolean original = isCompress();
+                setCompress(false);
+                try {
+                    super.zipFile(in, zOut, vPath, lastModified, fromArchive, mode, symlinkDestination, addInParallel);
+                } finally {
+                    setCompress(original);
+                }
+            } else {
+                super.zipFile(in, zOut, vPath, lastModified, fromArchive, mode, symlinkDestination, addInParallel);
+            }
         }
     }
 
