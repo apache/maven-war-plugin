@@ -18,7 +18,6 @@
  */
 
 import java.io.*;
-import java.util.*;
 import org.codehaus.plexus.util.*;
 
 /*
@@ -71,7 +70,7 @@ if ( overlayHasManaged )
     return false;
 }
 
-System.out.println( "Overlay WAR correctly contains only plexus-utils-3.0.24.jar." );
+// Overlay WAR correctly contains only plexus-utils-3.0.24.jar.
 
 // --- Check main WAR content ---
 File mainTarget = new File( basedir, "main-war/target" );
@@ -81,7 +80,6 @@ File mainLib = new File( mainWar, "WEB-INF/lib" );
 String[] mainJars = mainLib.list();
 boolean mainHasOld = false;
 boolean mainHasManaged = false;
-List duplicateGavs = new ArrayList();
 
 for ( int i = 0; i < mainJars.length; i++ )
 {
@@ -89,12 +87,10 @@ for ( int i = 0; i < mainJars.length; i++ )
     if ( jar.startsWith( "plexus-utils-3.0.24" ) )
     {
         mainHasOld = true;
-        duplicateGavs.add( "plexus-utils:3.0.24 (" + jar + ")" );
     }
     if ( jar.startsWith( "plexus-utils-" + managedVersion ) )
     {
         mainHasManaged = true;
-        duplicateGavs.add( "plexus-utils:" + managedVersion + " (" + jar + ")" );
     }
 }
 
@@ -107,18 +103,12 @@ if ( !mainHasManaged )
 if ( mainHasOld )
 {
     // Both versions found -- issue STILL EXISTS
-    System.out.println( "ISSUE #389 (MWAR-220) STILL EXISTS:" );
-    System.out.println( "  Both plexus-utils versions found in main WAR WEB-INF/lib:" );
-    System.out.println( "    - plexus-utils-3.0.24.jar (from overlay unpacking)" );
-    System.out.println( "    - plexus-utils-" + managedVersion + ".jar (from dependencyManagement)" );
-    System.out.println( "  dependencyManagement does not filter overlay-provided jars." );
+    System.err.println( "Found plexus-utils-3.0.24.jar in main WAR WEB-INF/lib; "
+        + "dependencyManagement should have excluded it." );
     return false;
 }
 else
 {
     // Only managed version -- issue has been fixed
-    System.out.println( "ISSUE #389 (MWAR-220) APPEARS FIXED:" );
-    System.out.println( "  Only plexus-utils-" + managedVersion + ".jar found in WEB-INF/lib." );
-    System.out.println( "  The overlay's plexus-utils-3.0.24.jar was correctly filtered out." );
     return true;
 }
