@@ -174,7 +174,10 @@ public class OverlayPackagingTask extends AbstractWarPackagingTask {
                 context.getLog()
                         .debug("Removing dependency [" + jarName + "] from overlay [" + overlay.getId()
                                 + "]; managed version in project already provides it");
-                overlayJar.delete();
+                if (!overlayJar.delete()) {
+                    context.getLog()
+                            .warn("Failed to delete [" + jarName + "] from overlay [" + overlay.getId() + "]");
+                }
             }
         }
     }
