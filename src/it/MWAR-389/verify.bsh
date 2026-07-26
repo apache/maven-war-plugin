@@ -1,0 +1,124 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+import java.io.*;
+import java.util.*;
+import org.codehaus.plexus.util.*;
+
+/*
+ * Test for MWAR-220 / issue #389:
+ * dependencyManagement with overlays should not result in multiple versions
+ * of the same dependency in WEB-INF/lib.
+ *
+ * The overlay-war is built with plexus-utils 3.0.24.
+ * The main-war has dependencyManagement pinning plexus-utils to the managed
+ * version (@plexusUtilVersion@), and uses overlay-war as an overlay.
+ *
+ * If the issue still exists, both versions will appear in main-war's WEB-INF/lib.
+ * If fixed, only the managed version will appear.
+ */
+
+String managedVersion = plexusUtilVersion;
+
+// --- Check overlay WAR content ---
+File overlayTarget = new File( basedir, "overlay-war/target" );
+File overlayWar = new File( overlayTarget, "overlay-war-1.0-SNAPSHOT" );
+File overlayLib = new File( overlayWar, "WEB-INF/lib" );
+
+String[] overlayJars = overlayLib.list();
+boolean overlayHasOld = false;
+boolean overlayHasManaged = false;
+
+for ( int i = 0; i < overlayJars.length; i++ )
+{
+    String jar = overlayJars[i];
+    if ( jar.startsWith( "plexus-utils-3.0.24" ) )
+    {
+        overlayHasOld = true;
+    }
+    if ( jar.startsWith( "plexus-utils-" + managedVersion ) )
+    {
+        overlayHasManaged = true;
+    }
+}
+
+if ( !overlayHasOld )
+{
+    System.err.println( "Overlay WAR missing plexus-utils-3.0.24.jar in WEB-INF/lib." );
+    return false;
+}
+
+if ( overlayHasManaged )
+{
+    System.err.println( "Overlay WAR unexpectedly contains plexus-utils-" + managedVersion + ".jar. "
+        + "Overlay should only have version 3.0.24." );
+    return false;
+}
+
+System.out.println( "Overlay WAR correctly contains only plexus-utils-3.0.24.jar." );
+
+// --- Check main WAR content ---
+File mainTarget = new File( basedir, "main-war/target" );
+File mainWar = new File( mainTarget, "main-war-1.0-SNAPSHOT" );
+File mainLib = new File( mainWar, "WEB-INF/lib" );
+
+String[] mainJars = mainLib.list();
+boolean mainHasOld = false;
+boolean mainHasManaged = false;
+List duplicateGavs = new ArrayList();
+
+for ( int i = 0; i < mainJars.length; i++ )
+{
+    String jar = mainJars[i];
+    if ( jar.startsWith( "plexus-utils-3.0.24" ) )
+    {
+        mainHasOld = true;
+        duplicateGavs.add( "plexus-utils:3.0.24 (" + jar + ")" );
+    }
+    if ( jar.startsWith( "plexus-utils-" + managedVersion ) )
+    {
+        mainHasManaged = true;
+        duplicateGavs.add( "plexus-utils:" + managedVersion + " (" + jar + ")" );
+    }
+}
+
+if ( !mainHasManaged )
+{
+    System.err.println( "Main WAR missing plexus-utils-" + managedVersion + ".jar in WEB-INF/lib." );
+    return false;
+}
+
+if ( mainHasOld )
+{
+    // Both versions found -- issue STILL EXISTS
+    System.out.println( "ISSUE #389 (MWAR-220) STILL EXISTS:" );
+    System.out.println( "  Both plexus-utils versions found in main WAR WEB-INF/lib:" );
+    System.out.println( "    - plexus-utils-3.0.24.jar (from overlay unpacking)" );
+    System.out.println( "    - plexus-utils-" + managedVersion + ".jar (from dependencyManagement)" );
+    System.out.println( "  dependencyManagement does not filter overlay-provided jars." );
+    return false;
+}
+else
+{
+    // Only managed version -- issue has been fixed
+    System.out.println( "ISSUE #389 (MWAR-220) APPEARS FIXED:" );
+    System.out.println( "  Only plexus-utils-" + managedVersion + ".jar found in WEB-INF/lib." );
+    System.out.println( "  The overlay's plexus-utils-3.0.24.jar was correctly filtered out." );
+    return true;
+}
