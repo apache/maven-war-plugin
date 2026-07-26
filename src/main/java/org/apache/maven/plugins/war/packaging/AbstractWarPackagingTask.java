@@ -20,7 +20,6 @@ package org.apache.maven.plugins.war.packaging;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
@@ -361,8 +360,7 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
      * @throws java.io.IOException if an error occurred while reading the file
      */
     protected String getEncoding(File webXml) throws IOException {
-        try (InputStream in = Files.newInputStream(webXml.toPath());
-                XmlStreamReader xmlReader = new XmlStreamReader(in)) {
+        try (XmlStreamReader xmlReader = XmlStreamReader.builder().setFile(webXml).get()) {
             return xmlReader.getEncoding();
         }
     }
