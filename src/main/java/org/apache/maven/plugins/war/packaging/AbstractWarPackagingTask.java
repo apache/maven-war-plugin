@@ -360,7 +360,8 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
      * @throws java.io.IOException if an error occurred while reading the file
      */
     protected String getEncoding(File webXml) throws IOException {
-        try (XmlStreamReader xmlReader = new XmlStreamReader(webXml)) {
+        try (XmlStreamReader xmlReader =
+                XmlStreamReader.builder().setFile(webXml).get()) {
             return xmlReader.getEncoding();
         }
     }
