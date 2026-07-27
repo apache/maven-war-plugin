@@ -20,6 +20,8 @@ package org.apache.maven.plugins.war.packaging;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -65,11 +67,12 @@ public class OverlayPackagingTask extends AbstractWarPackagingTask {
                 // Step1: Extract if necessary
                 final File tmpDir = unpackOverlay(context, overlay);
 
-                // Step1b: Remove jars from overlay that conflict with managed dependencies
-                filterConflictingDependencyJars(context, tmpDir);
+                // Step1b: Identify jars from overlay that conflict with project dependencies
+                Set<String> conflictingJars = computeConflictingJars(context, tmpDir);
 
-                // Step2: setup
-                final PathSet includes = getFilesToIncludes(tmpDir, overlay.getIncludes(), overlay.getExcludes());
+                // Step2: setup, excluding conflicting jars so the cached overlay is not mutated
+                String[] effectiveExcludes = mergeExcludes(overlay.getExcludes(), conflictingJars);
+                final PathSet includes = getFilesToIncludes(tmpDir, overlay.getIncludes(), effectiveExcludes);
 
                 // Copy
                 if (null == overlay.getTargetPath()) {
@@ -136,18 +139,21 @@ public class OverlayPackagingTask extends AbstractWarPackagingTask {
     }
 
     /**
-     * Removes jars from the overlay's {@code WEB-INF/lib} that conflict with the project's managed
-     * dependencies. When a project uses dependencyManagement to pin a version, any jar from the
-     * overlay with the same artifactId but a different version is removed, ensuring only the
-     * dependency-managed version ends up in {@code WEB-INF/lib}.
+     * Identifies jars from the overlay's {@code WEB-INF/lib} whose artifactId matches a non-optional
+     * runtime-scope dependency resolved by the project. These jars are candidates for exclusion
+     * from the overlay copy so that only the project-resolved version ends up in {@code WEB-INF/lib}.
+     *
+     * <p>The overlay's cached unpack directory is <em>not</em> mutated; the returned set is used
+     * as additional excludes during the copy step.
      *
      * @param context the packaging context
      * @param overlayDir the unpacked overlay directory
+     * @return set of paths (relative to the overlay dir) to exclude from the overlay copy
      */
-    private void filterConflictingDependencyJars(WarPackagingContext context, File overlayDir) {
+    private Set<String> computeConflictingJars(WarPackagingContext context, File overlayDir) {
         File libDir = new File(overlayDir, "WEB-INF/lib");
         if (!libDir.isDirectory()) {
-            return;
+            return Collections.emptySet();
         }
 
         ScopeArtifactFilter filter = new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME);
@@ -159,32 +165,54 @@ public class OverlayPackagingTask extends AbstractWarPackagingTask {
         }
 
         if (projectArtifactIds.isEmpty()) {
-            return;
+            return Collections.emptySet();
         }
 
         File[] overlayJars = libDir.listFiles((dir, name) -> name.endsWith(".jar"));
         if (overlayJars == null) {
-            return;
+            return Collections.emptySet();
         }
 
+        Set<String> conflicting = new HashSet<>();
         for (File overlayJar : overlayJars) {
             String jarName = overlayJar.getName();
             String artifactId = extractArtifactId(jarName);
             if (artifactId != null && projectArtifactIds.contains(artifactId)) {
                 context.getLog()
-                        .debug("Removing dependency [" + jarName + "] from overlay [" + overlay.getId()
-                                + "]; managed version in project already provides it");
-                if (!overlayJar.delete()) {
-                    context.getLog()
-                            .warn("Failed to delete [" + jarName + "] from overlay [" + overlay.getId() + "]");
-                }
+                        .debug("Excluding dependency [" + jarName + "] from overlay [" + overlay.getId()
+                                + "]; project runtime dependencies already include a version");
+                conflicting.add("WEB-INF/lib/" + jarName);
             }
         }
+        return conflicting;
+    }
+
+    /**
+     * Merges the overlay's existing excludes with additional jar filenames to exclude.
+     *
+     * @param overlayExcludes excludes from the overlay configuration, may be null
+     * @param additionalJars paths to add as excludes
+     * @return merged excludes array
+     */
+    private static String[] mergeExcludes(String[] overlayExcludes, Set<String> additionalJars) {
+        if (additionalJars.isEmpty()) {
+            return overlayExcludes;
+        }
+        if (overlayExcludes == null || overlayExcludes.length == 0) {
+            return additionalJars.toArray(new String[0]);
+        }
+        String[] merged = Arrays.copyOf(overlayExcludes, overlayExcludes.length + additionalJars.size());
+        System.arraycopy(
+                additionalJars.toArray(new String[0]), 0, merged, overlayExcludes.length, additionalJars.size());
+        return merged;
     }
 
     /**
      * Extracts the Maven artifactId from a jar filename following the
      * {@code artifactId-version(-classifier)?.jar} convention.
+     *
+     * <p>Scans right-to-left for the last {@code -} followed by a digit, which correctly
+     * handles artifactIds that contain digits (e.g. {@code commons-lang3-3.20.0.jar}).
      *
      * @param jarName the jar filename
      * @return the artifactId, or null if it cannot be determined
@@ -194,15 +222,10 @@ public class OverlayPackagingTask extends AbstractWarPackagingTask {
             return null;
         }
         String baseName = jarName.substring(0, jarName.length() - 4);
-        int versionStart = -1;
-        for (int i = 0; i < baseName.length(); i++) {
-            if (Character.isDigit(baseName.charAt(i))) {
-                versionStart = i;
-                break;
+        for (int i = baseName.length() - 2; i >= 0; i--) {
+            if (baseName.charAt(i) == '-' && Character.isDigit(baseName.charAt(i + 1))) {
+                return baseName.substring(0, i);
             }
-        }
-        if (versionStart > 0 && baseName.charAt(versionStart - 1) == '-') {
-            return baseName.substring(0, versionStart - 1);
         }
         return null;
     }
