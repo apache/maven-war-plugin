@@ -20,10 +20,15 @@ package org.apache.maven.plugins.war.packaging;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
@@ -139,9 +144,10 @@ public class OverlayPackagingTask extends AbstractWarPackagingTask {
     }
 
     /**
-     * Identifies jars from the overlay's {@code WEB-INF/lib} whose artifactId matches a non-optional
-     * runtime-scope dependency resolved by the project. These jars are candidates for exclusion
-     * from the overlay copy so that only the project-resolved version ends up in {@code WEB-INF/lib}.
+     * Identifies jars from the overlay's {@code WEB-INF/lib} whose groupId:artifactId matches a
+     * non-optional runtime-scope dependency resolved by the project. When the overlay jar contains
+     * {@code META-INF/maven/**\/pom.properties}, the groupId is read from that metadata for a precise
+     * match. Otherwise, matching falls back to artifactId only.
      *
      * <p>The overlay's cached unpack directory is <em>not</em> mutated; the returned set is used
      * as additional excludes during the copy step.
@@ -157,14 +163,16 @@ public class OverlayPackagingTask extends AbstractWarPackagingTask {
         }
 
         ScopeArtifactFilter filter = new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME);
-        Set<String> projectArtifactIds = new HashSet<>();
+        Set<String> projectArtifactKeys = new HashSet<>();
+        Set<String> projectFallbackIds = new HashSet<>();
         for (Artifact artifact : context.getProject().getArtifacts()) {
             if (!artifact.isOptional() && filter.include(artifact) && "jar".equals(artifact.getType())) {
-                projectArtifactIds.add(artifact.getArtifactId());
+                projectArtifactKeys.add(artifact.getGroupId() + ":" + artifact.getArtifactId());
+                projectFallbackIds.add(artifact.getArtifactId());
             }
         }
 
-        if (projectArtifactIds.isEmpty()) {
+        if (projectArtifactKeys.isEmpty()) {
             return Collections.emptySet();
         }
 
@@ -177,7 +185,14 @@ public class OverlayPackagingTask extends AbstractWarPackagingTask {
         for (File overlayJar : overlayJars) {
             String jarName = overlayJar.getName();
             String artifactId = extractArtifactId(jarName);
-            if (artifactId != null && projectArtifactIds.contains(artifactId)) {
+            if (artifactId == null) {
+                continue;
+            }
+
+            String groupId = getJarGroupId(overlayJar);
+            String key = (groupId != null) ? groupId + ":" + artifactId : artifactId;
+            if ((groupId != null && projectArtifactKeys.contains(key))
+                    || (groupId == null && projectFallbackIds.contains(artifactId))) {
                 context.getLog()
                         .debug("Excluding dependency [" + jarName + "] from overlay [" + overlay.getId()
                                 + "]; project runtime dependencies already include a version");
@@ -185,6 +200,33 @@ public class OverlayPackagingTask extends AbstractWarPackagingTask {
             }
         }
         return conflicting;
+    }
+
+    /**
+     * Reads the Maven groupId from a jar's {@code META-INF/maven/**\/pom.properties} metadata, if
+     * present.
+     *
+     * @param jarFile the jar file
+     * @return the groupId, or null if it could not be determined
+     */
+    private static String getJarGroupId(File jarFile) {
+        try (ZipFile zip = new ZipFile(jarFile)) {
+            Enumeration<? extends ZipEntry> entries = zip.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                String name = entry.getName();
+                if (name.startsWith("META-INF/maven/") && name.endsWith("/pom.properties")) {
+                    Properties props = new Properties();
+                    try (InputStream is = zip.getInputStream(entry)) {
+                        props.load(is);
+                    }
+                    return props.getProperty("groupId");
+                }
+            }
+        } catch (IOException e) {
+            // groupId not available; fall back to artifactId-only matching
+        }
+        return null;
     }
 
     /**
@@ -213,6 +255,9 @@ public class OverlayPackagingTask extends AbstractWarPackagingTask {
      *
      * <p>Scans right-to-left for the last {@code -} followed by a digit, which correctly
      * handles artifactIds that contain digits (e.g. {@code commons-lang3-3.20.0.jar}).
+     *
+     * <p>The extracted artifactId is used together with the groupId obtained from
+     * {@link #getJarGroupId(File)} for precise {@code groupId:artifactId} matching.
      *
      * @param jarName the jar filename
      * @return the artifactId, or null if it cannot be determined
