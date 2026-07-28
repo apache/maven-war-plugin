@@ -346,6 +346,14 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
                 FileUtils.copyFile(source.getCanonicalFile(), destination);
                 // preserve timestamp
                 destination.setLastModified(readAttributes.lastModifiedTime().toMillis());
+                // normalize permissions: clear executable, set read-for-all, write-for-owner
+                // on all copied files (not just WEB-INF/lib jars)
+                boolean ok = destination.setExecutable(false, false);
+                ok &= destination.setReadable(true, false);
+                ok &= destination.setWritable(true, true);
+                if (!ok) {
+                    context.getLog().debug("Could not normalize permissions for " + targetFilename);
+                }
                 context.getLog().debug(" + " + targetFilename + " has been copied.");
             }
             return true;
@@ -360,7 +368,8 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
      * @throws java.io.IOException if an error occurred while reading the file
      */
     protected String getEncoding(File webXml) throws IOException {
-        try (XmlStreamReader xmlReader = new XmlStreamReader(webXml)) {
+        try (XmlStreamReader xmlReader =
+                XmlStreamReader.builder().setFile(webXml).get()) {
             return xmlReader.getEncoding();
         }
     }
@@ -495,5 +504,20 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
             }
         }
         return true;
+    }
+
+    /**
+     * Returns {@code true} if the artifact with the given type would be placed in {@code WEB-INF/lib/}.
+     *
+     * @param type the artifact type
+     * @return {@code true} if the type is a library type that goes to WEB-INF/lib
+     */
+    public static boolean isLibraryType(String type) {
+        return "jar".equals(type)
+                || "ejb".equals(type)
+                || "ejb-client".equals(type)
+                || "test-jar".equals(type)
+                || "bundle".equals(type)
+                || "par".equals(type);
     }
 }
