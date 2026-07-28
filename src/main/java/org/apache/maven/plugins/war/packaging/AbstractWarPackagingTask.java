@@ -496,4 +496,19 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
         }
         return true;
     }
+
+    /**
+     * Returns {@code true} if the artifact with the given type would be placed in {@code WEB-INF/lib/}.
+     *
+     * @param type the artifact type
+     * @return {@code true} if the type is a library type that goes to WEB-INF/lib
+     */
+    public static boolean isLibraryType(String type) {
+        return "jar".equals(type)
+                || "ejb".equals(type)
+                || "ejb-client".equals(type)
+                || "test-jar".equals(type)
+                || "bundle".equals(type)
+                || "par".equals(type);
+    }
 }

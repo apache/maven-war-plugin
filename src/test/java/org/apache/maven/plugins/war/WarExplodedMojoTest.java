@@ -18,8 +18,11 @@
  */
 package org.apache.maven.plugins.war;
 
+import javax.inject.Inject;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 import org.apache.maven.api.plugin.testing.InjectMojo;
@@ -27,6 +30,7 @@ import org.apache.maven.api.plugin.testing.MojoExtension;
 import org.apache.maven.api.plugin.testing.MojoParameter;
 import org.apache.maven.api.plugin.testing.MojoTest;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.testing.stubs.ArtifactStub;
 import org.apache.maven.plugins.war.stub.AarArtifactStub;
 import org.apache.maven.plugins.war.stub.EJBArtifactStub;
@@ -50,9 +54,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
 @MojoTest
 public class WarExplodedMojoTest {
+
+    @Inject
+    private MavenSession mavenSession;
 
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/warexplodedmojo/plugin-config.xml")
     @MojoParameter(
@@ -933,5 +941,48 @@ public class WarExplodedMojoTest {
         expectedWebSource2File.delete();
         expectedEJBArtifact.delete();
         expectedEJBDupArtifact.delete();
+    }
+
+    /**
+     * Test for MWAR-443: Files placed by maven-dependency-plugin in WEB-INF/lib
+     * for provided-scope artifacts should not be deleted by the WAR plugin.
+     */
+    @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/warexplodedmojo/plugin-config.xml")
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/SimpleExplodedWar-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/SimpleExplodedWar-test-data/source/")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedmojo/MWAR443Test")
+    @MojoParameter(name = "outdatedCheckPath", value = "WEB-INF/lib/")
+    @Test
+    public void testProvidedScopeArtifactPlacedByDependencyPluginShouldNotBeDeleted(WarExplodedMojo mojo)
+            throws Exception {
+        // Ensure session has a start time so the outdated resource detection is active.
+        // Uses same pattern as WarExplodedMojoFilteringTest which also calls
+        // when(mavenSession.get...()).thenReturn(...)
+        when(mavenSession.getStartTime()).thenReturn(new Date());
+
+        File webAppDirectory = mojo.getWebappDirectory();
+        File libDir = new File(webAppDirectory, "WEB-INF/lib");
+        File providedJar = new File(libDir, "derbyLocale_cs-10.14.2.0.jar");
+        try {
+            // Setup: Create a file in WEB-INF/lib with an old timestamp,
+            // simulating a file placed by maven-dependency-plugin for a provided-scope artifact
+            libDir.mkdirs();
+            providedJar.createNewFile();
+            // Set timestamp to something in the past (before session start)
+            providedJar.setLastModified(0L);
+
+            mojo.execute();
+
+            // The file should NOT be deleted - it was placed by another plugin
+            assertTrue(providedJar.exists(), "provided-scope artifact should not be deleted by WAR plugin");
+        } finally {
+            // Cleanup
+            providedJar.delete();
+            libDir.delete();
+        }
     }
 }
