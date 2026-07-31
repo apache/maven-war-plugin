@@ -59,11 +59,11 @@ import org.apache.maven.shared.filtering.MavenFileFilter;
 import org.apache.maven.shared.filtering.MavenFilteringException;
 import org.apache.maven.shared.filtering.MavenResourcesExecution;
 import org.apache.maven.shared.filtering.MavenResourcesFiltering;
-import org.apache.maven.shared.mapping.MappingUtils;
 import org.apache.maven.shared.utils.StringUtils;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
+import org.codehaus.plexus.interpolation.InterpolationException;
 
 /**
  * Contains common jobs for WAR mojos.
@@ -661,10 +661,10 @@ public abstract class AbstractWarMojo extends AbstractMojo {
                             outdatedCheckPath = outdatedCheckPath.replace('/', '\\');
                         }
                     }
-                    // MWAR-443: Compute expected filenames for runtime-scope artifacts
-                    // so we don't mark files placed by other plugins (e.g., maven-dependency-plugin)
-                    // as outdated and subsequently delete them.
-                    final Set<String> runtimeArtifactFileNames = getRuntimeArtifactFileNames();
+                    // MWAR-443: Compute the expected file names of non-runtime-scope library artifacts
+                    // so files placed by other plugins (e.g., maven-dependency-plugin) are not marked
+                    // as outdated and subsequently deleted.
+                    final Set<String> nonRuntimeArtifactFileNames = getNonRuntimeArtifactFileNames();
                     Files.walkFileTree(webappDirectory.toPath(), new SimpleFileVisitor<Path>() {
                         @Override
                         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
@@ -675,17 +675,15 @@ public abstract class AbstractWarMojo extends AbstractMojo {
                                         .relativize(file)
                                         .toString();
                                 if (checkAllPathsForOutdated() || path.startsWith(outdatedCheckPath)) {
-                                    // MWAR-443: For files under the artifact lib directory,
-                                    // only mark as outdated if they match a runtime-scope artifact
-                                    // that the WAR plugin would copy. This prevents deleting files
-                                    // placed by other plugins (e.g., maven-dependency-plugin) for
-                                    // non-runtime-scope dependencies.
+                                    // MWAR-443: Files under the artifact lib directory that match a
+                                    // non-runtime-scope artifact may have been placed by another plugin
+                                    // (e.g., maven-dependency-plugin), so do not mark them as outdated.
+                                    // Stale files that are not part of the current project (e.g. outdated
+                                    // versions of runtime artifacts) are still removed.
                                     String normalizedPath = path.replace('\\', '/');
-                                    if (normalizedPath.startsWith("WEB-INF/lib/")
-                                            && !runtimeArtifactFileNames.contains(
+                                    if (!normalizedPath.startsWith(AbstractWarPackagingTask.LIB_PATH)
+                                            || !nonRuntimeArtifactFileNames.contains(
                                                     file.toFile().getName())) {
-                                        // Skip: file was placed by another plugin, not managed by WAR plugin
-                                    } else {
                                         outdatedResources.add(path);
                                     }
                                 }
@@ -705,38 +703,22 @@ public abstract class AbstractWarMojo extends AbstractMojo {
         }
 
         /**
-         * Returns the set of expected target filenames for runtime-scope artifacts.
-         * Used to avoid marking files placed by other plugins (e.g., maven-dependency-plugin)
-         * as outdated and subsequently deleting them (MWAR-443).
+         * Returns the set of expected target filenames in {@code WEB-INF/lib/} for non-runtime-scope library
+         * artifacts. Used to avoid marking files placed by other plugins (e.g., maven-dependency-plugin) as
+         * outdated and subsequently deleting them (MWAR-443).
          */
-        private Set<String> getRuntimeArtifactFileNames() {
+        private Set<String> getNonRuntimeArtifactFileNames() {
             Set<String> fileNames = new HashSet<>();
             ScopeArtifactFilter filter = new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME);
             if (project.getArtifacts() != null) {
                 for (Artifact artifact : project.getArtifacts()) {
-                    if (!artifact.isOptional()
-                            && filter.include(artifact)
-                            && AbstractWarPackagingTask.isLibraryType(artifact.getType())) {
+                    if (!filter.include(artifact) && AbstractWarPackagingTask.isLibraryType(artifact.getType())) {
                         try {
-                            String targetFileName;
-                            if (getOutputFileNameMapping() != null) {
-                                targetFileName =
-                                        MappingUtils.evaluateFileNameMapping(getOutputFileNameMapping(), artifact);
-                            } else {
-                                String classifier = artifact.getClassifier();
-                                if (classifier != null && !classifier.trim().isEmpty()) {
-                                    targetFileName = MappingUtils.evaluateFileNameMapping(
-                                            MappingUtils.DEFAULT_FILE_NAME_MAPPING_CLASSIFIER, artifact);
-                                } else {
-                                    targetFileName = MappingUtils.evaluateFileNameMapping(
-                                            MappingUtils.DEFAULT_FILE_NAME_MAPPING, artifact);
-                                }
-                            }
-                            if ("par".equals(artifact.getType())) {
-                                targetFileName = targetFileName.substring(0, targetFileName.lastIndexOf('.')) + ".jar";
-                            }
-                            fileNames.add(targetFileName);
-                        } catch (Exception e) {
+                            String targetFileName = AbstractWarPackagingTask.evaluateFileNameMapping(
+                                    getOutputFileNameMapping(), artifact);
+                            fileNames.add(
+                                    AbstractWarPackagingTask.getLibraryFileName(artifact.getType(), targetFileName));
+                        } catch (InterpolationException e) {
                             getLog().debug("Could not compute expected filename for artifact: " + artifact, e);
                         }
                     }

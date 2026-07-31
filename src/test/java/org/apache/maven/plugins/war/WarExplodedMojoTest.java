@@ -29,6 +29,7 @@ import org.apache.maven.api.plugin.testing.InjectMojo;
 import org.apache.maven.api.plugin.testing.MojoExtension;
 import org.apache.maven.api.plugin.testing.MojoParameter;
 import org.apache.maven.api.plugin.testing.MojoTest;
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.testing.stubs.ArtifactStub;
@@ -945,7 +946,8 @@ public class WarExplodedMojoTest {
 
     /**
      * Test for MWAR-443: Files placed by maven-dependency-plugin in WEB-INF/lib
-     * for provided-scope artifacts should not be deleted by the WAR plugin.
+     * for provided-scope artifacts should not be deleted by the WAR plugin,
+     * while stale files not part of the current project are still removed.
      */
     @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/warexplodedmojo/plugin-config.xml")
     @MojoParameter(
@@ -964,25 +966,84 @@ public class WarExplodedMojoTest {
         // when(mavenSession.get...()).thenReturn(...)
         when(mavenSession.getStartTime()).thenReturn(new Date());
 
+        // A provided-scope library artifact is not copied by the WAR plugin itself, but may
+        // have been placed in WEB-INF/lib by another plugin (e.g., maven-dependency-plugin).
+        MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
+        JarArtifactStub providedArtifact = new JarArtifactStub(getBasedir(), new DefaultArtifactHandler("jar"));
+        providedArtifact.setScope(Artifact.SCOPE_PROVIDED);
+        providedArtifact.setArtifactId("derbyLocale_cs");
+        providedArtifact.setVersion("10.14.2.0");
+        project.addArtifact(providedArtifact);
+        mojo.setProject(project);
+
         File webAppDirectory = mojo.getWebappDirectory();
         File libDir = new File(webAppDirectory, "WEB-INF/lib");
+        // file placed by maven-dependency-plugin for the provided-scope artifact, older than the session
         File providedJar = new File(libDir, "derbyLocale_cs-10.14.2.0.jar");
+        // stale file from a previous build that is not part of the current project
+        File staleRuntimeJar = new File(libDir, "stale-runtime-1.0.jar");
         try {
-            // Setup: Create a file in WEB-INF/lib with an old timestamp,
-            // simulating a file placed by maven-dependency-plugin for a provided-scope artifact
             libDir.mkdirs();
             providedJar.createNewFile();
-            // Set timestamp to something in the past (before session start)
+            staleRuntimeJar.createNewFile();
+            // Set timestamps to the past (before session start)
+            providedJar.setLastModified(0L);
+            staleRuntimeJar.setLastModified(0L);
+
+            mojo.execute();
+
+            // The file placed by another plugin should NOT be deleted
+            assertTrue(providedJar.exists(), "provided-scope artifact should not be deleted by WAR plugin");
+            // Stale files that are not part of the current project are still removed
+            assertFalse(staleRuntimeJar.exists(), "stale runtime artifact should be deleted by WAR plugin");
+        } finally {
+            FileUtils.deleteDirectory(webAppDirectory);
+        }
+    }
+
+    /**
+     * Test for MWAR-443: With an {@code outputFileNameMapping} configured, files placed by
+     * maven-dependency-plugin for provided-scope artifacts should not be deleted by the WAR plugin.
+     */
+    @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/warexplodedmojo/plugin-config.xml")
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/SimpleExplodedWar-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/SimpleExplodedWar-test-data/source/")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warexplodedmojo/MWAR443TestStripVersion")
+    @MojoParameter(name = "outdatedCheckPath", value = "WEB-INF/lib/")
+    @MojoParameter(name = "outputFileNameMapping", value = "@{artifactId}@.@{extension}@")
+    @Test
+    public void testProvidedScopeArtifactPlacedByDependencyPluginWithFileNameMappingShouldNotBeDeleted(
+            WarExplodedMojo mojo) throws Exception {
+        when(mavenSession.getStartTime()).thenReturn(new Date());
+
+        MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
+        JarArtifactStub providedArtifact = new JarArtifactStub(getBasedir(), new DefaultArtifactHandler("jar"));
+        providedArtifact.setScope(Artifact.SCOPE_PROVIDED);
+        providedArtifact.setArtifactId("derbyLocale_cs");
+        providedArtifact.setVersion("10.14.2.0");
+        project.addArtifact(providedArtifact);
+        mojo.setProject(project);
+
+        File webAppDirectory = mojo.getWebappDirectory();
+        File libDir = new File(webAppDirectory, "WEB-INF/lib");
+        // with stripVersion-style mapping the dependency-plugin places the file without the version
+        File providedJar = new File(libDir, "derbyLocale_cs.jar");
+        try {
+            libDir.mkdirs();
+            providedJar.createNewFile();
+            // Set timestamp to the past (before session start)
             providedJar.setLastModified(0L);
 
             mojo.execute();
 
-            // The file should NOT be deleted - it was placed by another plugin
+            // The file placed by another plugin should NOT be deleted
             assertTrue(providedJar.exists(), "provided-scope artifact should not be deleted by WAR plugin");
         } finally {
-            // Cleanup
-            providedJar.delete();
-            libDir.delete();
+            FileUtils.deleteDirectory(webAppDirectory);
         }
     }
 }
