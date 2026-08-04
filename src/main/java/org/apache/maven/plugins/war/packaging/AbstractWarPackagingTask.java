@@ -535,7 +535,7 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
      * @param targetFileName the mapped file name of the artifact
      * @return the file name the artifact will have in {@code WEB-INF/lib/}
      */
-    public static String getLibraryFileName(String type, String targetFileName) {
+    static String getLibraryFileName(String type, String targetFileName) {
         if ("par".equals(type)) {
             int extensionIndex = targetFileName.lastIndexOf('.');
             if (extensionIndex > 0) {
