@@ -517,7 +517,7 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
      * @param type the artifact type
      * @return {@code true} if the type is a library type that goes to WEB-INF/lib
      */
-    public static boolean isLibraryType(String type) {
+    static boolean isLibraryType(String type) {
         return "jar".equals(type)
                 || "ejb".equals(type)
                 || "ejb-client".equals(type)
