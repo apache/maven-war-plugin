@@ -346,6 +346,14 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
                 FileUtils.copyFile(source.getCanonicalFile(), destination);
                 // preserve timestamp
                 destination.setLastModified(readAttributes.lastModifiedTime().toMillis());
+                // normalize permissions: clear executable, set read-for-all, write-for-owner
+                // on all copied files (not just WEB-INF/lib jars)
+                boolean ok = destination.setExecutable(false, false);
+                ok &= destination.setReadable(true, false);
+                ok &= destination.setWritable(true, true);
+                if (!ok) {
+                    context.getLog().debug("Could not normalize permissions for " + targetFilename);
+                }
                 context.getLog().debug(" + " + targetFilename + " has been copied.");
             }
             return true;
@@ -360,7 +368,8 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
      * @throws java.io.IOException if an error occurred while reading the file
      */
     protected String getEncoding(File webXml) throws IOException {
-        try (XmlStreamReader xmlReader = new XmlStreamReader(webXml)) {
+        try (XmlStreamReader xmlReader =
+                XmlStreamReader.builder().setFile(webXml).get()) {
             return xmlReader.getEncoding();
         }
     }
