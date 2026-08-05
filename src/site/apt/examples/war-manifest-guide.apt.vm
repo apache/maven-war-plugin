@@ -66,7 +66,7 @@ WAR Manifest Customization
   Now, you can control which dependencies are included in <<<WEB-INF/lib>>> and in the manifest classpath by following
   these examples.  Maven will follow the transitive dependency tree until it gets to artifacts scoped as "provided".
 
-  <<Note:>> No way is shown how to include a dependency in <<<WEB-INF/lib>>> but not in the manifest classpath.
+  <<Note:>> No example is shown for including a dependency in <<<WEB-INF/lib>>> while excluding it from the manifest classpath.
 
 +--------------------+
 <project>
