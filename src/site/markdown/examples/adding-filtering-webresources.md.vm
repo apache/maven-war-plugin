@@ -1,44 +1,32 @@
- ------
- Adding and Filtering External Web Resources
- ------
- Pete Marvin King
- Dennis Lundberg
- ------
- 2012-09-28
- ------
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
 
-~~ Licensed to the Apache Software Foundation (ASF) under one
-~~ or more contributor license agreements.  See the NOTICE file
-~~ distributed with this work for additional information
-~~ regarding copyright ownership.  The ASF licenses this file
-~~ to you under the Apache License, Version 2.0 (the
-~~ "License"); you may not use this file except in compliance
-~~ with the License.  You may obtain a copy of the License at
-~~
-~~   http://www.apache.org/licenses/LICENSE-2.0
-~~
-~~ Unless required by applicable law or agreed to in writing,
-~~ software distributed under the License is distributed on an
-~~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-~~ KIND, either express or implied.  See the License for the
-~~ specific language governing permissions and limitations
-~~ under the License.
+http://www.apache.org/licenses/LICENSE-2.0
 
-~~ NOTE: For help with the syntax of this file, see:
-~~ http://maven.apache.org/doxia/references/apt-format.html
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
 
-Adding and Filtering External Web Resources
+# Adding and Filtering External Web Resources
 
- The default resource directory for all Maven projects is <<<src/main/resources>>> which
- will end up in <<<target/classes>>> and in <<<WEB-INF/classes>>> in the WAR. The directory
- structure will be preserved in the process.
+The default resource directory for all Maven projects is `src/main/resources` which will end up in `target/classes` and in `WEB-INF/classes` in the WAR. The directory structure will be preserved in the process.
 
- The WAR Plugin is also capable of including resources not found in the default resource
- directory through the <<<webResources>>> parameter.
+The WAR Plugin is also capable of including resources not found in the default resource directory through the `webResources` parameter.
 
-*Adding web resources
+Adding web resources
+--------------------
 
-+-------+
+```xml
 <project>
   ...
   <build>
@@ -60,11 +48,11 @@ Adding and Filtering External Web Resources
   </build>
   ...
 </project>
-+-------+
+```
 
- Using our sample project in the {{{../usage.html}usage section}} with an added external resource, like this:
+Using our sample project in the [usage section](../usage.html) with an added external resource, like this:
 
-----------
+```
  .
  |-- pom.xml
  |-- resource2
@@ -87,11 +75,11 @@ Adding and Filtering External Web Resources
              |-- index.jsp
              `-- jsp
                  `-- websource.jsp
-----------
+```
 
- would end up in the WAR as:
+would end up in the WAR as:
 
-----------
+```
 documentedproject-1.0-SNAPSHOT.war
  |-- META-INF
  |   |-- MANIFEST.MF
@@ -115,28 +103,25 @@ documentedproject-1.0-SNAPSHOT.war
  |-- index.jsp
  `-- jsp
      `-- websource.jsp
-----------
+```
 
- <<<external-resource2.jpg>>> and <<<image2>>> are copied to the root of the WAR, preserving the
- directory structure.
+`external-resource2.jpg` and `image2` are copied to the root of the WAR, preserving the directory structure.
 
-*Configuring web Resources
+Configuring web Resources
+-------------------------
 
- <<<webResources>>> is a list of resources. All options of resource are supported.
+`webResources` is a list of resources. All options of resource are supported.
 
- A web resource
+A web resource
 
-  * can have includes/excludes
+- can have includes/excludes
+- can be filtered
+- is not limited to the default destination - the root of the WAR
+#[[### Includes/Excludes]]#
 
-  * can be filtered
+To include all jpgs in the WAR we can add the following to our POM configuration from above:
 
-  * is not limited to the default destination - the root of the WAR
-
-**Includes/Excludes
-
- To include all jpgs in the WAR we can add the following to our POM configuration from above:
-
-+----------+
+```unknown
         ...
         <configuration>
           <webResources>
@@ -151,11 +136,11 @@ documentedproject-1.0-SNAPSHOT.war
           </webResources>
         </configuration>
         ...
-+----------+
+```
 
- To exclude the <<<image2>>> directory from the WAR add this:
+To exclude the `image2` directory from the WAR add this:
 
-+----------+
+```unknown
         ...
         <configuration>
           <webResources>
@@ -170,14 +155,13 @@ documentedproject-1.0-SNAPSHOT.war
           </webResources>
         </configuration>
         ...
-+----------+
+```
 
- Be careful when mixing includes and excludes, excludes will have a higher priority.
- Includes can not override excludes if a resource matches both.
+Be careful when mixing includes and excludes, excludes will have a higher priority. Includes can not override excludes if a resource matches both.
 
- Having this configuration will exclude all jpgs from the WAR:
+Having this configuration will exclude all jpgs from the WAR:
 
-+----------+
+```unknown
         ...
         <configuration>
           <webResources>
@@ -196,11 +180,11 @@ documentedproject-1.0-SNAPSHOT.war
           </webResources>
         </configuration>
         ...
-+----------+
+```
 
- Here's another example of how to specify include and exclude patterns:
+Here's another example of how to specify include and exclude patterns:
 
-+----------+
+```unknown
         ...
         <configuration>
           <webResources>
@@ -221,14 +205,13 @@ documentedproject-1.0-SNAPSHOT.war
           </webResources>
         </configuration>
         ...
-+----------+
+```
 
-**Filtering
+#[[### Filtering]]#
 
-  Using our example above, we can also configure filters for our resources.
-  We will add a hypothetical <<<configurations>>> directory to our project:
+Using our example above, we can also configure filters for our resources. We will add a hypothetical `configurations` directory to our project:
 
-----------
+```
  .
  |-- configurations
  |   |-- config.cfg
@@ -255,12 +238,11 @@ documentedproject-1.0-SNAPSHOT.war
              |-- index.jsp
              `-- jsp
                  `-- websource.jsp
-----------
+```
 
-  To prevent corrupting your binary files when filtering is enabled, you can configure a list of file extensions that
-  will not be filtered.
+To prevent corrupting your binary files when filtering is enabled, you can configure a list of file extensions that will not be filtered.
 
-+----------+
+```unknown
         ...
         <configuration>
           <!-- the default value is the filter list under build -->
@@ -289,25 +271,25 @@ documentedproject-1.0-SNAPSHOT.war
           </webResources>
         </configuration>
         ...
-+----------+
+```
 
-*** <<<config.prop>>>
+#[[#### `config.prop`]]#
 
-+----------+
+```properties
 interpolated_property=some_config_value
-+----------+
+```
 
-*** <<<config.cfg>>>
+#[[#### `config.cfg`]]#
 
-+----------+
+```xml
 <another_ioc_container>
    <configuration>${interpolated_property}</configuration>
 </another_ioc_container>
-+----------+
+```
 
- The resulting WAR would be:
+The resulting WAR would be:
 
-----------
+```
 documentedproject-1.0-SNAPSHOT.war
  |-- META-INF
  |   |-- MANIFEST.MF
@@ -332,30 +314,23 @@ documentedproject-1.0-SNAPSHOT.war
  |-- index.jsp
  `-- jsp
      `-- websource.jsp
-----------
+```
 
- and the content of <<<config.cfg>>> would be:
+and the content of `config.cfg` would be:
 
-+----------+
+```xml
 <another_ioc_container>
    <configuration>some_config_value</configuration>
 </another_ioc_container>
-+----------+
+```
 
-  <<Note:>> In versions 2.2 and earlier of this plugin the platform encoding was
-  used when filtering resources. Depending on what that encoding was you could
-  end up with scrambled characters after filtering. Starting with version 2.3
-  this plugin respects the property <<<project.build.sourceEncoding>>> when
-  filtering resources. One notable exception to this is that <<<.xml>>> files
-  are filtered using the encoding specified inside the xml-file itself.
+**Note:** In versions 2.2 and earlier of this plugin the platform encoding was used when filtering resources. Depending on what that encoding was you could end up with scrambled characters after filtering. Starting with version 2.3 this plugin respects the property `project.build.sourceEncoding` when filtering resources. One notable exception to this is that `.xml` files are filtered using the encoding specified inside the xml-file itself.
 
+#[[### Overriding the default destination directory]]#
 
-**Overriding the default destination directory
+By default web resources are copied to the root of the WAR, as shown in the previous example. To override the default destination directory, specify the target path.
 
- By default web resources are copied to the root of the WAR, as shown in the previous example.
- To override the default destination directory, specify the target path.
-
-+----------+
+```unknown
         ...
         <configuration>
           <webResources>
@@ -375,11 +350,11 @@ documentedproject-1.0-SNAPSHOT.war
           </webResources>
         </configuration>
         ...
-+----------+
+```
 
- Using the sample project the resulting WAR would look like this:
+Using the sample project the resulting WAR would look like this:
 
-----------
+```
 documentedproject-1.0-SNAPSHOT.war
  |-- META-INF
  |   |-- MANIFEST.MF
@@ -404,4 +379,4 @@ documentedproject-1.0-SNAPSHOT.war
  |-- index.jsp
  `-- jsp
      `-- websource.jsp
-----------
+```
