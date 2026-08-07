@@ -1,60 +1,55 @@
- ------
- Using File Name Mapping
- ------
- Stephane Nicoll
- Dennis Lundberg
- ------
- 2010-05-24
+---
+title: Using File Name Mapping
+author: 
+  - Stephane Nicoll
+  - Dennis Lundberg
+date: 2010-05-24
+---
 
-~~ Licensed to the Apache Software Foundation (ASF) under one
-~~ or more contributor license agreements.  See the NOTICE file
-~~ distributed with this work for additional information
-~~ regarding copyright ownership.  The ASF licenses this file
-~~ to you under the Apache License, Version 2.0 (the
-~~ "License"); you may not use this file except in compliance
-~~ with the License.  You may obtain a copy of the License at
-~~
-~~   http://www.apache.org/licenses/LICENSE-2.0
-~~
-~~ Unless required by applicable law or agreed to in writing,
-~~ software distributed under the License is distributed on an
-~~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-~~ KIND, either express or implied.  See the License for the
-~~ specific language governing permissions and limitations
-~~ under the License.
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
 
-~~ NOTE: For help with the syntax of this file, see:
-~~ http://maven.apache.org/doxia/references/apt-format.html
+http://www.apache.org/licenses/LICENSE-2.0
 
-Using File Name Mapping
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
 
- It might be necessary to customize the file name of libraries and TLDs. By default, those resources are stored
- using the following pattern:
+# Using File Name Mapping
 
-+-----
+It might be necessary to customize the file name of libraries and TLDs. By default, those resources are stored using the following pattern:
+
+```unknown
 @{artifactId}@-@{version}@.@{extension}@
-+-----
+```
 
- If the artifact has a classifier the default pattern is of course:
+If the artifact has a classifier the default pattern is of course:
 
-+-----
+```unknown
 @{artifactId}@-@{version}@-@{classifier}@.@{extension}@
-+-----
+```
 
- The <<<outputFileNameMapping>>> parameter allows you to give a custom pattern. Each token defined in the
- pattern will be replaced with a value from the current artifact. You can use any property of Artifact and
- ArtifactHandler as a token. There is also a special token named <<<dashClassifier?>>> that can be used, since 2.1.
- It will add the string "-yourclassifier" if and only if the artifact has a classifier.
+The `outputFileNameMapping` parameter allows you to give a custom pattern. Each token defined in the pattern will be replaced with a value from the current artifact. You can use any property of Artifact and ArtifactHandler as a token. There is also a special token named `dashClassifier?` that can be used, since 2.1. It will add the string "-yourclassifier" if and only if the artifact has a classifier.
 
- For instance, to store the libraries and TLDs without version numbers or classifiers, use the following pattern:
+For instance, to store the libraries and TLDs without version numbers or classifiers, use the following pattern:
 
-+-----
+```unknown
 @{artifactId}@.@{extension}@
-+-----
+```
 
- To store the libraries and TLDs without version numbers but with classifiers
- (if they exist), use the following pattern:
+To store the libraries and TLDs without version numbers but with classifiers (if they exist), use the following pattern:
 
-+-----
+```unknown
 @{artifactId}@@{dashClassifier?}@.@{extension}@
-+-----
+```
+
