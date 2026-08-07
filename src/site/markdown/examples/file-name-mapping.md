@@ -1,3 +1,11 @@
+---
+title: Using File Name Mapping
+author: 
+  - Stephane Nicoll
+  - Dennis Lundberg
+date: 2010-05-24
+---
+
 <!--
 Licensed to the Apache Software Foundation (ASF) under one
 or more contributor license agreements.  See the NOTICE file
