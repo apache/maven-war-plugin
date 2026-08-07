@@ -135,7 +135,7 @@ The WAR Plugin handles both **war** and **zip** artifacts as overlays. However, 
 Configuring Overlays
 --------------------
 
-In previous versions of the WAR Plugin, no configuration was necessary. This is still the case if you are happy with the default settings. However, if you need more control, read on\!
+In previous versions of the WAR Plugin, no configuration was necessary. This is still the case if you are happy with the default settings. However, if you need more control, read on!
 
 The `<overlay>` element can have the following child elements:
 
