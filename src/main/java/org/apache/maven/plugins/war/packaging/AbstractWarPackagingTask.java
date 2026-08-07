@@ -517,7 +517,7 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
      * @param type the artifact type
      * @return {@code true} if the type is a library type that goes to WEB-INF/lib
      */
-    static boolean isLibraryType(String type) {
+    public static boolean isLibraryType(String type) {
         return "jar".equals(type)
                 || "ejb".equals(type)
                 || "ejb-client".equals(type)
@@ -535,7 +535,7 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
      * @param targetFileName the mapped file name of the artifact
      * @return the file name the artifact will have in {@code WEB-INF/lib/}
      */
-    static String getLibraryFileName(String type, String targetFileName) {
+    public static String getLibraryFileName(String type, String targetFileName) {
         if ("par".equals(type)) {
             int extensionIndex = targetFileName.lastIndexOf('.');
             if (extensionIndex > 0) {
