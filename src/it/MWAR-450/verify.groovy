@@ -58,7 +58,7 @@ try
         return false;
     }
     Properties properties = new Properties();
-    FileInputStream fis = new FileInputStream( myProperties );
+    fis = new FileInputStream( myProperties );
     properties.load( fis );
     fis.close();
     String property = properties.get( "my.property" );
@@ -75,10 +75,10 @@ try
         System.err.println( "myfile.txt is missing or is a directory." );
         return false;
     }
-    FileInputStream fis = new FileInputStream ( myfile );
-    String paramContent = IOUtil.toString ( fis, "UTF-8" );
+    fis = new FileInputStream ( myfile );
+    paramContent = IOUtil.toString ( fis, "UTF-8" );
     System.out.println( "content='" + paramContent + "'" );
-    int indexOf = paramContent.indexOf( "Characters that should be encoded in UTF-8: åäö" );
+    indexOf = paramContent.indexOf( "Characters that should be encoded in UTF-8: åäö" );
     if ( indexOf < 0 )
     {
       System.err.println( "Non-ascii characters changed encoding during filtering" );

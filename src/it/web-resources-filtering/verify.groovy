@@ -70,7 +70,7 @@ try
       return false;
     }
 
-    indexOf = paramContent.indexOf( "<Set name=\"password\">${jdbc.password}</Set>" );
+    indexOf = paramContent.indexOf( '<Set name="password">${jdbc.password}</Set>' );
     if ( indexOf < 0 )
     {
       System.err.println( "jdbc.password has been filtered" );
@@ -94,7 +94,7 @@ try
     }
 
     Properties properties = new Properties();
-    FileInputStream fis = new FileInputStream( myProperties );
+    fis = new FileInputStream( myProperties );
     properties.load( fis );
     fis.close();
 

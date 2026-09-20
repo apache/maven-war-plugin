@@ -55,10 +55,10 @@ try
         return false;
     }
 
-    indexOf = paramContent.indexOf( "<text2>start-${}-end</text2>" );
+    indexOf = paramContent.indexOf( '<text2>start-${}-end</text2>' );
     if ( indexOf < 0 )
     {
-        System.err.println( "filterme.xml does not contains <text2>start-${}-end</text2>" );
+        System.err.println( 'filterme.xml does not contains <text2>start-${}-end</text2>' );
         return false;
     }
 
