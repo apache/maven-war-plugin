@@ -49,10 +49,10 @@ try
     String paramContent = FileUtils.fileRead( filtered );
 
 
-    int indexOf = paramContent.indexOf( "app.version=${node.version}" );
+    int indexOf = paramContent.indexOf( 'app.version=${node.version}' );
     if ( indexOf < 0 )
     {
-        System.err.println( "filtered.properties was not filtered with the value of ${node.version}" );
+        System.err.println( 'filtered.properties was not filtered with the value of ${node.version}' );
         return false;
     }
 
