@@ -87,7 +87,7 @@ try
     }
 
     Properties properties = new Properties();
-    FileInputStream fis = new FileInputStream( myProperties );
+    fis = new FileInputStream( myProperties );
     properties.load( fis );
     fis.close();
 
