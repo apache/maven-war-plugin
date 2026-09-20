@@ -35,9 +35,9 @@ try
 
     JarFile jar = new JarFile( jarFile );
 
-    String[] includedEntries = {
+    String[] includedEntries = [
         "org/apache/maven/plugin/war/it/Dummy.class",
-    };
+    ];
     for ( String included : includedEntries )
     {
         System.out.println( "Checking for existence of " + included );

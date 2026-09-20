@@ -32,11 +32,11 @@ try
         return false;
     }
 
-    String[] expectedPaths = {
+    String[] expectedPaths = [
             "index.html",
             "WEB-INF/lib/commons-logging-1.0.3.jar",
             "WEB-INF/lib/maven-it-mwar-45-1.0.jar",
-    };
+    ];
     for ( String path : expectedPaths )
     {
         File file = new File( explodedDir, path );
@@ -48,10 +48,10 @@ try
         }
     }
 
-    String[] unexpectedPaths = {
+    String[] unexpectedPaths = [
             "WEB-INF/classes/org/apache/maven/it0016/Person.class",
             "WEB-INF/lib/servlet-api-2.4.jar",
-    };
+    ];
     for ( String path : unexpectedPaths )
     {
         File file = new File( explodedDir, path );
@@ -73,11 +73,11 @@ try
 
     JarFile war = new JarFile( warFile );
 
-    String[] includedEntries = {
+    String[] includedEntries = [
         "index.html",
         "WEB-INF/lib/maven-it-mwar-45-1.0.jar",
         "WEB-INF/lib/commons-logging-1.0.3.jar",
-    };
+    ];
     for ( String included : includedEntries )
     {
         System.out.println( "Checking for existence of " + included );

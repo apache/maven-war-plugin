@@ -23,7 +23,7 @@ import org.codehaus.plexus.util.*;
 
 boolean result = true;
 
-filesAreIdentical( File expected, File current )
+boolean filesAreIdentical( File expected, File current )
     throws IOException
 {
     if ( expected.length() != current.length() )
@@ -105,7 +105,7 @@ try
 
     targetImg = new File( basedir, "war-filter-overlay/target/custom-manifest-1.0-SNAPSHOT/duke-beer.jpg" );
 
-    boolean identical = filesAreIdentical( originalImg, targetImg );
+    identical = filesAreIdentical( originalImg, targetImg );
 
     if ( !identical )
     {
