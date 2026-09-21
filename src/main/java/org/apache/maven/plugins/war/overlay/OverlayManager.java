@@ -203,7 +203,7 @@ public class OverlayManager {
                 && Objects.equals(overlay.getType(), artifact.getType())
                 // MWAR-241 Make sure to treat null and "" as equal when comparing the classifier
                 && Objects.equals(
-                        Objects.toString(overlay.getClassifier()), Objects.toString(artifact.getClassifier())));
+                        Objects.toString(overlay.getClassifier(), ""), Objects.toString(artifact.getClassifier(), "")));
     }
 
     /**
