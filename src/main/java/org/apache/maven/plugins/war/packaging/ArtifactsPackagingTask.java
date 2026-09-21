@@ -98,15 +98,12 @@ public class ArtifactsPackagingTask extends AbstractWarPackagingTask {
                             copyFile(id, context, artifact.getFile(), MODULES_PATH + targetFileName);
                         } else if ("xar".equals(type)) {
                             copyFile(id, context, artifact.getFile(), EXTENSIONS_PATH + targetFileName);
-                        } else if ("jar".equals(type)
-                                || "ejb".equals(type)
-                                || "ejb-client".equals(type)
-                                || "test-jar".equals(type)
-                                || "bundle".equals(type)) {
-                            copyFile(id, context, artifact.getFile(), LIB_PATH + targetFileName);
-                        } else if ("par".equals(type)) {
-                            targetFileName = targetFileName.substring(0, targetFileName.lastIndexOf('.')) + ".jar";
-                            copyFile(id, context, artifact.getFile(), LIB_PATH + targetFileName);
+                        } else if (isLibraryType(type)) {
+                            copyFile(
+                                    id,
+                                    context,
+                                    artifact.getFile(),
+                                    LIB_PATH + getLibraryFileName(type, targetFileName));
                         } else if ("war".equals(type)) {
                             // Nothing to do here, it is an overlay and it's already handled
                             context.getLog()

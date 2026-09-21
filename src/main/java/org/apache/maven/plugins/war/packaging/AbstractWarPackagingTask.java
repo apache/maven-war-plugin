@@ -437,8 +437,22 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
      */
     protected String getArtifactFinalName(WarPackagingContext context, Artifact artifact)
             throws InterpolationException {
-        if (context.getOutputFileNameMapping() != null) {
-            return MappingUtils.evaluateFileNameMapping(context.getOutputFileNameMapping(), artifact);
+        return evaluateFileNameMapping(context.getOutputFileNameMapping(), artifact);
+    }
+
+    /**
+     * Evaluates the file name mapping for the given artifact, using the {@code outputFileNameMapping} when set,
+     * or the standard naming scheme otherwise.
+     *
+     * @param outputFileNameMapping the output file name mapping, may be {@code null}
+     * @param artifact the artifact
+     * @return the converted filename of the artifact
+     * @throws InterpolationException in case of interpolation problem
+     */
+    public static String evaluateFileNameMapping(String outputFileNameMapping, Artifact artifact)
+            throws InterpolationException {
+        if (outputFileNameMapping != null) {
+            return MappingUtils.evaluateFileNameMapping(outputFileNameMapping, artifact);
         }
 
         String classifier = artifact.getClassifier();
@@ -504,5 +518,40 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
             }
         }
         return true;
+    }
+
+    /**
+     * Returns {@code true} if the artifact with the given type would be placed in {@code WEB-INF/lib/}.
+     *
+     * @param type the artifact type
+     * @return {@code true} if the type is a library type that goes to WEB-INF/lib
+     */
+    public static boolean isLibraryType(String type) {
+        return "jar".equals(type)
+                || "ejb".equals(type)
+                || "ejb-client".equals(type)
+                || "test-jar".equals(type)
+                || "bundle".equals(type)
+                || "par".equals(type);
+    }
+
+    /**
+     * Returns the file name the given artifact would have in {@code WEB-INF/lib/}, converting the extension
+     * for artifact types that are packaged under a different extension (e.g., {@code par} files are packaged
+     * as {@code .jar}).
+     *
+     * @param type the artifact type
+     * @param targetFileName the mapped file name of the artifact
+     * @return the file name the artifact will have in {@code WEB-INF/lib/}
+     */
+    public static String getLibraryFileName(String type, String targetFileName) {
+        if ("par".equals(type)) {
+            int extensionIndex = targetFileName.lastIndexOf('.');
+            if (extensionIndex > 0) {
+                return targetFileName.substring(0, extensionIndex) + ".jar";
+            }
+            return targetFileName + ".jar";
+        }
+        return targetFileName;
     }
 }
