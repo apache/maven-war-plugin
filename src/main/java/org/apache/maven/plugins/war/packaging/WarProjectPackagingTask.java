@@ -79,9 +79,13 @@ public class WarProjectPackagingTask extends AbstractWarPackagingTask {
 
         // Prepare the INF directories
         File webinfDir = new File(context.getWebappDirectory(), WEB_INF_PATH);
-        webinfDir.mkdirs();
+        if (!webinfDir.exists() && !webinfDir.mkdirs()) {
+            throw new MojoExecutionException("Failed to create directory: " + webinfDir.getAbsolutePath());
+        }
         File metainfDir = new File(context.getWebappDirectory(), META_INF_PATH);
-        metainfDir.mkdirs();
+        if (!metainfDir.exists() && !metainfDir.mkdirs()) {
+            throw new MojoExecutionException("Failed to create directory: " + metainfDir.getAbsolutePath());
+        }
 
         handleWebResources(context);
 

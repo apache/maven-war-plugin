@@ -254,7 +254,10 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
                     encoding = context.getResourceEncoding();
                 }
                 // fix for MWAR-36, ensures that the parent dir are created first
-                targetFile.getParentFile().mkdirs();
+                File parentDir = targetFile.getParentFile();
+                if (!parentDir.exists() && !parentDir.mkdirs()) {
+                    throw new MojoExecutionException("Failed to create directory: " + parentDir.getAbsolutePath());
+                }
 
                 context.getMavenFileFilter().copyFile(file, targetFile, true, context.getFilterWrappers(), encoding);
             } catch (MavenFilteringException e) {
