@@ -235,13 +235,13 @@
           <groupId>org.apache.rat</groupId>
           <artifactId>apache-rat-plugin</artifactId>
           <configuration>
-            <excludes combine.children="append">
+            <inputExcludes>
               <!--
                 ! No possibilities to add license information into a MANIFEST
               -->
               <exclude>src/it/MWAR-167/src/main/resources/MANIFEST.MF</exclude>
               <exclude>src/test/resources/**</exclude>
-            </excludes>
+            </inputExcludes>
           </configuration>
         </plugin>
       </plugins>
