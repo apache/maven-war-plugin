@@ -531,7 +531,8 @@ public abstract class AbstractWarMojo extends AbstractMojo {
                 resourceEncoding,
                 propertiesEncoding,
                 failOnMissingWebXml,
-                outputTimestamp);
+                outputTimestamp,
+                isIncremental());
 
         final List<WarPackagingTask> packagingTasks = getPackagingTasks(overlayManager);
 
@@ -595,6 +596,8 @@ public abstract class AbstractWarMojo extends AbstractMojo {
 
         private final String outputTimestamp;
 
+        private final boolean incremental;
+
         /**
          * @param webappDirectory the web application directory
          * @param webappStructure the web app structure
@@ -607,6 +610,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
          * @param propertiesEncoding the encoding to use for properties files
          * @param failOnMissingWebXml flag to check whether we should ignore missing web.xml or not
          * @param outputTimestamp the output timestamp for reproducible archive creation
+         * @param incremental whether unchanged files should be skipped during copying
          */
         @SuppressWarnings("checkstyle:ParameterNumber")
         DefaultWarPackagingContext(
@@ -620,7 +624,8 @@ public abstract class AbstractWarMojo extends AbstractMojo {
                 String resourceEncoding,
                 String propertiesEncoding,
                 final Boolean failOnMissingWebXml,
-                String outputTimestamp) {
+                String outputTimestamp,
+                boolean incremental) {
             this.webappDirectory = webappDirectory;
             this.webappStructure = webappStructure;
             this.overlayManager = overlayManager;
@@ -676,6 +681,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
                 }
             }
             this.outputTimestamp = outputTimestamp;
+            this.incremental = incremental;
         }
 
         protected boolean checkAllPathsForOutdated() {
@@ -828,6 +834,11 @@ public abstract class AbstractWarMojo extends AbstractMojo {
         @Override
         public String getOutputTimestamp() {
             return outputTimestamp;
+        }
+
+        @Override
+        public boolean isIncremental() {
+            return incremental;
         }
 
         /**
@@ -1057,6 +1068,13 @@ public abstract class AbstractWarMojo extends AbstractMojo {
      */
     protected boolean isIncludeEmptyDirectories() {
         return includeEmptyDirectories;
+    }
+
+    /**
+     * @return whether unchanged files should be skipped during copying
+     */
+    protected boolean isIncremental() {
+        return false;
     }
 
     /**
