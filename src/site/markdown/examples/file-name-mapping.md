@@ -45,12 +45,12 @@ The `outputFileNameMapping` parameter allows you to give a custom pattern. Each 
 - `@{artifactId}@` - the artifact's ID
 - `@{version}@` - the artifact version; for `SNAPSHOT` artifacts this can contain a timestamp instead of `SNAPSHOT`
 - `@{baseVersion}@` - the base artifact version; for `SNAPSHOT` artifacts this always ends with `SNAPSHOT`
-- `@{classifier}@` - the artifact's classifier
+- `@{classifier}@` - the artifact's classifier, or nothing if it has none
 - `@{extension}@` - the artifact's file extension
-- `@{dashClassifier}@` - the classifier preceded by a dash
-- `@{dashClassifier?}@` - since 2.1, the string "-yourclassifier" if and only if the artifact has a classifier, otherwise empty
+- `@{dashClassifier}@` - the classifier preceded by a dash, or nothing if the artifact has no classifier
+- `@{dashClassifier?}@` - same as `@{dashClassifier}@`; the spelling supported since 2.1
 
-Any other property of Artifact and ArtifactHandler (for example `packaging`, `language`, `directory`, `addedToClasspath`, `includesDependencies`, `type`, `scope` or `file`) still resolves as a token, but is deprecated: it will not resolve in the Maven 4 line, so use only the tokens listed above.
+Any other property of Artifact and ArtifactHandler (for example `packaging`, `language`, `directory`, `addedToClasspath`, `includesDependencies`, `type`, `scope` or `file`) still resolves as a token, but is deprecated: these properties do not exist in the Maven 4 API, so they stop resolving once the plugin moves to it. Use only the tokens listed above.
 
 For instance, to store the libraries and TLDs without version numbers or classifiers, use the following pattern:
 
