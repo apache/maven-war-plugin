@@ -39,7 +39,18 @@ If the artifact has a classifier the default pattern is of course:
 @{artifactId}@-@{version}@-@{classifier}@.@{extension}@
 ```
 
-The `outputFileNameMapping` parameter allows you to give a custom pattern. Each token defined in the pattern will be replaced with a value from the current artifact. You can use any property of Artifact and ArtifactHandler as a token. There is also a special token named `dashClassifier?` that can be used, since 2.1. It will add the string "-yourclassifier" if and only if the artifact has a classifier.
+The `outputFileNameMapping` parameter allows you to give a custom pattern. Each token defined in the pattern will be replaced with a value from the current artifact. The following tokens are supported:
+
+- `@{groupId}@` - the artifact's group ID
+- `@{artifactId}@` - the artifact's ID
+- `@{version}@` - the artifact version; for `SNAPSHOT` artifacts this can contain a timestamp instead of `SNAPSHOT`
+- `@{baseVersion}@` - the base artifact version; for `SNAPSHOT` artifacts this always ends with `SNAPSHOT`
+- `@{classifier}@` - the artifact's classifier
+- `@{extension}@` - the artifact's file extension
+- `@{dashClassifier}@` - the classifier preceded by a dash
+- `@{dashClassifier?}@` - since 2.1, the string "-yourclassifier" if and only if the artifact has a classifier, otherwise empty
+
+Any other property of Artifact and ArtifactHandler (for example `packaging`, `language`, `directory`, `addedToClasspath`, `includesDependencies`, `type`, `scope` or `file`) still resolves as a token, but is deprecated: it will not resolve in the Maven 4 line, so use only the tokens listed above.
 
 For instance, to store the libraries and TLDs without version numbers or classifiers, use the following pattern:
 
