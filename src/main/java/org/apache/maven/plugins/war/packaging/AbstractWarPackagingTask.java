@@ -178,7 +178,7 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
                         }
 
                         public void alreadyRegistered(String ownerId, String targetFilename) throws IOException {
-                            copyFile(context, file, targetFile, targetFilename, context.isIncremental());
+                            copyFile(context, file, targetFile, targetFilename, true);
                         }
 
                         public void refused(String ownerId, String targetFilename, String actualOwnerId)
@@ -199,7 +199,7 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
                                             + "] belonged to overlay ["
                                             + deprecatedOwnerId
                                             + "] so it will be overwritten.");
-                            copyFile(context, file, targetFile, targetFilename, context.isIncremental());
+                            copyFile(context, file, targetFile, targetFilename, false);
                         }
 
                         public void supersededUnknownOwner(String ownerId, String targetFilename, String unknownOwnerId)
@@ -213,7 +213,7 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
                                             + "] which does not exist anymore in the current project. It is recommended to invoke "
                                             + "clean if the dependencies of the project changed.");
                             // CHECKSTYLE_ON: LineLength
-                            copyFile(context, file, targetFile, targetFilename, context.isIncremental());
+                            copyFile(context, file, targetFile, targetFilename, false);
                         }
                     });
         } else if (!targetFile.exists() && !targetFile.mkdirs()) {
