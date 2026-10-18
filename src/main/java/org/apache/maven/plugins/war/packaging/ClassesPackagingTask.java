@@ -52,8 +52,8 @@ public class ClassesPackagingTask extends AbstractWarPackagingTask {
     @Override
     public void performPackaging(WarPackagingContext context) throws MojoExecutionException {
         final File webappClassesDirectory = new File(context.getWebappDirectory(), CLASSES_PATH);
-        if (!webappClassesDirectory.exists()) {
-            webappClassesDirectory.mkdirs();
+        if (!webappClassesDirectory.exists() && !webappClassesDirectory.mkdirs()) {
+            throw new MojoExecutionException("Failed to create directory: " + webappClassesDirectory.getAbsolutePath());
         }
 
         if (context.getClassesDirectory().exists()
