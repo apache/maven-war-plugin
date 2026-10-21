@@ -36,6 +36,7 @@ import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
+import org.codehaus.plexus.archiver.util.DefaultFileSet;
 import org.codehaus.plexus.interpolation.InterpolationException;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
@@ -334,7 +335,9 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
 
                 try {
                     JarArchiver archiver = context.getJarArchiver();
-                    archiver.addDirectory(source);
+                    DefaultFileSet fileSet = new DefaultFileSet();
+                    fileSet.setDirectory(source);
+                    archiver.addFileSet(fileSet);
                     archiver.setDestFile(destination);
                     archiver.createArchive();
                 } catch (ArchiverException e) {
