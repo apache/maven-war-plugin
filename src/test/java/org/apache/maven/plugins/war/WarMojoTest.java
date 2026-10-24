@@ -38,6 +38,7 @@ import org.apache.maven.plugins.war.stub.MavenProject4CopyConstructor;
 import org.apache.maven.plugins.war.stub.MavenProjectArtifactsStub;
 import org.apache.maven.plugins.war.stub.WarArtifact4CCStub;
 import org.codehaus.plexus.util.IOUtil;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
@@ -394,6 +395,81 @@ public class WarMojoTest {
                     "META-INF/maven/org.apache.maven.plugin.test/maven-war-plugin-test/pom.properties"
                 },
                 new String[] {null, null, mojo.getWebXml().getName(), null, null, null, null});
+    }
+
+    @InjectMojo(goal = "war", pom = "src/test/resources/unit/warmojotest/plugin-config-primary-artifact.xml")
+    @MojoParameter(
+            name = "classesDirectory",
+            value =
+                    "target/test-classes/unit/warmojotest/WarWithManifestMultibyteSymbolTransferredToNewLineAsWhole-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value =
+                    "target/test-classes/unit/warmojotest/WarWithManifestMultibyteSymbolTransferredToNewLineAsWhole-test-data/source/")
+    @MojoParameter(
+            name = "webappDirectory",
+            value = "target/test-classes/unit/warmojotest/WarWithManifestMultibyteSymbolTransferredToNewLineAsWhole")
+    @MojoParameter(
+            name = "outputDirectory",
+            value =
+                    "target/test-classes/unit/warmojotest/WarWithManifestMultibyteSymbolTransferredToNewLineAsWhole-output")
+    @MojoParameter(
+            name = "webXml",
+            value =
+                    "target/test-classes/unit/warmojotest/WarWithManifestMultibyteSymbolTransferredToNewLineAsWhole-test-data/xml-config/web.xml")
+    @MojoParameter(name = "warName", value = "simple")
+    @SuppressWarnings("checkstyle:all")
+    @Disabled(
+            "Quarantined until the manifest entries are fixed to be valid according to the Jar File Specification and IETF RFC 3629")
+    @Test
+    public void
+            warMojo_ShouldMakeWarWithManifestMultibyteSymbolTransferredToNewLineAsWhole_WhenManifestEntriesContainLongMultibyteString(
+                    WarMojo mojo) throws Exception {
+        // given
+        WarArtifact4CCStub warArtifact = new WarArtifact4CCStub(getBasedir());
+        MavenProject4CopyConstructor project = new MavenProject4CopyConstructor();
+        project.setArtifact(warArtifact);
+        mojo.setProject(project);
+
+        Map<String, String> manifestEntries = new HashMap<>();
+        manifestEntries.put("Build-Jdk-Spec", "27");
+        manifestEntries.put(
+                "My-Custom-String", "αααααααααααααααααααααααααααββββββββββββββββββββββββββββββββββββγγγγγγγγγγγγγγγ");
+
+        mojo.getArchive().setManifestEntries(manifestEntries);
+
+        // when
+        mojo.execute();
+
+        // then
+        // validate jar file
+        String outputDir = MojoExtension.getVariableValueFromObject(mojo, "outputDirectory")
+                .toString();
+        File expectedJarFile = new File(outputDir, "simple.war");
+        assertJarContent(
+                expectedJarFile,
+                new String[] {
+                    "META-INF/MANIFEST.MF",
+                    "META-INF/config.xml",
+                    "WEB-INF/web.xml",
+                    "pansit.jsp",
+                    "org/web/app/last-exile.jsp",
+                    "META-INF/maven/org.apache.maven.plugin.test/maven-war-plugin-test/pom.xml",
+                    "META-INF/maven/org.apache.maven.plugin.test/maven-war-plugin-test/pom.properties"
+                },
+                new String[] {
+                    "Manifest-Version: 1.0\n" + "Created-By: Maven WAR Plugin\n"
+                            + "My-Custom-String: ααααααααααααααααααααααααααα\n"
+                            + " ββββββββββββββββββββββββββββββββββββ\n"
+                            + " γγγγγγγγγγγγγγγ\n"
+                            + "Build-Jdk-Spec: 27\n\n",
+                    null,
+                    mojo.getWebXml().getName(),
+                    null,
+                    null,
+                    null,
+                    null
+                });
     }
 
     @InjectMojo(goal = "war", pom = "src/test/resources/unit/warmojotest/plugin-config-primary-artifact.xml")
