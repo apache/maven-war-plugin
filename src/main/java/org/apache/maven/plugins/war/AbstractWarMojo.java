@@ -29,11 +29,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.maven.archiver.MavenArchiveConfiguration;
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
+import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
@@ -42,6 +46,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.war.overlay.OverlayManager;
+import org.apache.maven.plugins.war.packaging.AbstractWarPackagingTask;
 import org.apache.maven.plugins.war.packaging.CopyUserManifestTask;
 import org.apache.maven.plugins.war.packaging.OverlayPackagingTask;
 import org.apache.maven.plugins.war.packaging.WarPackagingContext;
@@ -58,6 +63,7 @@ import org.apache.maven.shared.utils.StringUtils;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
+import org.codehaus.plexus.interpolation.InterpolationException;
 
 /**
  * Contains common jobs for WAR mojos.
@@ -655,6 +661,10 @@ public abstract class AbstractWarMojo extends AbstractMojo {
                             outdatedCheckPath = outdatedCheckPath.replace('/', '\\');
                         }
                     }
+                    // MWAR-443: Compute the expected file names of non-runtime-scope library artifacts
+                    // so files placed by other plugins (e.g., maven-dependency-plugin) are not marked
+                    // as outdated and subsequently deleted.
+                    final Set<String> nonRuntimeArtifactFileNames = getNonRuntimeArtifactFileNames();
                     Files.walkFileTree(webappDirectory.toPath(), new SimpleFileVisitor<Path>() {
                         @Override
                         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
@@ -665,7 +675,17 @@ public abstract class AbstractWarMojo extends AbstractMojo {
                                         .relativize(file)
                                         .toString();
                                 if (checkAllPathsForOutdated() || path.startsWith(outdatedCheckPath)) {
-                                    outdatedResources.add(path);
+                                    // MWAR-443: Files under the artifact lib directory that match a
+                                    // non-runtime-scope artifact may have been placed by another plugin
+                                    // (e.g., maven-dependency-plugin), so do not mark them as outdated.
+                                    // Stale files that are not part of the current project (e.g. outdated
+                                    // versions of runtime artifacts) are still removed.
+                                    String normalizedPath = path.replace('\\', '/');
+                                    if (!normalizedPath.startsWith(AbstractWarPackagingTask.LIB_PATH)
+                                            || !nonRuntimeArtifactFileNames.contains(
+                                                    file.toFile().getName())) {
+                                        outdatedResources.add(path);
+                                    }
                                 }
                             }
                             return super.visitFile(file, attrs);
@@ -680,6 +700,31 @@ public abstract class AbstractWarMojo extends AbstractMojo {
 
         protected boolean checkAllPathsForOutdated() {
             return outdatedCheckPath.equals("/");
+        }
+
+        /**
+         * Returns the set of expected target filenames in {@code WEB-INF/lib/} for non-runtime-scope library
+         * artifacts. Used to avoid marking files placed by other plugins (e.g., maven-dependency-plugin) as
+         * outdated and subsequently deleting them (MWAR-443).
+         */
+        private Set<String> getNonRuntimeArtifactFileNames() {
+            Set<String> fileNames = new HashSet<>();
+            ScopeArtifactFilter filter = new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME);
+            if (project.getArtifacts() != null) {
+                for (Artifact artifact : project.getArtifacts()) {
+                    if (!filter.include(artifact) && AbstractWarPackagingTask.isLibraryType(artifact.getType())) {
+                        try {
+                            String targetFileName = AbstractWarPackagingTask.evaluateFileNameMapping(
+                                    getOutputFileNameMapping(), artifact);
+                            fileNames.add(
+                                    AbstractWarPackagingTask.getLibraryFileName(artifact.getType(), targetFileName));
+                        } catch (InterpolationException e) {
+                            getLog().debug("Could not compute expected filename for artifact: " + artifact, e);
+                        }
+                    }
+                }
+            }
+            return fileNames;
         }
 
         @Override
