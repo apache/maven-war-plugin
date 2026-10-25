@@ -1,0 +1,136 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+import java.io.*;
+import org.codehaus.plexus.util.*;
+
+/*
+ * Test for MWAR-220 / issue #389:
+ * dependencyManagement with overlays should not result in multiple versions
+ * of the same dependency in WEB-INF/lib.
+ *
+ * The overlay-war is built with plexus-utils 3.0.24.
+ * The main-war has dependencyManagement pinning plexus-utils to the managed
+ * version (@plexusUtilVersion@), and uses overlay-war as an overlay.
+ *
+ * If the issue still exists, both versions will appear in main-war's WEB-INF/lib.
+ * If fixed, only the managed version will appear.
+ */
+
+String managedVersion = plexusUtilVersion;
+
+// --- Check overlay WAR content ---
+File overlayTarget = new File( basedir, "overlay-war/target" );
+File overlayWar = new File( overlayTarget, "overlay-war-1.0-SNAPSHOT" );
+File overlayLib = new File( overlayWar, "WEB-INF/lib" );
+
+if ( !overlayLib.exists() || !overlayLib.isDirectory() )
+{
+    System.err.println( "Overlay WAR WEB-INF/lib directory missing: " + overlayLib );
+    return false;
+}
+
+String[] overlayJars = overlayLib.list();
+if ( overlayJars == null )
+{
+    System.err.println( "Failed to list overlay WAR WEB-INF/lib contents: " + overlayLib );
+    return false;
+}
+boolean overlayHasOld = false;
+boolean overlayHasManaged = false;
+
+for ( int i = 0; i < overlayJars.length; i++ )
+{
+    String jar = overlayJars[i];
+    if ( jar.startsWith( "plexus-utils-3.0.24" ) )
+    {
+        overlayHasOld = true;
+    }
+    if ( jar.startsWith( "plexus-utils-" + managedVersion ) )
+    {
+        overlayHasManaged = true;
+    }
+}
+
+if ( !overlayHasOld )
+{
+    System.err.println( "Overlay WAR missing plexus-utils-3.0.24.jar in WEB-INF/lib." );
+    return false;
+}
+
+if ( overlayHasManaged )
+{
+    System.err.println( "Overlay WAR unexpectedly contains plexus-utils-" + managedVersion + ".jar. "
+        + "Overlay should only have version 3.0.24." );
+    return false;
+}
+
+// Overlay WAR correctly contains only plexus-utils-3.0.24.jar.
+
+// --- Check main WAR content ---
+File mainTarget = new File( basedir, "main-war/target" );
+File mainWar = new File( mainTarget, "main-war-1.0-SNAPSHOT" );
+File mainLib = new File( mainWar, "WEB-INF/lib" );
+
+if ( !mainLib.exists() || !mainLib.isDirectory() )
+{
+    System.err.println( "Main WAR WEB-INF/lib directory missing: " + mainLib );
+    return false;
+}
+
+String[] mainJars = mainLib.list();
+if ( mainJars == null )
+{
+    System.err.println( "Failed to list main WAR WEB-INF/lib contents: " + mainLib );
+    return false;
+}
+boolean mainHasOld = false;
+boolean mainHasManaged = false;
+
+for ( int i = 0; i < mainJars.length; i++ )
+{
+    String jar = mainJars[i];
+    if ( jar.startsWith( "plexus-utils-3.0.24" ) )
+    {
+        mainHasOld = true;
+    }
+    if ( jar.startsWith( "plexus-utils-" + managedVersion ) )
+    {
+        mainHasManaged = true;
+    }
+}
+
+if ( !mainHasManaged )
+{
+    System.err.println( "Main WAR missing plexus-utils-" + managedVersion + ".jar in WEB-INF/lib." );
+    return false;
+}
+
+if ( mainHasOld )
+{
+    // Both versions found -- issue STILL EXISTS
+    System.err.println( "Found plexus-utils-3.0.24.jar in main WAR WEB-INF/lib; "
+        + "dependencyManagement should have excluded it." );
+    return false;
+}
+else
+{
+    // Only managed version -- issue has been fixed
+    return true;
+}
