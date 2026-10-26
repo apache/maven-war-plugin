@@ -20,7 +20,9 @@ package org.apache.maven.plugins.war.packaging;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.maven.api.DependencyScope;
 import org.apache.maven.api.DownloadedArtifact;
@@ -83,10 +85,15 @@ public class ArtifactsPackagingTask extends AbstractWarPackagingTask {
                 }
             }
 
-            final List<String> duplicates = findDuplicates(context, artifacts);
-
+            final List<String> finalNames = new ArrayList<>(artifacts.size());
             for (DownloadedArtifact artifact : artifacts) {
-                String targetFileName = getArtifactFinalName(context, artifact);
+                finalNames.add(getArtifactFinalName(context, artifact));
+            }
+            final Set<String> duplicates = findDuplicates(finalNames);
+
+            for (int i = 0; i < artifacts.size(); i++) {
+                DownloadedArtifact artifact = artifacts.get(i);
+                String targetFileName = finalNames.get(i);
 
                 context.getLog().debug("Processing: " + targetFileName);
 
@@ -168,22 +175,17 @@ public class ArtifactsPackagingTask extends AbstractWarPackagingTask {
     }
 
     /**
-     * Searches a set of artifacts for duplicate filenames and returns a list of duplicates.
+     * Returns the file names that occur more than once.
      *
-     * @param context the packaging context
-     * @param artifacts list of artifacts
-     * @return list of duplicated artifacts as bundling file names
+     * @param finalNames the final file names of the artifacts
+     * @return the duplicated file names
      */
-    private List<String> findDuplicates(WarPackagingContext context, List<DownloadedArtifact> artifacts)
-            throws InterpolationException {
-        List<String> duplicates = new ArrayList<>();
-        List<String> identifiers = new ArrayList<>();
-        for (DownloadedArtifact artifact : artifacts) {
-            String candidate = getArtifactFinalName(context, artifact);
-            if (identifiers.contains(candidate)) {
+    private static Set<String> findDuplicates(List<String> finalNames) {
+        Set<String> duplicates = new HashSet<>();
+        Set<String> identifiers = new HashSet<>();
+        for (String candidate : finalNames) {
+            if (!identifiers.add(candidate)) {
                 duplicates.add(candidate);
-            } else {
-                identifiers.add(candidate);
             }
         }
         return duplicates;

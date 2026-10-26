@@ -918,7 +918,7 @@ public class WarExplodedMojoTest {
     @MojoParameter(
             name = "webappDirectory",
             value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithFileNameMapping")
-    @MojoParameter(name = "outputFileNameMapping", value = "@{artifactId}.@{extension}")
+    @MojoParameter(name = "outputFileNameMapping", value = "@{artifactId}@.@{extension}@")
     @Test
     public void testExplodedWarWithOutputFileNameMapping(WarExplodedMojo mojo) throws Exception {
         // configure mojo
@@ -958,7 +958,7 @@ public class WarExplodedMojoTest {
     @MojoParameter(
             name = "webappDirectory",
             value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithFileNameMappingAndDuplicateDependencies")
-    @MojoParameter(name = "outputFileNameMapping", value = "@{artifactId}.@{extension}")
+    @MojoParameter(name = "outputFileNameMapping", value = "@{artifactId}@.@{extension}@")
     @Test
     public void testExplodedWarWithOutputFileNameMappingAndDuplicateDependencies(WarExplodedMojo mojo)
             throws Exception {
