@@ -194,11 +194,6 @@
       <version>${mavenFilteringVersion}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.shared</groupId>
-      <artifactId>maven-mapping</artifactId>
-      <version>3.0.0</version>
-    </dependency>
-    <dependency>
       <groupId>org.eclipse.sisu</groupId>
       <artifactId>org.eclipse.sisu.plexus</artifactId>
       <scope>provided</scope>

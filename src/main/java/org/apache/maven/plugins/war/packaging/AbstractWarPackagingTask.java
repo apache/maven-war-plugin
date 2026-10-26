@@ -30,7 +30,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.war.util.PathSet;
 import org.apache.maven.plugins.war.util.WebappStructure;
 import org.apache.maven.shared.filtering.MavenFilteringException;
-import org.apache.maven.shared.mapping.MappingUtils;
 import org.apache.maven.shared.utils.StringUtils;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.UnArchiver;
@@ -438,14 +437,14 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
     protected String getArtifactFinalName(WarPackagingContext context, Artifact artifact)
             throws InterpolationException {
         if (context.getOutputFileNameMapping() != null) {
-            return MappingUtils.evaluateFileNameMapping(context.getOutputFileNameMapping(), artifact);
+            return FileNameMapping.evaluate(context.getOutputFileNameMapping(), artifact);
         }
 
         String classifier = artifact.getClassifier();
         if (classifier != null && !(classifier.trim().isEmpty())) {
-            return MappingUtils.evaluateFileNameMapping(MappingUtils.DEFAULT_FILE_NAME_MAPPING_CLASSIFIER, artifact);
+            return FileNameMapping.evaluate(FileNameMapping.DEFAULT_FILE_NAME_MAPPING_CLASSIFIER, artifact);
         } else {
-            return MappingUtils.evaluateFileNameMapping(MappingUtils.DEFAULT_FILE_NAME_MAPPING, artifact);
+            return FileNameMapping.evaluate(FileNameMapping.DEFAULT_FILE_NAME_MAPPING, artifact);
         }
     }
 
