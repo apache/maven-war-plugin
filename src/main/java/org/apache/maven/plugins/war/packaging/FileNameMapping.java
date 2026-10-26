@@ -29,20 +29,9 @@ import org.codehaus.plexus.interpolation.RegexBasedInterpolator;
 /**
  * Evaluates file name mapping expressions such as {@code @{artifactId}@-@{version}@@{dashClassifier?}@.@{extension}@}
  * against an {@link Artifact}. Any getter of the artifact or of its artifact handler can be used as a token, plus
- * {@code dashClassifier} and {@code dashClassifier?}, which expand to {@code -<classifier>} or to nothing.
+ * {@code dashClassifier} and {@code dashClassifier?}, which expand to {@code -<classifier>} or, for a blank classifier, to nothing.
  */
 final class FileNameMapping {
-
-    /**
-     * Default file name mapping.
-     */
-    static final String DEFAULT_FILE_NAME_MAPPING = "@{artifactId}@-@{baseVersion}@.@{extension}@";
-
-    /**
-     * Default file name mapping including classifier.
-     */
-    static final String DEFAULT_FILE_NAME_MAPPING_CLASSIFIER =
-            "@{artifactId}@-@{baseVersion}@@{dashClassifier?}@.@{extension}@";
 
     private FileNameMapping() {
         // prevent instantiation.
@@ -69,10 +58,11 @@ final class FileNameMapping {
 
     private static PropertiesBasedValueSource dashClassifierValueSource(String classifier) {
         Properties classifierMask = new Properties();
+        String trimmed = classifier == null ? "" : classifier.trim();
 
-        if (classifier != null && !classifier.isEmpty()) {
-            classifierMask.setProperty("dashClassifier?", "-" + classifier);
-            classifierMask.setProperty("dashClassifier", "-" + classifier);
+        if (!trimmed.isEmpty()) {
+            classifierMask.setProperty("dashClassifier?", "-" + trimmed);
+            classifierMask.setProperty("dashClassifier", "-" + trimmed);
         } else {
             classifierMask.setProperty("dashClassifier?", "");
             classifierMask.setProperty("dashClassifier", "");

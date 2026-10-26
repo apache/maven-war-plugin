@@ -425,6 +425,12 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
     }
 
     /**
+     * The default file name mapping; {@code @{dashClassifier?}@} expands to nothing when the artifact has no classifier.
+     */
+    private static final String DEFAULT_FILE_NAME_MAPPING =
+            "@{artifactId}@-@{baseVersion}@@{dashClassifier?}@.@{extension}@";
+
+    /**
      * Returns the final name of the specified artifact.
      *
      * If the {@code outputFileNameMapping} is set, it is used, otherwise the standard naming scheme is used.
@@ -436,16 +442,8 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
      */
     protected String getArtifactFinalName(WarPackagingContext context, Artifact artifact)
             throws InterpolationException {
-        if (context.getOutputFileNameMapping() != null) {
-            return FileNameMapping.evaluate(context.getOutputFileNameMapping(), artifact);
-        }
-
-        String classifier = artifact.getClassifier();
-        if (classifier != null && !(classifier.trim().isEmpty())) {
-            return FileNameMapping.evaluate(FileNameMapping.DEFAULT_FILE_NAME_MAPPING_CLASSIFIER, artifact);
-        } else {
-            return FileNameMapping.evaluate(FileNameMapping.DEFAULT_FILE_NAME_MAPPING, artifact);
-        }
+        String mapping = context.getOutputFileNameMapping();
+        return FileNameMapping.evaluate(mapping != null ? mapping : DEFAULT_FILE_NAME_MAPPING, artifact);
     }
 
     /**
