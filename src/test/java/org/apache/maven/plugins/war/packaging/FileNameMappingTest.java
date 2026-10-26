@@ -30,6 +30,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 class FileNameMappingTest {
 
+    private static final String DEFAULT_MAPPING = "@{artifactId}@-@{baseVersion}@@{dashClassifier?}@.@{extension}@";
+
     @Test
     void completeMapping() throws Exception {
         Artifact jar = new DefaultArtifact(
@@ -70,18 +72,14 @@ class FileNameMappingTest {
                 "jar",
                 "classifier",
                 new DefaultArtifactHandler("jar"));
-        assertEquals(
-                "maven-test-lib-1.0-classifier.jar",
-                FileNameMapping.evaluate(FileNameMapping.DEFAULT_FILE_NAME_MAPPING_CLASSIFIER, jar));
+        assertEquals("maven-test-lib-1.0-classifier.jar", FileNameMapping.evaluate(DEFAULT_MAPPING, jar));
     }
 
     @Test
     void mappingWithNullClassifier() throws Exception {
         Artifact jar = new DefaultArtifact(
                 "org.apache.sample", "maven-test-lib", "1.0", null, "jar", null, new DefaultArtifactHandler("jar"));
-        assertEquals(
-                "maven-test-lib-1.0.jar",
-                FileNameMapping.evaluate(FileNameMapping.DEFAULT_FILE_NAME_MAPPING_CLASSIFIER, jar));
+        assertEquals("maven-test-lib-1.0.jar", FileNameMapping.evaluate(DEFAULT_MAPPING, jar));
     }
 
     /**
@@ -92,18 +90,14 @@ class FileNameMappingTest {
     void mappingWithNullClassifierShouldNotHaveTrailingDash() throws Exception {
         Artifact jar = new DefaultArtifact(
                 "org.apache.sample", "maven-test-lib", "1.0", null, "jar", null, new DefaultArtifactHandler("jar"));
-        assertEquals(
-                "maven-test-lib-1.0.jar",
-                FileNameMapping.evaluate(FileNameMapping.DEFAULT_FILE_NAME_MAPPING_CLASSIFIER, jar));
+        assertEquals("maven-test-lib-1.0.jar", FileNameMapping.evaluate(DEFAULT_MAPPING, jar));
     }
 
     @Test
     void mappingWithEmptyClassifierShouldNotHaveTrailingDash() throws Exception {
         Artifact jar = new DefaultArtifact(
                 "org.apache.sample", "maven-test-lib", "1.0", null, "jar", "", new DefaultArtifactHandler("jar"));
-        assertEquals(
-                "maven-test-lib-1.0.jar",
-                FileNameMapping.evaluate(FileNameMapping.DEFAULT_FILE_NAME_MAPPING_CLASSIFIER, jar));
+        assertEquals("maven-test-lib-1.0.jar", FileNameMapping.evaluate(DEFAULT_MAPPING, jar));
     }
 
     /**
@@ -140,5 +134,25 @@ class FileNameMappingTest {
         assertEquals(
                 "maven-test-lib-1.0.jar",
                 FileNameMapping.evaluate("@{artifactId}@-@{version}@@{dashClassifier?}@.@{extension}@", jar));
+    }
+
+    @Test
+    void blankClassifierWithOptionalDashClassifier() throws Exception {
+        Artifact jar = new DefaultArtifact(
+                "org.apache.sample", "maven-test-lib", "1.0", null, "jar", " ", new DefaultArtifactHandler("jar"));
+        assertEquals("maven-test-lib-1.0.jar", FileNameMapping.evaluate(DEFAULT_MAPPING, jar));
+    }
+
+    @Test
+    void classifierIsTrimmedInDashClassifier() throws Exception {
+        Artifact jar = new DefaultArtifact(
+                "org.apache.sample",
+                "maven-test-lib",
+                "1.0",
+                null,
+                "jar",
+                " tests ",
+                new DefaultArtifactHandler("jar"));
+        assertEquals("maven-test-lib-1.0-tests.jar", FileNameMapping.evaluate(DEFAULT_MAPPING, jar));
     }
 }
