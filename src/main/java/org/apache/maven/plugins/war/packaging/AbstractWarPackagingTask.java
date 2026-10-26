@@ -35,8 +35,6 @@ import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
 import org.codehaus.plexus.interpolation.InterpolationException;
-import org.codehaus.plexus.interpolation.ObjectBasedValueSource;
-import org.codehaus.plexus.interpolation.StringSearchInterpolator;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.SelectorUtils;
@@ -418,10 +416,11 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
         return pathSet;
     }
 
-    private static final String DEFAULT_FILE_NAME_MAPPING = "@{artifactId}-@{version}@{dashClassifier?}.@{extension}";
-
-    private static final String DEFAULT_FILE_NAME_MAPPING_CLASSIFIER =
-            "@{artifactId}-@{version}-@{classifier}.@{extension}";
+    /**
+     * The default file name mapping; {@code @{dashClassifier?}@} expands to nothing when the artifact has no classifier.
+     */
+    private static final String DEFAULT_FILE_NAME_MAPPING =
+            "@{artifactId}@-@{baseVersion}@@{dashClassifier?}@.@{extension}@";
 
     /**
      * Returns the final name of the specified artifact.
@@ -435,44 +434,8 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
      */
     protected String getArtifactFinalName(WarPackagingContext context, Artifact artifact)
             throws InterpolationException {
-        String mapping;
-        if (context.getOutputFileNameMapping() != null) {
-            mapping = context.getOutputFileNameMapping();
-        } else {
-            String classifier = artifact.getClassifier();
-            if (classifier != null && !(classifier.trim().isEmpty())) {
-                mapping = DEFAULT_FILE_NAME_MAPPING_CLASSIFIER;
-            } else {
-                mapping = DEFAULT_FILE_NAME_MAPPING;
-            }
-        }
-        return evaluateFileNameMapping(mapping, artifact);
-    }
-
-    /**
-     * Evaluates a file name mapping expression against a Maven 4 API artifact.
-     * This replaces the use of MappingUtils.evaluateFileNameMapping which requires the old Artifact type.
-     */
-    private static String evaluateFileNameMapping(String expression, Artifact artifact) throws InterpolationException {
-        StringSearchInterpolator interpolator = new StringSearchInterpolator("@{", "}");
-        interpolator.addValueSource(new ObjectBasedValueSource(artifact) {
-            @Override
-            public Object getValue(String expr) {
-                if ("dashClassifier".equals(expr) || "dashClassifier?".equals(expr)) {
-                    String classifier = artifact.getClassifier();
-                    if (classifier != null && !classifier.isEmpty()) {
-                        return "-" + classifier;
-                    }
-                    return "";
-                } else if ("version".equals(expr)) {
-                    return artifact.getVersion().toString();
-                } else if ("baseVersion".equals(expr)) {
-                    return artifact.getBaseVersion().toString();
-                }
-                return super.getValue(expr);
-            }
-        });
-        return interpolator.interpolate(expression);
+        String mapping = context.getOutputFileNameMapping();
+        return FileNameMapping.evaluate(mapping != null ? mapping : DEFAULT_FILE_NAME_MAPPING, artifact);
     }
 
     /**
