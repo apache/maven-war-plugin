@@ -178,7 +178,7 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
                         }
 
                         public void alreadyRegistered(String ownerId, String targetFilename) throws IOException {
-                            copyFile(context, file, targetFile, targetFilename, true);
+                            copyFile(context, file, targetFile, targetFilename, context.isIncremental());
                         }
 
                         public void refused(String ownerId, String targetFilename, String actualOwnerId)

@@ -89,6 +89,52 @@ class AbstractWarPackagingTaskTest {
     }
 
     @Test
+    void incrementalCopyReplacesContentWhenSourceIsNewer() throws IOException {
+        assertCopyWithTimestamps(true, "updated", 3_000, "previous", 2_000, "updated");
+    }
+
+    @Test
+    void incrementalCopyKeepsDestinationWhenSourceIsNotNewer() throws IOException {
+        assertCopyWithTimestamps(true, "same", 2_000, "same", 2_000, "same");
+    }
+
+    @Test
+    void defaultCopyOverwritesEvenWhenDestinationIsNewer() throws IOException {
+        assertCopyWithTimestamps(false, "updated", 1_000, "previous", 2_000, "updated");
+    }
+
+    private void assertCopyWithTimestamps(
+            boolean incremental,
+            String sourceContent,
+            long sourceTimestamp,
+            String destinationContent,
+            long destinationTimestamp,
+            String expectedContent)
+            throws IOException {
+        File webappDir = new File(tempDir, "webapp");
+        File destination = new File(webappDir, "index.html");
+        assertTrue(destination.getParentFile().mkdirs());
+        Files.write(destination.toPath(), destinationContent.getBytes(StandardCharsets.UTF_8));
+        Files.setLastModifiedTime(destination.toPath(), FileTime.fromMillis(destinationTimestamp));
+
+        File source = new File(tempDir, "source.html");
+        Files.write(source.toPath(), sourceContent.getBytes(StandardCharsets.UTF_8));
+        Files.setLastModifiedTime(source.toPath(), FileTime.fromMillis(sourceTimestamp));
+
+        TestWarPackagingContext context = new TestWarPackagingContext(webappDir) {
+            @Override
+            public boolean isIncremental() {
+                return incremental;
+            }
+        };
+
+        createTask().copyFile("current-overlay", context, source, "index.html");
+
+        assertTrue(java.util.Arrays.equals(
+                expectedContent.getBytes(StandardCharsets.UTF_8), Files.readAllBytes(destination.toPath())));
+    }
+
+    @Test
     void incrementalCopyReplacesFileSupersededFromKnownOwner() throws IOException {
         assertSupersededFileIsReplaced(false);
     }
