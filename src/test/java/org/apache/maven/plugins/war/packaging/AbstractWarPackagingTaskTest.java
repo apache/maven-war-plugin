@@ -20,8 +20,13 @@ package org.apache.maven.plugins.war.packaging;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.attribute.FileTime;
+import java.util.Collections;
 import java.util.Locale;
 
+import org.apache.maven.plugins.war.util.WebappStructure;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -81,6 +86,103 @@ class AbstractWarPackagingTaskTest {
         assertFalse(destination.canExecute(), "copied file should not be executable");
         assertTrue(destination.canRead(), "copied file should be readable");
         assertTrue(destination.canWrite(), "copied file should be writable");
+    }
+
+    @Test
+    void incrementalCopyReplacesContentWhenSourceIsNewer() throws IOException {
+        assertCopyWithTimestamps(true, "updated", 3_000, "previous", 2_000, "updated");
+    }
+
+    @Test
+    void incrementalCopyKeepsDestinationWhenSourceIsNotNewer() throws IOException {
+        assertCopyWithTimestamps(true, "same", 2_000, "same", 2_000, "same");
+    }
+
+    @Test
+    void defaultCopyOverwritesEvenWhenDestinationIsNewer() throws IOException {
+        assertCopyWithTimestamps(false, "updated", 1_000, "previous", 2_000, "updated");
+    }
+
+    private void assertCopyWithTimestamps(
+            boolean incremental,
+            String sourceContent,
+            long sourceTimestamp,
+            String destinationContent,
+            long destinationTimestamp,
+            String expectedContent)
+            throws IOException {
+        File webappDir = new File(tempDir, "webapp");
+        File destination = new File(webappDir, "index.html");
+        assertTrue(destination.getParentFile().mkdirs());
+        Files.write(destination.toPath(), destinationContent.getBytes(StandardCharsets.UTF_8));
+        Files.setLastModifiedTime(destination.toPath(), FileTime.fromMillis(destinationTimestamp));
+
+        File source = new File(tempDir, "source.html");
+        Files.write(source.toPath(), sourceContent.getBytes(StandardCharsets.UTF_8));
+        Files.setLastModifiedTime(source.toPath(), FileTime.fromMillis(sourceTimestamp));
+
+        TestWarPackagingContext context = new TestWarPackagingContext(webappDir) {
+            @Override
+            public boolean isIncremental() {
+                return incremental;
+            }
+        };
+
+        createTask().copyFile("current-overlay", context, source, "index.html");
+
+        assertTrue(java.util.Arrays.equals(
+                expectedContent.getBytes(StandardCharsets.UTF_8), Files.readAllBytes(destination.toPath())));
+    }
+
+    @Test
+    void incrementalCopyReplacesFileSupersededFromKnownOwner() throws IOException {
+        assertSupersededFileIsReplaced(false);
+    }
+
+    @Test
+    void incrementalCopyReplacesFileSupersededFromUnknownOwner() throws IOException {
+        assertSupersededFileIsReplaced(true);
+    }
+
+    private void assertSupersededFileIsReplaced(boolean unknownOwner) throws IOException {
+        File webappDir = new File(tempDir, "webapp");
+        File destination = new File(webappDir, "WEB-INF/web.xml");
+        assertTrue(destination.getParentFile().mkdirs());
+        Files.write(destination.toPath(), "old owner".getBytes(StandardCharsets.UTF_8));
+        Files.setLastModifiedTime(destination.toPath(), FileTime.fromMillis(2_000));
+
+        File source = new File(tempDir, unknownOwner ? "unknown-owner.xml" : "known-owner.xml");
+        Files.write(source.toPath(), "new owner".getBytes(StandardCharsets.UTF_8));
+        Files.setLastModifiedTime(source.toPath(), FileTime.fromMillis(1_000));
+
+        WebappStructure structure = new WebappStructure(Collections.emptyList()) {
+            @Override
+            public void registerFile(String id, String path, RegistrationCallback callback) throws IOException {
+                if (unknownOwner) {
+                    callback.supersededUnknownOwner(id, path, "removed-overlay");
+                } else {
+                    callback.superseded(id, path, "current-overlay");
+                }
+            }
+        };
+        TestWarPackagingContext context = new TestWarPackagingContext(webappDir) {
+            @Override
+            public WebappStructure getWebappStructure() {
+                return structure;
+            }
+
+            @Override
+            public boolean isIncremental() {
+                return true;
+            }
+        };
+
+        createTask().copyFile("new-overlay", context, source, "WEB-INF/web.xml");
+
+        assertTrue(
+                java.util.Arrays.equals(
+                        "new owner".getBytes(StandardCharsets.UTF_8), Files.readAllBytes(destination.toPath())),
+                "a superseding overlay must replace the previous owner's file regardless of timestamps");
     }
 
     private static AbstractWarPackagingTask createTask() {

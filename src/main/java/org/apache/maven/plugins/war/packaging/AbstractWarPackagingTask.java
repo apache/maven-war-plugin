@@ -174,11 +174,11 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
             context.getWebappStructure()
                     .registerFile(sourceId, targetFilename, new WebappStructure.RegistrationCallback() {
                         public void registered(String ownerId, String targetFilename) throws IOException {
-                            copyFile(context, file, targetFile, targetFilename, false);
+                            copyFile(context, file, targetFile, targetFilename, context.isIncremental());
                         }
 
                         public void alreadyRegistered(String ownerId, String targetFilename) throws IOException {
-                            copyFile(context, file, targetFile, targetFilename, true);
+                            copyFile(context, file, targetFile, targetFilename, context.isIncremental());
                         }
 
                         public void refused(String ownerId, String targetFilename, String actualOwnerId)

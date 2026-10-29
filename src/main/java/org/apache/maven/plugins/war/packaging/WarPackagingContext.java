@@ -95,6 +95,15 @@ public interface WarPackagingContext {
     boolean archiveClasses();
 
     /**
+     * Returns whether unchanged files should be skipped during copying.
+     *
+     * @return {@code true} to copy only changed files
+     */
+    default boolean isIncremental() {
+        return false;
+    }
+
+    /**
      * Returns the logger to use to output logging event.
      *
      * @return the logger
