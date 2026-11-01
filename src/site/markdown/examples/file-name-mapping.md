@@ -29,7 +29,7 @@ under the License.
 
 It might be necessary to customize the file name of libraries and TLDs. By default, those resources are stored using the following pattern:
 
-```unknown
+```text
 @{artifactId}@-@{baseVersion}@@{dashClassifier?}@.@{extension}@
 ```
 
@@ -52,12 +52,12 @@ If two artifacts end up with the same file name, both are stored with their grou
 
 For instance, to store the libraries and TLDs without version numbers or classifiers, use the following pattern:
 
-```unknown
+```text
 @{artifactId}@.@{extension}@
 ```
 
 To store the libraries and TLDs without version numbers but with classifiers (if they exist), use the following pattern:
 
-```unknown
+```text
 @{artifactId}@@{dashClassifier?}@.@{extension}@
 ```

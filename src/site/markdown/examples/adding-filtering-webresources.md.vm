@@ -129,7 +129,7 @@ A web resource
 
 To include all jpgs in the WAR we can add the following to our POM configuration from above:
 
-```unknown
+```xml
         ...
         <configuration>
           <webResources>
@@ -148,7 +148,7 @@ To include all jpgs in the WAR we can add the following to our POM configuration
 
 To exclude the `image2` directory from the WAR add this:
 
-```unknown
+```xml
         ...
         <configuration>
           <webResources>
@@ -169,7 +169,7 @@ Be careful when mixing includes and excludes, excludes will have a higher priori
 
 Having this configuration will exclude all jpgs from the WAR:
 
-```unknown
+```xml
         ...
         <configuration>
           <webResources>
@@ -192,7 +192,7 @@ Having this configuration will exclude all jpgs from the WAR:
 
 Here's another example of how to specify include and exclude patterns:
 
-```unknown
+```xml
         ...
         <configuration>
           <webResources>
@@ -250,7 +250,7 @@ Using our example above, we can also configure filters for our resources. We wil
 
 To prevent corrupting your binary files when filtering is enabled, you can configure a list of file extensions that will not be filtered.
 
-```unknown
+```xml
         ...
         <configuration>
           <!-- the default value is the filter list under build -->
@@ -338,7 +338,7 @@ and the content of `config.cfg` would be:
 
 By default web resources are copied to the root of the WAR, as shown in the previous example. To override the default destination directory, specify the target path.
 
-```unknown
+```xml
         ...
         <configuration>
           <webResources>
