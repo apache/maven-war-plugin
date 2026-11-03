@@ -79,6 +79,10 @@
     <mavenFilteringVersion>4.0.0-beta-1</mavenFilteringVersion>
     <mavenVersion>4.0.0-rc-5</mavenVersion>
     <javaVersion>17</javaVersion>
+    <!-- JUnit 6 needs Java 17, which this Maven 4 line already requires -->
+    <versions.junit>6.1.3</versions.junit>
+    <!-- the name maven-parent 50 and older read -->
+    <versions.junit5>${versions.junit}</versions.junit5>
     <guiceVersion>5.1.0</guiceVersion>
     <plexusArchiverVersion>4.12.0</plexusArchiverVersion>
     <version.maven-plugin-tools>4.0.0-beta-1</version.maven-plugin-tools>
