@@ -89,6 +89,32 @@ class AbstractWarPackagingTaskTest {
     }
 
     @Test
+    void incrementalCopyCreatesMissingFileWithEpochTimestamp() throws IOException {
+        File source = new File(tempDir, "source.html");
+        byte[] content = "content".getBytes(StandardCharsets.UTF_8);
+        Files.write(source.toPath(), content);
+        Files.setLastModifiedTime(source.toPath(), FileTime.fromMillis(0));
+        File webappDir = new File(tempDir, "webapp");
+        TestWarPackagingContext context = new TestWarPackagingContext(webappDir) {
+            @Override
+            public boolean isIncremental() {
+                return true;
+            }
+        };
+
+        createTask().copyFile("current-overlay", context, source, "index.html");
+
+        File destination = new File(webappDir, "index.html");
+        assertTrue(destination.isFile(), "a missing file must be copied regardless of its timestamp");
+        assertTrue(java.util.Arrays.equals(content, Files.readAllBytes(destination.toPath())));
+    }
+
+    @Test
+    void incrementalCopyKeepsExistingFileWithEpochTimestamp() throws IOException {
+        assertCopyWithTimestamps(true, "source", 0, "destination", 0, "destination");
+    }
+
+    @Test
     void incrementalCopyReplacesContentWhenSourceIsNewer() throws IOException {
         assertCopyWithTimestamps(true, "updated", 3_000, "previous", 2_000, "updated");
     }
