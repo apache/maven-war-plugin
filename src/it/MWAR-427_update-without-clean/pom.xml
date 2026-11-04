@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
 Licensed to the Apache Software Foundation (ASF) under one
 or more contributor license agreements.  See the NOTICE file
@@ -18,73 +17,22 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 -->
-
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.apache.maven.its.war</groupId>
-  <artifactId>mwar427</artifactId>
+  <artifactId>mwar427-root</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <packaging>war</packaging>
+  <packaging>pom</packaging>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <!-- Pass the variable into the test project to be able to read them -->
-    <testPlexusUtilVersion>@plexusUtilVersion@</testPlexusUtilVersion>
-  </properties>
+  <description>
+    Lets the invoker plugin interpolate the two projects below, which it builds one by one:
+    outdated-default keeps the default outdatedCheckPath (MWAR-427, MWAR-433),
+    outdated-root sets outdatedCheckPath to / (MWAR-441).
+  </description>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-war-plugin</artifactId>
-        <version>@project.version@</version>
-        <configuration>
-          <archiveClasses>true</archiveClasses>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.gmaven</groupId>
-        <artifactId>groovy-maven-plugin</artifactId>
-        <version>2.1.1</version>
-        <configuration>
-          <source>
-            def plexusUtilVersion = project.properties['testPlexusUtilVersion']
-            def fileToModify = new File(project.basedir, 'pom.xml')
-            processFileInplace(fileToModify) { text ->
-              text.replaceAll(plexusUtilVersion,'3.0.23')
-            }
-            def processFileInplace(file, Closure processText) {
-              file.write(processText(file.text))
-            }
-
-            new File('src/main/webapp/root.html').renameTo 'src/main/webapp/index.html'
-          </source>
-        </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-            <version>2.4.21</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-
-    </plugins>
-  </build>
-
-  <dependencies>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>3.0.1</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-utils</artifactId>
-      <version>@plexusUtilVersion@</version>
-    </dependency>
-  </dependencies>
-  
+  <modules>
+    <module>outdated-default</module>
+    <module>outdated-root</module>
+  </modules>
 </project>

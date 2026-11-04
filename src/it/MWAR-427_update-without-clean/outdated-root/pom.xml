@@ -23,7 +23,7 @@ under the License.
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.apache.maven.its.war</groupId>
-  <artifactId>mwar427</artifactId>
+  <artifactId>mwar441</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>war</packaging>
 
@@ -59,7 +59,7 @@ under the License.
               file.write(processText(file.text))
             }
             
-            new File('src/main/webapp/root.html').renameTo 'src/main/webapp/index.html'
+            new File(project.basedir, "src/main/webapp/root.html").renameTo(new File(project.basedir, "src/main/webapp/index.html"))
           </source>
         </configuration>
         <dependencies>
