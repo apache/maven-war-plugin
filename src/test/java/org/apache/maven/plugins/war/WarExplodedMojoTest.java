@@ -19,6 +19,8 @@
 package org.apache.maven.plugins.war;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
@@ -46,6 +48,7 @@ import org.codehaus.plexus.util.FileUtils;
 import org.junit.jupiter.api.Test;
 
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -933,5 +936,89 @@ public class WarExplodedMojoTest {
         expectedWebSource2File.delete();
         expectedEJBArtifact.delete();
         expectedEJBDupArtifact.delete();
+    }
+
+    @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/warexplodedmojo/plugin-config.xml")
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/SimpleExplodedWar-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/SimpleExplodedWar-test-data/source/")
+    @MojoParameter(
+            name = "webappDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithUserManifest")
+    @Test
+    public void testExplodedWarWithUserManifest(WarExplodedMojo mojo) throws Exception {
+        mojo.getArchive()
+                .setManifestFile(new File(
+                        getBasedir(),
+                        "target/test-classes/unit/warexplodedmojo/ExplodedWarWithUserManifest-test-data/MANIFEST.MF"));
+        mojo.setProject(new MavenProjectBasicStub());
+        mojo.execute();
+
+        File manifest = new File(mojo.getWebappDirectory(), "META-INF/MANIFEST.MF");
+        assertTrue(manifest.isFile(), "manifest not found: " + manifest);
+        String content = new String(Files.readAllBytes(manifest.toPath()), StandardCharsets.UTF_8);
+        assertTrue(content.contains("Manifest-Version: 1.0"), "Manifest-Version header not found");
+        assertTrue(content.contains("Bundle-Name: Dummy Bundle"), "Bundle-Name header not found");
+        assertTrue(content.contains("Bundle-SymbolicName: dummy.bundle"), "Bundle-SymbolicName header not found");
+        assertTrue(content.contains("Bundle-Version: 1.0.0.SNAPSHOT"), "Bundle-Version header not found");
+    }
+
+    @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/warexplodedmojo/plugin-config.xml")
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/SimpleExplodedWar-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/SimpleExplodedWar-test-data/source/")
+    @MojoParameter(
+            name = "webappDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarPackagingExcludesGlob")
+    @MojoParameter(name = "packagingExcludes", value = "WEB-INF/lib/*io*.jar")
+    @Test
+    public void testExplodedWarPackagingExcludesGlob(WarExplodedMojo mojo) throws Exception {
+        MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
+        project.addArtifact(createJarArtifact("commons-io"));
+        project.addArtifact(createJarArtifact("commons-lang3"));
+        mojo.setProject(project);
+        mojo.execute();
+
+        String[] libraries = new File(mojo.getWebappDirectory(), "WEB-INF/lib").list();
+        assertArrayEquals(new String[] {"commons-lang3-0.0-Test.jar"}, libraries, "only one dependency is copied");
+    }
+
+    private JarArtifactStub createJarArtifact(String artifactId) {
+        JarArtifactStub artifact = new JarArtifactStub(getBasedir(), new DefaultArtifactHandler("jar"));
+        artifact.setArtifactId(artifactId);
+        return artifact;
+    }
+
+    @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/warexplodedmojo/plugin-config.xml")
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithWebResourceRoot-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithWebResourceRoot-test-data/source/")
+    @MojoParameter(
+            name = "webappDirectory",
+            value = "target/test-classes/unit/warexplodedmojo/ExplodedWarWithWebResourceRoot")
+    @Test
+    public void testExplodedWarWithWebResourceInRootTargetPath(WarExplodedMojo mojo) throws Exception {
+        ResourceStub[] resources = new ResourceStub[] {new ResourceStub()};
+        resources[0].setDirectory(MojoExtension.getBasedir()
+                + "/target/test-classes/unit/warexplodedmojo/ExplodedWarWithWebResourceRoot-test-data/resources/");
+        resources[0].setTargetPath("/");
+        resources[0].setFiltering(false);
+        mojo.setWebResources(resources);
+        mojo.setProject(new MavenProjectBasicStub());
+        mojo.execute();
+
+        File webAppDirectory = mojo.getWebappDirectory();
+        assertTrue(new File(webAppDirectory, "WEB-INF/web.xml").isFile(), "web.xml not found");
+        assertTrue(new File(webAppDirectory, "index.jsp").isFile(), "index.jsp not found");
+        assertTrue(new File(webAppDirectory, "another.jsp").isFile(), "another.jsp not found in the root");
     }
 }
