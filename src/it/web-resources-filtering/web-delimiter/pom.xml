@@ -25,17 +25,42 @@ under the License.
     <groupId>com.edb.finance.example</groupId>
     <artifactId>example-parent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <relativePath>parent/pom.xml</relativePath>
+    <relativePath>../parent/pom.xml</relativePath>
   </parent>
 
-  <artifactId>example</artifactId>
-  <packaging>pom</packaging>
 
-  <name>Example Maven Multi-module project For Filtering with Delimiters</name>
+  <artifactId>example-web-delimiter</artifactId>
+  <packaging>war</packaging>
+  
+  <name>example-web-delimiter Maven Webapp</name>
   <url>http://maven.apache.org</url>
 
-  <modules>
-    <module>parent</module>
-    <module>web</module>
-  </modules>
+  <dependencies>
+  </dependencies>
+
+  <build>
+    <finalName>example-web-delimiter</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>@pom.version@</version>
+        <configuration>
+          <escapeString>\</escapeString>
+          <supportMultiLineFiltering>true</supportMultiLineFiltering>
+          <webResources>
+            <resource>
+              <directory>${basedir}/src/main/webresources</directory>
+              <filtering>true</filtering>
+            </resource>
+          </webResources>
+          <resourceEncoding>ISO-8859-1</resourceEncoding>
+          <delimiters>
+            <delimiter>@@*@@</delimiter>
+          </delimiters>
+          <useDefaultDelimiters>false</useDefaultDelimiters>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
