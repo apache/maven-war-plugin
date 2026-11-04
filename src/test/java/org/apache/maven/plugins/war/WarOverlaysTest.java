@@ -509,6 +509,29 @@ public class WarOverlaysTest {
         assertWebAppContent(webAppDirectory, assertedFiles, filter);
     }
 
+    @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/waroverlays/default.xml")
+    @MojoParameter(name = "workDirectory", value = "target/test-classes/unit/waroverlays/war/work-context-xml-overlay")
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/waroverlays/default-overlay-test-data/classes")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/waroverlays/default-overlay-test-data/source/")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/waroverlays/context-xml-overlay")
+    @Test
+    public void testDefaultOverlayKeepsContextXml(WarExplodedMojo mojo) throws Exception {
+        mojo.setProject(createProjectWithOverlays(buildWarOverlayStub("overlay-context-xml")));
+
+        mojo.execute();
+
+        File webAppDirectory = (File) getVariableValueFromObject(mojo, "webappDirectory");
+        File contextXml = new File(webAppDirectory, "META-INF/context.xml");
+        assertTrue(contextXml.isFile(), "META-INF/context.xml lost in the overlay process");
+        assertEquals(
+                FileUtils.fileRead(getOverlayFile("overlay-context-xml", "META-INF/context.xml"), "UTF-8"),
+                FileUtils.fileRead(contextXml, "UTF-8"));
+    }
+
     // Helpers
 
     private MavenProjectArtifactsStub createProjectWithOverlays(ArtifactStub... artifactStubs) throws Exception {
