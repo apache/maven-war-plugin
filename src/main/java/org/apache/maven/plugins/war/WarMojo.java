@@ -43,11 +43,13 @@ import org.apache.maven.plugins.war.util.ClassesPackager;
 import org.apache.maven.project.MavenProjectHelper;
 import org.apache.maven.shared.filtering.MavenFileFilter;
 import org.apache.maven.shared.filtering.MavenResourcesFiltering;
+import org.codehaus.plexus.archiver.ArchiveEntry;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.ManifestException;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
 import org.codehaus.plexus.archiver.war.WarArchiver;
+import org.codehaus.plexus.archiver.zip.ConcurrentJarCreator;
 import org.codehaus.plexus.util.FileUtils;
 
 /**
@@ -386,9 +388,42 @@ public class WarMojo extends AbstractWarMojo {
 
     public WarArchiver getWarArchiver() {
         try {
-            return (WarArchiver) getArchiverManager().getArchiver("war");
+            if (isCompressLibs()) {
+                return (WarArchiver) getArchiverManager().getArchiver("war");
+            } else {
+                return new UncompressedLibsWarArchiver();
+            }
         } catch (NoSuchArchiverException e) {
             throw new IllegalStateException("Cannot find war archiver", e);
+        }
+    }
+
+    /**
+     * A {@link WarArchiver} subclass that stores dependency library JARs ({@code WEB-INF/lib/*.jar})
+     * in STORED mode (uncompressed) instead of DEFLATED mode, while still compressing all other entries.
+     * This improves servlet container startup time since the already-compressed JARs are not
+     * decompressed and recompressed during WAR creation and extraction.
+     */
+    private static class UncompressedLibsWarArchiver extends WarArchiver {
+
+        UncompressedLibsWarArchiver() {
+            super();
+        }
+
+        @Override
+        protected void zipFile(ArchiveEntry entry, ConcurrentJarCreator zOut, String vPath)
+                throws IOException, ArchiverException {
+            if (vPath.startsWith("WEB-INF/lib/") && !vPath.endsWith("/")) {
+                boolean original = isCompress();
+                setCompress(false);
+                try {
+                    super.zipFile(entry, zOut, vPath);
+                } finally {
+                    setCompress(original);
+                }
+            } else {
+                super.zipFile(entry, zOut, vPath);
+            }
         }
     }
 
