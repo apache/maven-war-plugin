@@ -459,7 +459,10 @@ public abstract class AbstractWarMojo extends AbstractMojo {
      * @throws MojoFailureException in case of failure
      */
     public void buildExplodedWebapp(File webapplicationDirectory) throws MojoExecutionException, MojoFailureException {
-        webapplicationDirectory.mkdirs();
+        if (!webapplicationDirectory.exists() && !webapplicationDirectory.mkdirs()) {
+            throw new MojoExecutionException(
+                    "Failed to create directory: " + webapplicationDirectory.getAbsolutePath());
+        }
 
         try {
             buildWebapp(project, webapplicationDirectory);
