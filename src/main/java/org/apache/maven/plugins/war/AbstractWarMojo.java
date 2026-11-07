@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.maven.archiver.MavenArchiveConfiguration;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
@@ -47,6 +48,7 @@ import org.apache.maven.plugins.war.packaging.OverlayPackagingTask;
 import org.apache.maven.plugins.war.packaging.WarPackagingContext;
 import org.apache.maven.plugins.war.packaging.WarPackagingTask;
 import org.apache.maven.plugins.war.packaging.WarProjectPackagingTask;
+import org.apache.maven.plugins.war.util.MavenBuildTimestamp;
 import org.apache.maven.plugins.war.util.WebappStructure;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.filtering.FilterWrapper;
@@ -513,6 +515,10 @@ public abstract class AbstractWarMojo extends AbstractMojo {
             mavenResourcesExecution.setEscapeString(this.escapeString);
             mavenResourcesExecution.setSupportMultiLineFiltering(supportMultiLineFiltering);
 
+            // Handle subject of MRESOURCES-99: these properties are interpolated into the POM itself by
+            // Maven core, but a plugin has no way to read the values core already computed, so recompute them.
+            mavenResourcesExecution.setAdditionalProperties(buildSpecialProperties(mavenProject));
+
             defaultFilterWrappers = mavenFileFilter.getDefaultFilterWrappers(mavenResourcesExecution);
 
         } catch (MavenFilteringException e) {
@@ -540,6 +546,25 @@ public abstract class AbstractWarMojo extends AbstractMojo {
         }
 
         getLog().debug("Webapp assembled in [" + (System.currentTimeMillis() - startTime) + " msecs]");
+    }
+
+    /**
+     * Returns the properties interpolated into the POM by Maven core (such as {@code maven.build.timestamp} and
+     * {@code project.baseUri}) so they are also available when filtering {@code webResources}, matching what
+     * {@code maven-resources-plugin} already does for {@code src/main/resources} (MRESOURCES-99).
+     *
+     * @param mavenProject the maven project
+     * @return the additional properties to filter with
+     */
+    private Properties buildSpecialProperties(final MavenProject mavenProject) {
+        final Properties additionalProperties = new Properties();
+        additionalProperties.put("maven.build.timestamp", new MavenBuildTimestamp().formattedTimestamp());
+        if (mavenProject.getBasedir() != null) {
+            additionalProperties.put(
+                    "project.baseUri",
+                    mavenProject.getBasedir().getAbsoluteFile().toURI().toString());
+        }
+        return additionalProperties;
     }
 
     /**
