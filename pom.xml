@@ -159,11 +159,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.shared</groupId>
-      <artifactId>maven-shared-utils</artifactId>
-      <version>3.5.0</version>
-    </dependency>
-    <dependency>
       <groupId>javax.inject</groupId>
       <artifactId>javax.inject</artifactId>
     </dependency>
