@@ -174,11 +174,11 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
             context.getWebappStructure()
                     .registerFile(sourceId, targetFilename, new WebappStructure.RegistrationCallback() {
                         public void registered(String ownerId, String targetFilename) throws IOException {
-                            copyFile(context, file, targetFile, targetFilename, false);
+                            copyFile(context, file, targetFile, targetFilename, context.isIncremental());
                         }
 
                         public void alreadyRegistered(String ownerId, String targetFilename) throws IOException {
-                            copyFile(context, file, targetFile, targetFilename, true);
+                            copyFile(context, file, targetFile, targetFilename, context.isIncremental());
                         }
 
                         public void refused(String ownerId, String targetFilename, String actualOwnerId)
@@ -324,6 +324,7 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
 
         BasicFileAttributes readAttributes = Files.readAttributes(source.toPath(), BasicFileAttributes.class);
         if (onlyIfModified
+                && destination.exists()
                 && destination.lastModified()
                         >= readAttributes.lastModifiedTime().toMillis()) {
             context.getLog().debug(" * " + targetFilename + " is up to date.");
