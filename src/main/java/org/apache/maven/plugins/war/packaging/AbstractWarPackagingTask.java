@@ -39,7 +39,6 @@ import org.codehaus.plexus.interpolation.InterpolationException;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.SelectorUtils;
-import org.codehaus.plexus.util.StringUtils;
 
 /**
  * @author Stephane Nicoll
@@ -247,7 +246,9 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
                 if (isXmlFile(file)) {
                     // For xml-files we extract the encoding from the files
                     encoding = getEncoding(file);
-                } else if (isPropertiesFile(file) && StringUtils.isNotEmpty(context.getPropertiesEncoding())) {
+                } else if (isPropertiesFile(file)
+                        && (context.getPropertiesEncoding() != null
+                                && !context.getPropertiesEncoding().isEmpty())) {
                     encoding = context.getPropertiesEncoding();
                 } else {
                     // For all others we use the configured encoding
