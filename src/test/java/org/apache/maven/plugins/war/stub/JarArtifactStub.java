@@ -43,10 +43,12 @@ public class JarArtifactStub extends AbstractArtifactStub {
         this.artifactHandler = artifactHandler;
     }
 
+    @Override
     public void setGroupId(String id) {
         groupId = id;
     }
 
+    @Override
     public String getGroupId() {
         if (groupId != null) {
             return groupId;
@@ -55,14 +57,17 @@ public class JarArtifactStub extends AbstractArtifactStub {
         }
     }
 
+    @Override
     public String getType() {
         return "jar";
     }
 
+    @Override
     public void setArtifactId(String artifactId) {
         this.artifactId = artifactId;
     }
 
+    @Override
     public String getArtifactId() {
         if (artifactId != null) {
             return artifactId;
@@ -71,6 +76,7 @@ public class JarArtifactStub extends AbstractArtifactStub {
         }
     }
 
+    @Override
     public String getVersion() {
         if (version != null) {
             return version;
@@ -79,18 +85,22 @@ public class JarArtifactStub extends AbstractArtifactStub {
         }
     }
 
+    @Override
     public void setVersion(String version) {
         this.version = version;
     }
 
+    @Override
     public boolean isOptional() {
         return optional;
     }
 
+    @Override
     public void setOptional(boolean optional) {
         this.optional = optional;
     }
 
+    @Override
     public String getScope() {
         if (scope != null) {
             return scope;
@@ -99,10 +109,12 @@ public class JarArtifactStub extends AbstractArtifactStub {
         }
     }
 
+    @Override
     public void setScope(String scope) {
         this.scope = scope;
     }
 
+    @Override
     public File getFile() {
         if (file == null) {
             return new File(basedir, "/target/test-classes/unit/sample_wars/simple.jar");
@@ -110,10 +122,12 @@ public class JarArtifactStub extends AbstractArtifactStub {
         return file;
     }
 
+    @Override
     public void setFile(File file) {
         this.file = file;
     }
 
+    @Override
     public ArtifactHandler getArtifactHandler() {
         return artifactHandler;
     }

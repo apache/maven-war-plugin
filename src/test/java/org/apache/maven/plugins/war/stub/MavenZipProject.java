@@ -35,10 +35,12 @@ public class MavenZipProject extends MavenProject4CopyConstructor {
         this.artifacts = new HashSet<>();
     }
 
+    @Override
     public Set<Artifact> getArtifacts() {
         return this.artifacts;
     }
 
+    @Override
     public Set<Artifact> getDependencyArtifacts() {
         return this.artifacts;
     }

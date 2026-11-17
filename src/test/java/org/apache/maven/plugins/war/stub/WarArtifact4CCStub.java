@@ -30,14 +30,17 @@ public class WarArtifact4CCStub extends WarArtifactStub {
         super(basedir);
     }
 
+    @Override
     public String getGroupId() {
         return "org.maven.plugin.test";
     }
 
+    @Override
     public String getClassifier() {
         return "testclassifier";
     }
 
+    @Override
     public ArtifactHandler getArtifactHandler() {
         return new DefaultArtifactHandler();
     }

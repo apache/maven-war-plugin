@@ -29,6 +29,7 @@ import org.apache.maven.plugin.MojoFailureException;
  */
 public class CopyUserManifestTask extends AbstractWarPackagingTask {
 
+    @Override
     public void performPackaging(WarPackagingContext context) throws MojoExecutionException, MojoFailureException {
         File userManifest = context.getArchive().getManifestFile();
         if (userManifest != null) {

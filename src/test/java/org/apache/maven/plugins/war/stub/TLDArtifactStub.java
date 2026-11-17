@@ -25,14 +25,17 @@ public class TLDArtifactStub extends AbstractArtifactStub {
         super(basedir);
     }
 
+    @Override
     public String getType() {
         return "tld";
     }
 
+    @Override
     public String getArtifactId() {
         return "tldartifact";
     }
 
+    @Override
     public File getFile() {
         return new File(basedir, "/target/test-classes/unit/sample_wars/tld.jar");
     }
