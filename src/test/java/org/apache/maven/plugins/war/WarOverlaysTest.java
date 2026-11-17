@@ -23,6 +23,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -662,8 +663,8 @@ public class WarOverlaysTest {
         }
 
         // Now we have the files, sort them.
-        expectedFiles.sort(null);
-        webAppContent.sort(null);
+        Collections.sort(expectedFiles);
+        Collections.sort(webAppContent);
         assertEquals(
                 expectedFiles,
                 webAppContent,

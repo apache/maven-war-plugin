@@ -19,6 +19,7 @@
 package org.apache.maven.plugins.war.packaging;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
@@ -41,7 +42,7 @@ class AbstractWarPackagingTaskTest {
     }
 
     @Test
-    void testCopyFileRemovesExecutablePermissions() throws Exception {
+    void testCopyFileRemovesExecutablePermissions() throws IOException {
         assumeFalse(isWindows());
         File source = new File(tempDir, "source.jar");
         assertTrue(source.createNewFile());
@@ -62,7 +63,7 @@ class AbstractWarPackagingTaskTest {
     }
 
     @Test
-    void testCopyFilePreservesNonExecutable() throws Exception {
+    void testCopyFilePreservesNonExecutable() throws IOException {
         assumeFalse(isWindows());
         File source = new File(tempDir, "source.jar");
         assertTrue(source.createNewFile());

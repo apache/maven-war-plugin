@@ -200,7 +200,7 @@ public class PathSetTest {
      * @throws IOException if an io error occurred
      */
     @Test
-    public void testAddAllFilesInDirectory() throws Exception {
+    public void testAddAllFilesInDirectory() throws IOException {
         PathSet ps = new PathSet();
 
         /* Preparing directory structure*/
