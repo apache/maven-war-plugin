@@ -120,7 +120,7 @@ public class WarProjectPackagingTask extends AbstractWarPackagingTask {
                 throw new MojoExecutionException("The <directory> tag is missing from the <resource> tag.");
             }
 
-            if (!(new File(resource.getDirectory())).isAbsolute()) {
+            if (!new File(resource.getDirectory()).isAbsolute()) {
                 resource.setDirectory(context.getProject().getBasedir() + File.separator + resource.getDirectory());
             }
 
