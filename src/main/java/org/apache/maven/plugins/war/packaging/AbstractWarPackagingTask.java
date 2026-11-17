@@ -172,14 +172,17 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
         if (file.isFile()) {
             context.getWebappStructure()
                     .registerFile(sourceId, targetFilename, new WebappStructure.RegistrationCallback() {
+                        @Override
                         public void registered(String ownerId, String targetFilename) throws IOException {
                             copyFile(context, file, targetFile, targetFilename, false);
                         }
 
+                        @Override
                         public void alreadyRegistered(String ownerId, String targetFilename) throws IOException {
                             copyFile(context, file, targetFile, targetFilename, true);
                         }
 
+                        @Override
                         public void refused(String ownerId, String targetFilename, String actualOwnerId)
                                 throws IOException {
                             context.getLog()
@@ -190,6 +193,7 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
                                             + actualOwnerId + "].");
                         }
 
+                        @Override
                         public void superseded(String ownerId, String targetFilename, String deprecatedOwnerId)
                                 throws IOException {
                             context.getLog()
@@ -201,6 +205,7 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
                             copyFile(context, file, targetFile, targetFilename, false);
                         }
 
+                        @Override
                         public void supersededUnknownOwner(String ownerId, String targetFilename, String unknownOwnerId)
                                 throws IOException {
                             // CHECKSTYLE_OFF: LineLength

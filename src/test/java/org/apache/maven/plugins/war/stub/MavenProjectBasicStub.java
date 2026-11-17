@@ -41,14 +41,17 @@ public class MavenProjectBasicStub extends MavenProject {
         properties = new Properties();
     }
 
+    @Override
     public Set<Artifact> getArtifacts() {
         return new HashSet<>();
     }
 
+    @Override
     public String getName() {
         return "Test Project ";
     }
 
+    @Override
     public File getBasedir() {
         // create an isolated environment
         // see setupTestEnvironment for details
@@ -56,18 +59,22 @@ public class MavenProjectBasicStub extends MavenProject {
         return null;
     }
 
+    @Override
     public String getGroupId() {
         return "org.apache.maven.plugin.test";
     }
 
+    @Override
     public String getArtifactId() {
         return "maven-war-plugin-test";
     }
 
+    @Override
     public String getPackaging() {
         return "jar";
     }
 
+    @Override
     public String getVersion() {
         return "0.0-Test";
     }
@@ -76,16 +83,20 @@ public class MavenProjectBasicStub extends MavenProject {
         properties.put(key, value);
     }
 
+    @Override
     public Properties getProperties() {
         return properties;
     }
 
+    @Override
     public String getDescription() {
         return "Test Description";
     }
 
+    @Override
     public Organization getOrganization() {
         return new Organization() {
+            @Override
             public String getName() {
                 return "Test Name";
             }

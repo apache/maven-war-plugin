@@ -35,10 +35,12 @@ public class MarArtifactStub extends AbstractArtifactStub {
         this.artifactHandler = artifactHandler;
     }
 
+    @Override
     public void setGroupId(String id) {
         groupId = id;
     }
 
+    @Override
     public String getGroupId() {
         if (groupId != null) {
             return groupId;
@@ -47,18 +49,22 @@ public class MarArtifactStub extends AbstractArtifactStub {
         }
     }
 
+    @Override
     public String getType() {
         return "mar";
     }
 
+    @Override
     public String getArtifactId() {
         return "marartifact";
     }
 
+    @Override
     public File getFile() {
         return new File(basedir, "/target/test-classes/unit/sample_wars/simple.mar");
     }
 
+    @Override
     public ArtifactHandler getArtifactHandler() {
         return artifactHandler;
     }

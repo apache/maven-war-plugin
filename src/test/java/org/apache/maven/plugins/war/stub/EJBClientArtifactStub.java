@@ -30,10 +30,12 @@ public class EJBClientArtifactStub extends AbstractArtifactStub {
         super(basedir);
     }
 
+    @Override
     public void setGroupId(String id) {
         groupId = id;
     }
 
+    @Override
     public String getGroupId() {
         if (groupId != null) {
             return groupId;
@@ -42,24 +44,30 @@ public class EJBClientArtifactStub extends AbstractArtifactStub {
         }
     }
 
+    @Override
     public String getType() {
         return "ejb-client";
     }
 
+    @Override
     public String getClassifier() {
         return "client";
     }
 
+    @Override
     public String getArtifactId() {
         return "ejbclientartifact";
     }
 
+    @Override
     public File getFile() {
         return new File(basedir, "/target/test-classes/unit/sample_wars/ejbclient.jar");
     }
 
+    @Override
     public ArtifactHandler getArtifactHandler() {
         return new DefaultArtifactHandler() {
+            @Override
             public String getExtension() {
                 return "jar";
             }

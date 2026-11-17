@@ -757,6 +757,7 @@ public class WarOverlaysTest {
             this.webAppDirIndex = webAppDirectory.getAbsolutePath().length() + 1;
         }
 
+        @Override
         public boolean accept(File file) {
             String effectiveRelativePath = buildRelativePath(file);
             return !(rejectedFilePaths.contains(effectiveRelativePath) || file.isDirectory());

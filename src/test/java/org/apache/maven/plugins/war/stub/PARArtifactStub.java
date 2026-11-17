@@ -25,14 +25,17 @@ public class PARArtifactStub extends AbstractArtifactStub {
         super(basedir);
     }
 
+    @Override
     public String getType() {
         return "par";
     }
 
+    @Override
     public String getArtifactId() {
         return "parartifact";
     }
 
+    @Override
     public File getFile() {
         return new File(basedir, "/target/test-classes/unit/sample_wars/sample.par");
     }
