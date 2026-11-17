@@ -95,7 +95,7 @@ public class Overlay {
      * @return true if the overlay represents the current project, false otherwise
      */
     public boolean isCurrentProject() {
-        return (groupId == null && artifactId == null);
+        return groupId == null && artifactId == null;
     }
 
     /**
@@ -317,7 +317,7 @@ public class Overlay {
     @Override
     public int hashCode() {
         int result;
-        result = (getId() != null ? getId().hashCode() : 0);
+        result = getId() != null ? getId().hashCode() : 0;
         result = 31 * result + (includes != null ? Arrays.hashCode(includes) : 0);
         result = 31 * result + (excludes != null ? Arrays.hashCode(excludes) : 0);
         return result;

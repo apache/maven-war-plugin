@@ -67,7 +67,7 @@ public abstract class AbstractArtifactStub extends ArtifactStub {
         if (a.getGroupId() != null) {
             result = getGroupId().compareTo(a.getGroupId());
         } else {
-            result = (getGroupId() == null ? 0 : -1);
+            result = getGroupId() == null ? 0 : -1;
         }
         /* -- */
 
