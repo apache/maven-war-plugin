@@ -44,7 +44,6 @@ import org.apache.maven.plugins.war.stub.ResourceStub;
 import org.apache.maven.plugins.war.stub.TLDArtifactStub;
 import org.apache.maven.plugins.war.stub.WarArtifactStub;
 import org.apache.maven.plugins.war.stub.XarArtifactStub;
-import org.codehaus.plexus.util.FileUtils;
 import org.junit.jupiter.api.Test;
 
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
@@ -167,7 +166,10 @@ public class WarExplodedMojoTest {
         assertTrue(expectedWebSource2File.exists(), "source files not found: " + expectedWebSource2File);
         assertTrue(expectedWEBXMLFile.exists(), "WEB XML not found: " + expectedWEBXMLFile);
         assertTrue(expectedMETAINFDir.exists(), "META-INF not found");
-        assertEquals(mojo.getWebXml().getName(), FileUtils.fileRead(expectedWEBXMLFile), "WEB XML not correct");
+        assertEquals(
+                mojo.getWebXml().getName(),
+                new String(Files.readAllBytes(expectedWEBXMLFile.toPath()), StandardCharsets.UTF_8),
+                "WEB XML not correct");
 
         // housekeeping
         expectedWebSourceFile.delete();
@@ -294,7 +296,10 @@ public class WarExplodedMojoTest {
         File expectedFile = new File(webAppDirectory, "/org/sample/company/test.jsp");
 
         assertTrue(expectedFile.exists(), "file not found: " + expectedFile);
-        assertEquals("org/sample/company/test.jsp", FileUtils.fileRead(expectedFile), "file incorrect");
+        assertEquals(
+                "org/sample/company/test.jsp",
+                new String(Files.readAllBytes(expectedFile.toPath()), StandardCharsets.UTF_8),
+                "file incorrect");
 
         // check when the merged war file is newer - so set an old time on the local file
         File simpleJSP = new File(
@@ -307,7 +312,10 @@ public class WarExplodedMojoTest {
 
         expectedFile.setLastModified(time);
         assertTrue(expectedFile.exists(), "file not found: " + expectedFile);
-        assertEquals("org/sample/company/test.jsp", FileUtils.fileRead(expectedFile), "file incorrect");
+        assertEquals(
+                "org/sample/company/test.jsp",
+                new String(Files.readAllBytes(expectedFile.toPath()), StandardCharsets.UTF_8),
+                "file incorrect");
 
         // housekeeping
         expectedFile.delete();
@@ -844,7 +852,7 @@ public class WarExplodedMojoTest {
         // destination starts with a value of error replaced with a blank source
         assertNotEquals(
                 "error",
-                FileUtils.fileRead(expectedWebSourceFile),
+                new String(Files.readAllBytes(expectedWebSourceFile.toPath()), StandardCharsets.UTF_8),
                 "source files not updated with new copy: " + expectedWebSourceFile);
 
         // housekeeping
