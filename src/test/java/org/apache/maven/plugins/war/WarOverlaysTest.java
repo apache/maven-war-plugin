@@ -21,6 +21,8 @@ package org.apache.maven.plugins.war;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -36,7 +38,6 @@ import org.apache.maven.plugins.war.stub.MavenProjectArtifactsStub;
 import org.apache.maven.plugins.war.stub.WarOverlayStub;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
-import org.codehaus.plexus.util.FileUtils;
 import org.junit.jupiter.api.Test;
 
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
@@ -527,8 +528,11 @@ public class WarOverlaysTest {
         File contextXml = new File(webAppDirectory, "META-INF/context.xml");
         assertTrue(contextXml.isFile(), "META-INF/context.xml lost in the overlay process");
         assertEquals(
-                FileUtils.fileRead(getOverlayFile("overlay-context-xml", "META-INF/context.xml"), "UTF-8"),
-                FileUtils.fileRead(contextXml, "UTF-8"));
+                new String(
+                        Files.readAllBytes(getOverlayFile("overlay-context-xml", "META-INF/context.xml")
+                                .toPath()),
+                        StandardCharsets.UTF_8),
+                new String(Files.readAllBytes(contextXml.toPath()), StandardCharsets.UTF_8));
     }
 
     // Helpers
@@ -559,9 +563,9 @@ public class WarOverlaysTest {
         // The predefined files contain only "new line" file endings.
         // This tests fail on Windows as the new created files also contain "carriage return".
         final String webAppFileWithReplacedLineEndings =
-                FileUtils.fileRead(webAppFile).replaceAll("\\r\\n", "\n");
+                new String(Files.readAllBytes(webAppFile.toPath()), StandardCharsets.UTF_8).replaceAll("\\r\\n", "\n");
         final String overlayFileWithReplacedLineEndings =
-                FileUtils.fileRead(overlayFile).replaceAll("\\r\\n", "\n");
+                new String(Files.readAllBytes(overlayFile.toPath()), StandardCharsets.UTF_8).replaceAll("\\r\\n", "\n");
 
         assertEquals(
                 overlayFileWithReplacedLineEndings,
@@ -584,7 +588,10 @@ public class WarOverlaysTest {
         final File webAppFile = new File(webAppDirectory, filePath);
         //        final File sourceFile = new File(getWebAppSource(testId), filePath);
         final String expectedContent = filePath;
-        assertEquals(expectedContent, FileUtils.fileRead(webAppFile), "Wrong content for file " + filePath);
+        assertEquals(
+                expectedContent,
+                new String(Files.readAllBytes(webAppFile.toPath()), StandardCharsets.UTF_8),
+                "Wrong content for file " + filePath);
     }
 
     /**
