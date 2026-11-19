@@ -19,11 +19,14 @@
 package org.apache.maven.plugins.war.packaging;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
@@ -80,6 +83,30 @@ class AbstractWarPackagingTaskTest {
         assertFalse(destination.canExecute(), "copied file should not be executable");
         assertTrue(destination.canRead(), "copied file should be readable");
         assertTrue(destination.canWrite(), "copied file should be writable");
+    }
+
+    @Test
+    void testCopyFileCopiesWhenContentSizeDiffersDespiteEqualTimestamp() throws Exception {
+        // Reproduces GitHub #684: on filesystems with coarse mtime granularity (e.g. 1s on HFS+),
+        // a source file modified within the same tick as the destination's last copy compares as
+        // "not newer", so onlyIfModified must also fall back to a size check.
+        File source = new File(tempDir, "source.txt");
+        Files.write(source.toPath(), "changed content".getBytes(StandardCharsets.UTF_8));
+
+        File webappDir = new File(tempDir, "webapp");
+        File destination = new File(webappDir, "test.txt");
+        assertTrue(destination.getParentFile().mkdirs());
+        Files.write(destination.toPath(), "old".getBytes(StandardCharsets.UTF_8));
+
+        long sameModifiedTime = (System.currentTimeMillis() / 1000) * 1000;
+        assertTrue(source.setLastModified(sameModifiedTime));
+        assertTrue(destination.setLastModified(sameModifiedTime));
+
+        AbstractWarPackagingTask task = createTask();
+        boolean copied = task.copyFile(new TestWarPackagingContext(webappDir), source, destination, "test.txt", true);
+
+        assertTrue(copied, "file should be copied when its size differs, even with an equal timestamp");
+        assertEquals("changed content", new String(Files.readAllBytes(destination.toPath()), StandardCharsets.UTF_8));
     }
 
     private static AbstractWarPackagingTask createTask() {

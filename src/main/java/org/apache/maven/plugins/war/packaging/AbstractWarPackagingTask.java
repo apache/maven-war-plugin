@@ -331,7 +331,8 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
         BasicFileAttributes readAttributes = Files.readAttributes(source.toPath(), BasicFileAttributes.class);
         if (onlyIfModified
                 && destination.lastModified()
-                        >= readAttributes.lastModifiedTime().toMillis()) {
+                        >= readAttributes.lastModifiedTime().toMillis()
+                && destination.length() == readAttributes.size()) {
             context.getLog().debug(" * " + targetFilename + " is up to date.");
             return false;
         } else {
