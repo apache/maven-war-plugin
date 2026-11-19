@@ -343,6 +343,28 @@ public class WarExplodedMojoFilteringTest {
 
     @InjectMojo(goal = "exploded", pom = "plugin-config.xml")
     @Basedir("src/test/resources/unit/warexplodedmojo/")
+    @MojoParameter(name = "classesDirectory", value = DATA + "FilteringMWAR415-test-data/classes/")
+    @MojoParameter(name = "warSourceDirectory", value = DATA + "FilteringMWAR415-test-data/source/")
+    @MojoParameter(name = "webappDirectory", value = DATA + "FilteringMWAR415")
+    @Test
+    public void testFilteringWebResourceSubstitutesBuildTimestamp(WarExplodedMojo mojo) throws Exception {
+        prepare(mojo);
+        mojo.setWebResources(new Resource[] {webResource("FilteringMWAR415-test-data", "resources", true)});
+        mojo.execute();
+
+        File properties = new File(mojo.getWebappDirectory(), "build-timestamp.properties");
+        assertTrue(properties.isFile(), "build-timestamp.properties not found");
+        String content = read(properties, "UTF-8");
+        assertTrue(
+                content.contains("build.timestamp=") && !content.contains("${maven.build.timestamp}"),
+                "maven.build.timestamp was not substituted: " + content);
+        assertTrue(
+                content.matches("(?s).*build\\.timestamp=\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z.*"),
+                "substituted timestamp does not match the expected format: " + content);
+    }
+
+    @InjectMojo(goal = "exploded", pom = "plugin-config.xml")
+    @Basedir("src/test/resources/unit/warexplodedmojo/")
     @MojoParameter(name = "classesDirectory", value = DATA + "FilteringMWAR139-test-data/classes/")
     @MojoParameter(name = "warSourceDirectory", value = DATA + "FilteringMWAR139-test-data/source/")
     @MojoParameter(name = "webappDirectory", value = DATA + "FilteringMWAR139")
