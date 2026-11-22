@@ -85,6 +85,7 @@ public class DependencyInfo {
 
     @Override
     public int hashCode() {
+        int result;
         return dependency != null ? dependency.hashCode() : 0;
     }
 }

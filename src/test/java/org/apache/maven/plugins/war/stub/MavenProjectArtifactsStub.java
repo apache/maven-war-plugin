@@ -38,10 +38,12 @@ public class MavenProjectArtifactsStub extends MavenProjectBasicStub {
         artifacts.add(stub);
     }
 
+    @Override
     public Set<Artifact> getArtifacts() {
         return artifacts;
     }
 
+    @Override
     public List<Dependency> getDependencies() {
         if (getArtifacts() == null) {
             return new ArrayList<>();
@@ -60,6 +62,7 @@ public class MavenProjectArtifactsStub extends MavenProjectBasicStub {
         return dependencies;
     }
 
+    @Override
     public List<String> getRuntimeClasspathElements() {
         List<String> artifacts = new ArrayList<>();
 

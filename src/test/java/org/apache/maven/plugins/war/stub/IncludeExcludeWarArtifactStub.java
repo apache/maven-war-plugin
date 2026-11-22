@@ -26,10 +26,12 @@ public class IncludeExcludeWarArtifactStub extends WarArtifactStub {
         setGroupId("wartests");
     }
 
+    @Override
     public String getArtifactId() {
         return "war-include-exclude";
     }
 
+    @Override
     public File getFile() {
         return new File(basedir, "/target/test-classes/unit/sample_wars/include-exclude.war");
     }

@@ -37,10 +37,12 @@ public class WarArtifactStub extends AbstractArtifactStub {
         super(basedir);
     }
 
+    @Override
     public String getType() {
         return "war";
     }
 
+    @Override
     public String getArtifactId() {
         if (artifactId == null) {
             return "simple";
@@ -49,10 +51,12 @@ public class WarArtifactStub extends AbstractArtifactStub {
         }
     }
 
+    @Override
     public void setArtifactId(String artifactId) {
         this.artifactId = artifactId;
     }
 
+    @Override
     public String getGroupId() {
         if (groupId == null) {
             return "wartests";
@@ -61,10 +65,12 @@ public class WarArtifactStub extends AbstractArtifactStub {
         }
     }
 
+    @Override
     public void setGroupId(String groupId) {
         this.groupId = groupId;
     }
 
+    @Override
     public File getFile() {
         if (file == null) {
             return new File(basedir, "/target/test-classes/unit/sample_wars/simple.war");
@@ -73,10 +79,12 @@ public class WarArtifactStub extends AbstractArtifactStub {
         }
     }
 
+    @Override
     public void setFile(File file) {
         this.file = file;
     }
 
+    @Override
     public String getClassifier() {
         return classifier;
     }
@@ -85,6 +93,7 @@ public class WarArtifactStub extends AbstractArtifactStub {
         this.classifier = classifier;
     }
 
+    @Override
     public boolean hasClassifier() {
         return classifier != null;
     }

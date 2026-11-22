@@ -35,26 +35,32 @@ public class ZipArtifactStub extends AbstractArtifactStub {
         this.zip = zipFile;
     }
 
+    @Override
     public String getId() {
         return null;
     }
 
+    @Override
     public String getVersion() {
         return "1.0";
     }
 
+    @Override
     public File getFile() {
         return this.zip;
     }
 
+    @Override
     public String getType() {
         return "zip";
     }
 
+    @Override
     public String getArtifactId() {
         return "zipId";
     }
 
+    @Override
     public String getGroupId() {
         return "zipGroupId";
     }
