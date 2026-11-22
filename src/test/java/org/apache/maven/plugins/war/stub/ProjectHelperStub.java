@@ -43,10 +43,13 @@ public class ProjectHelperStub implements MavenProjectHelper {
         return artifactClassifier;
     }
 
+    @Override
     public void attachArtifact(MavenProject project, File artifactFile, String artifactClassifier) {}
 
+    @Override
     public void attachArtifact(MavenProject project, String artifactType, File artifactFile) {}
 
+    @Override
     public void attachArtifact(
             MavenProject project, String artifactType, String artifactClassifier, File artifactFile) {
         this.artifactType = artifactType;

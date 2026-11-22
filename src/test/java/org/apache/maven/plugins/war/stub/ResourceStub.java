@@ -31,18 +31,22 @@ public class ResourceStub extends Resource {
 
     private String directory;
 
+    @Override
     public List<String> getIncludes() {
         return new ArrayList<>();
     }
 
+    @Override
     public List<String> getExcludes() {
         return new ArrayList<>();
     }
 
+    @Override
     public void setDirectory(String directory) {
         this.directory = directory;
     }
 
+    @Override
     public String getDirectory() {
         return directory;
     }

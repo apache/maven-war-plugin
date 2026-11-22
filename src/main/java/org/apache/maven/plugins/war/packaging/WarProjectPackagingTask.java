@@ -28,7 +28,6 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.war.Overlay;
 import org.apache.maven.plugins.war.util.PathSet;
 import org.apache.maven.shared.filtering.MavenFilteringException;
-import org.apache.maven.shared.utils.StringUtils;
 import org.codehaus.plexus.util.DirectoryScanner;
 
 /**
@@ -120,7 +119,7 @@ public class WarProjectPackagingTask extends AbstractWarPackagingTask {
                 throw new MojoExecutionException("The <directory> tag is missing from the <resource> tag.");
             }
 
-            if (!(new File(resource.getDirectory())).isAbsolute()) {
+            if (!new File(resource.getDirectory()).isAbsolute()) {
                 resource.setDirectory(context.getProject().getBasedir() + File.separator + resource.getDirectory());
             }
 
@@ -204,7 +203,7 @@ public class WarProjectPackagingTask extends AbstractWarPackagingTask {
             WarPackagingContext context, File webinfDir, File metainfDir, Boolean failOnMissingWebXml)
             throws MojoFailureException, MojoExecutionException {
         try {
-            if (webXml != null && StringUtils.isNotEmpty(webXml.getName())) {
+            if (webXml != null && (webXml.getName() != null && !webXml.getName().isEmpty())) {
                 if (!webXml.exists() && (failOnMissingWebXml == null || failOnMissingWebXml)) {
                     throw new MojoFailureException("The specified web.xml file '" + webXml + "' does not exist");
                 }
@@ -239,7 +238,9 @@ public class WarProjectPackagingTask extends AbstractWarPackagingTask {
                 }
             }
 
-            if (containerConfigXML != null && StringUtils.isNotEmpty(containerConfigXML.getName())) {
+            if (containerConfigXML != null
+                    && (containerConfigXML.getName() != null
+                            && !containerConfigXML.getName().isEmpty())) {
                 String xmlFileName = containerConfigXML.getName();
 
                 context.getWebappStructure().registerFileForced(id, META_INF_PATH + "/" + xmlFileName);
