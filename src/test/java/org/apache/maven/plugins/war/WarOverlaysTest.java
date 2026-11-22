@@ -21,9 +21,10 @@ package org.apache.maven.plugins.war;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -37,7 +38,6 @@ import org.apache.maven.plugins.war.stub.MavenProjectArtifactsStub;
 import org.apache.maven.plugins.war.stub.WarOverlayStub;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
-import org.codehaus.plexus.util.FileUtils;
 import org.junit.jupiter.api.Test;
 
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
@@ -509,6 +509,32 @@ public class WarOverlaysTest {
         assertWebAppContent(webAppDirectory, assertedFiles, filter);
     }
 
+    @InjectMojo(goal = "exploded", pom = "src/test/resources/unit/waroverlays/default.xml")
+    @MojoParameter(name = "workDirectory", value = "target/test-classes/unit/waroverlays/war/work-context-xml-overlay")
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/waroverlays/default-overlay-test-data/classes")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/waroverlays/default-overlay-test-data/source/")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/waroverlays/context-xml-overlay")
+    @Test
+    public void testDefaultOverlayKeepsContextXml(WarExplodedMojo mojo) throws Exception {
+        mojo.setProject(createProjectWithOverlays(buildWarOverlayStub("overlay-context-xml")));
+
+        mojo.execute();
+
+        File webAppDirectory = (File) getVariableValueFromObject(mojo, "webappDirectory");
+        File contextXml = new File(webAppDirectory, "META-INF/context.xml");
+        assertTrue(contextXml.isFile(), "META-INF/context.xml lost in the overlay process");
+        assertEquals(
+                new String(
+                        Files.readAllBytes(getOverlayFile("overlay-context-xml", "META-INF/context.xml")
+                                .toPath()),
+                        StandardCharsets.UTF_8),
+                new String(Files.readAllBytes(contextXml.toPath()), StandardCharsets.UTF_8));
+    }
+
     // Helpers
 
     private MavenProjectArtifactsStub createProjectWithOverlays(ArtifactStub... artifactStubs) throws Exception {
@@ -537,9 +563,9 @@ public class WarOverlaysTest {
         // The predefined files contain only "new line" file endings.
         // This tests fail on Windows as the new created files also contain "carriage return".
         final String webAppFileWithReplacedLineEndings =
-                FileUtils.fileRead(webAppFile).replaceAll("\\r\\n", "\n");
+                new String(Files.readAllBytes(webAppFile.toPath()), StandardCharsets.UTF_8).replaceAll("\\r\\n", "\n");
         final String overlayFileWithReplacedLineEndings =
-                FileUtils.fileRead(overlayFile).replaceAll("\\r\\n", "\n");
+                new String(Files.readAllBytes(overlayFile.toPath()), StandardCharsets.UTF_8).replaceAll("\\r\\n", "\n");
 
         assertEquals(
                 overlayFileWithReplacedLineEndings,
@@ -562,7 +588,10 @@ public class WarOverlaysTest {
         final File webAppFile = new File(webAppDirectory, filePath);
         //        final File sourceFile = new File(getWebAppSource(testId), filePath);
         final String expectedContent = filePath;
-        assertEquals(expectedContent, FileUtils.fileRead(webAppFile), "Wrong content for file " + filePath);
+        assertEquals(
+                expectedContent,
+                new String(Files.readAllBytes(webAppFile.toPath()), StandardCharsets.UTF_8),
+                "Wrong content for file " + filePath);
     }
 
     /**
@@ -640,8 +669,8 @@ public class WarOverlaysTest {
         }
 
         // Now we have the files, sort them.
-        Collections.sort(expectedFiles);
-        Collections.sort(webAppContent);
+        expectedFiles.sort(null);
+        webAppContent.sort(null);
         assertEquals(
                 expectedFiles,
                 webAppContent,
@@ -735,6 +764,7 @@ public class WarOverlaysTest {
             this.webAppDirIndex = webAppDirectory.getAbsolutePath().length() + 1;
         }
 
+        @Override
         public boolean accept(File file) {
             String effectiveRelativePath = buildRelativePath(file);
             return !(rejectedFilePaths.contains(effectiveRelativePath) || file.isDirectory());

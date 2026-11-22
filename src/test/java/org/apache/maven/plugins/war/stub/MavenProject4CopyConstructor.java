@@ -32,6 +32,7 @@ public class MavenProject4CopyConstructor extends MavenProjectBasicStub {
         initializeParentFields();
     }
 
+    @Override
     public List<Artifact> getAttachedArtifacts() {
         return new LinkedList<>();
     }

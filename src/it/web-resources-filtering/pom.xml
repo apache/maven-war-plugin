@@ -37,5 +37,6 @@ under the License.
   <modules>
     <module>parent</module>
     <module>web</module>
+    <module>web-delimiter</module>
   </modules>
 </project>

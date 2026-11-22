@@ -18,13 +18,18 @@
  */
 package org.apache.maven.plugins.war;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.jar.JarOutputStream;
 
 import org.apache.maven.api.plugin.testing.InjectMojo;
 import org.apache.maven.api.plugin.testing.MojoExtension;
@@ -32,6 +37,8 @@ import org.apache.maven.api.plugin.testing.MojoParameter;
 import org.apache.maven.api.plugin.testing.MojoTest;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
+import org.apache.maven.artifact.versioning.ArtifactVersion;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.war.stub.JarArtifactStub;
 import org.apache.maven.plugins.war.stub.MavenProject4CopyConstructor;
@@ -39,6 +46,7 @@ import org.apache.maven.plugins.war.stub.MavenProjectArtifactsStub;
 import org.apache.maven.plugins.war.stub.WarArtifact4CCStub;
 import org.codehaus.plexus.util.IOUtil;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.apache.maven.api.plugin.testing.MojoExtension.getBasedir;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -616,6 +624,270 @@ public class WarMojoTest {
         assertJarContent(
                 expectedJarFile, new String[] {"META-INF/MANIFEST.MF", "sample-servlet.clazz"}, new String[] {null, null
                 });
+    }
+
+    @InjectMojo(goal = "war", pom = "src/test/resources/unit/warmojotest/plugin-config-primary-artifact.xml")
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warmojotest/IncludeEmptyDirectories-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warmojotest/IncludeEmptyDirectories-test-data/source/")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warmojotest/IncludeEmptyDirectories")
+    @MojoParameter(
+            name = "outputDirectory",
+            value = "target/test-classes/unit/warmojotest/IncludeEmptyDirectories-output")
+    @MojoParameter(name = "warName", value = "simple")
+    @MojoParameter(name = "includeEmptyDirectories", value = "true")
+    @Test
+    public void testIncludeEmptyDirectories(WarMojo mojo) throws Exception {
+        // Git cannot hold an empty directory, so it is created here
+        File logs =
+                new File((File) MojoExtension.getVariableValueFromObject(mojo, "warSourceDirectory"), "WEB-INF/logs");
+        assertTrue(logs.isDirectory() || logs.mkdirs(), "could not create " + logs);
+
+        WarArtifact4CCStub warArtifact = new WarArtifact4CCStub(getBasedir());
+        MavenProject4CopyConstructor project = new MavenProject4CopyConstructor();
+        project.setArtifact(warArtifact);
+        mojo.setProject(project);
+        mojo.execute();
+
+        String outputDir = MojoExtension.getVariableValueFromObject(mojo, "outputDirectory")
+                .toString();
+        assertJarContent(
+                new File(outputDir, "simple.war"),
+                new String[] {"WEB-INF/web.xml", "WEB-INF/logs/"},
+                new String[] {null, null});
+    }
+
+    @InjectMojo(goal = "war", pom = "src/test/resources/unit/warmojotest/plugin-config-primary-artifact.xml")
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warmojotest/SimpleWar-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warmojotest/SimpleWar-test-data/source/")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warmojotest/Skip")
+    @MojoParameter(name = "outputDirectory", value = "target/test-classes/unit/warmojotest/Skip-output")
+    @MojoParameter(name = "warName", value = "simple")
+    @MojoParameter(name = "skip", value = "true")
+    @Test
+    public void testSkip(WarMojo mojo) throws Exception {
+        WarArtifact4CCStub warArtifact = new WarArtifact4CCStub(getBasedir());
+        MavenProject4CopyConstructor project = new MavenProject4CopyConstructor();
+        project.setArtifact(warArtifact);
+        mojo.setProject(project);
+        mojo.execute();
+
+        File webappDirectory = new File(MojoExtension.getVariableValueFromObject(mojo, "webappDirectory")
+                .toString());
+        File outputDirectory = new File(MojoExtension.getVariableValueFromObject(mojo, "outputDirectory")
+                .toString());
+        assertFalse(webappDirectory.exists(), "exploded directory created: " + webappDirectory);
+        assertFalse(new File(outputDirectory, "simple.war").exists(), "war file created");
+    }
+
+    @InjectMojo(goal = "war", pom = "src/test/resources/unit/warmojotest/plugin-config-primary-artifact.xml")
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warmojotest/AttachClasses-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warmojotest/AttachClasses-test-data/source/")
+    @MojoParameter(
+            name = "webXml",
+            value = "target/test-classes/unit/warmojotest/AttachClasses-test-data/xml-config/web.xml")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warmojotest/ArchiveClasses")
+    @MojoParameter(name = "outputDirectory", value = "target/test-classes/unit/warmojotest/ArchiveClasses-output")
+    @MojoParameter(name = "warName", value = "simple")
+    @MojoParameter(name = "archiveClasses", value = "true")
+    @Test
+    public void testArchiveClasses(WarMojo mojo) throws Exception {
+        MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
+        project.addArtifact(createJarArtifact("compiled", Artifact.SCOPE_COMPILE));
+        project.addArtifact(createJarArtifact("provided", Artifact.SCOPE_PROVIDED));
+        WarArtifact4CCStub warArtifact = new WarArtifact4CCStub(getBasedir());
+        project.setArtifact(warArtifact);
+        project.setFile(warArtifact.getFile());
+        mojo.setProject(project);
+        mojo.execute();
+
+        String outputDir = MojoExtension.getVariableValueFromObject(mojo, "outputDirectory")
+                .toString();
+        File expectedWarFile = new File(outputDir, "simple.war");
+        Map<String, JarEntry> content = assertJarContent(
+                expectedWarFile,
+                new String[] {
+                    "pansit.jsp",
+                    "WEB-INF/web.xml",
+                    "WEB-INF/lib/maven-war-plugin-test-0.0-Test.jar",
+                    "WEB-INF/lib/compiled-0.0-Test.jar"
+                },
+                new String[] {null, null, null, null});
+        assertFalse(content.containsKey("WEB-INF/classes/sample-servlet.clazz"), "classes were not archived");
+        assertFalse(content.containsKey("WEB-INF/lib/provided-0.0-Test.jar"), "provided dependency packaged");
+    }
+
+    @InjectMojo(goal = "war", pom = "src/test/resources/unit/warmojotest/plugin-config-primary-artifact.xml")
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warmojotest/AttachClasses-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warmojotest/AttachClasses-test-data/source/")
+    @MojoParameter(
+            name = "webXml",
+            value = "target/test-classes/unit/warmojotest/AttachClasses-test-data/xml-config/web.xml")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warmojotest/AttachArchivedClasses")
+    @MojoParameter(
+            name = "outputDirectory",
+            value = "target/test-classes/unit/warmojotest/AttachArchivedClasses-output")
+    @MojoParameter(name = "warName", value = "simple")
+    @MojoParameter(name = "archiveClasses", value = "true")
+    @MojoParameter(name = "attachClasses", value = "true")
+    @MojoParameter(name = "classesClassifier", value = "classes")
+    @Test
+    public void testAttachArchivedClasses(WarMojo mojo) throws Exception {
+        WarArtifact4CCStub warArtifact = new WarArtifact4CCStub(getBasedir());
+        MavenProject4CopyConstructor project = new MavenProject4CopyConstructor();
+        project.setArtifact(warArtifact);
+        mojo.setProject(project);
+        mojo.execute();
+
+        String outputDir = MojoExtension.getVariableValueFromObject(mojo, "outputDirectory")
+                .toString();
+        assertJarContent(
+                new File(outputDir, "simple-classes.jar"),
+                new String[] {"META-INF/MANIFEST.MF", "sample-servlet.clazz"},
+                new String[] {null, null});
+    }
+
+    @InjectMojo(goal = "war", pom = "src/test/resources/unit/warmojotest/plugin-config-primary-artifact.xml")
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warmojotest/SimpleWar-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warmojotest/SimpleWar-test-data/source/")
+    @MojoParameter(
+            name = "webXml",
+            value = "target/test-classes/unit/warmojotest/SimpleWar-test-data/xml-config/web.xml")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warmojotest/ManifestEntries")
+    @MojoParameter(name = "outputDirectory", value = "target/test-classes/unit/warmojotest/ManifestEntries-output")
+    @MojoParameter(name = "warName", value = "simple")
+    @Test
+    public void testManifestDefaultEntries(WarMojo mojo) throws Exception {
+        mojo.getArchive().setForced(true);
+        mojo.getArchive().getManifest().setAddDefaultSpecificationEntries(true);
+        mojo.getArchive().getManifest().setAddDefaultImplementationEntries(true);
+        // the Specification-Version entry is derived from the selected version of the project artifact
+        WarArtifact4CCStub warArtifact = new WarArtifact4CCStub(getBasedir()) {
+            @Override
+            public ArtifactVersion getSelectedVersion() {
+                return new DefaultArtifactVersion("1.0-SNAPSHOT");
+            }
+        };
+        MavenProject4CopyConstructor project = new MavenProject4CopyConstructor();
+        project.setArtifact(warArtifact);
+        mojo.setProject(project);
+        mojo.execute();
+
+        String outputDir = MojoExtension.getVariableValueFromObject(mojo, "outputDirectory")
+                .toString();
+        try (JarFile war = new JarFile(new File(outputDir, "simple.war"))) {
+            Attributes manifest = war.getManifest().getMainAttributes();
+            assertEquals("Test Project", manifest.getValue(Attributes.Name.SPECIFICATION_TITLE));
+            assertEquals("1.0", manifest.getValue(Attributes.Name.SPECIFICATION_VERSION));
+            assertEquals("Test Name", manifest.getValue(Attributes.Name.SPECIFICATION_VENDOR));
+            assertEquals("Test Project", manifest.getValue(Attributes.Name.IMPLEMENTATION_TITLE));
+            assertEquals("0.0-Test", manifest.getValue(Attributes.Name.IMPLEMENTATION_VERSION));
+            assertEquals("Test Name", manifest.getValue(Attributes.Name.IMPLEMENTATION_VENDOR));
+        }
+    }
+
+    @InjectMojo(goal = "war", pom = "src/test/resources/unit/warmojotest/plugin-config-primary-artifact.xml")
+    @MojoParameter(
+            name = "classesDirectory",
+            value = "target/test-classes/unit/warmojotest/SimpleWarUnderServlet30-test-data/classes/")
+    @MojoParameter(
+            name = "warSourceDirectory",
+            value = "target/test-classes/unit/warmojotest/SimpleWarUnderServlet30-test-data/source/")
+    @MojoParameter(name = "webappDirectory", value = "target/test-classes/unit/warmojotest/SimpleWarUnderJakarta")
+    @MojoParameter(
+            name = "outputDirectory",
+            value = "target/test-classes/unit/warmojotest/SimpleWarUnderJakarta-output")
+    @MojoParameter(name = "warName", value = "simple")
+    @Test
+    public void testFailOnMissingWebXmlNotSpecifiedAndJakartaServletUsed(WarMojo mojo, @TempDir File tempDir)
+            throws Exception {
+        JarArtifactStub jakartaApi = createJarArtifact("jakarta.servlet-api", Artifact.SCOPE_PROVIDED);
+        jakartaApi.setGroupId("jakarta.servlet");
+        jakartaApi.setFile(createJakartaServletApiJar(tempDir));
+        MavenProjectArtifactsStub project = new MavenProjectArtifactsStub();
+        project.addArtifact(jakartaApi);
+        WarArtifact4CCStub warArtifact = new WarArtifact4CCStub(getBasedir());
+        project.setArtifact(warArtifact);
+        project.setFile(warArtifact.getFile());
+        mojo.setProject(project);
+
+        mojo.execute();
+
+        String outputDir = MojoExtension.getVariableValueFromObject(mojo, "outputDirectory")
+                .toString();
+        Map<String, JarEntry> content =
+                assertJarContent(new File(outputDir, "simple.war"), new String[] {"pansit.jsp"}, new String[] {null});
+        assertFalse(content.containsKey("WEB-INF/web.xml"), "web.xml should be missing");
+    }
+
+    private JarArtifactStub createJarArtifact(String artifactId, String scope) {
+        DefaultArtifactHandler handler = new DefaultArtifactHandler("jar");
+        handler.setAddedToClasspath(true);
+        JarArtifactStub artifact = new JarArtifactStub(getBasedir(), handler);
+        artifact.setArtifactId(artifactId);
+        artifact.setFile(new File(getBasedir(), "/target/test-classes/unit/sample_wars/simple.jar"));
+        artifact.setScope(scope);
+        return artifact;
+    }
+
+    /**
+     * Creates a jar that holds only the annotation type the plugin looks for to detect Servlet 3.0 or newer.
+     */
+    private static File createJakartaServletApiJar(File directory) throws IOException {
+        String className = "jakarta/servlet/annotation/WebServlet";
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        try (DataOutputStream out = new DataOutputStream(bytes)) {
+            out.writeInt(0xCAFEBABE);
+            out.writeShort(0); // minor version
+            out.writeShort(52); // Java 8
+            out.writeShort(7); // constant pool count
+            out.writeByte(1); // #1 Utf8 this class
+            out.writeUTF(className);
+            out.writeByte(7); // #2 Class #1
+            out.writeShort(1);
+            out.writeByte(1); // #3 Utf8 super class
+            out.writeUTF("java/lang/Object");
+            out.writeByte(7); // #4 Class #3
+            out.writeShort(3);
+            out.writeByte(1); // #5 Utf8 interface
+            out.writeUTF("java/lang/annotation/Annotation");
+            out.writeByte(7); // #6 Class #5
+            out.writeShort(5);
+            out.writeShort(0x2601); // public abstract interface annotation
+            out.writeShort(2); // this class
+            out.writeShort(4); // super class
+            out.writeShort(1); // interfaces count
+            out.writeShort(6);
+            out.writeShort(0); // fields
+            out.writeShort(0); // methods
+            out.writeShort(0); // attributes
+        }
+        File jar = new File(directory, "jakarta.servlet-api-5.0.0.jar");
+        try (JarOutputStream out = new JarOutputStream(new FileOutputStream(jar))) {
+            out.putNextEntry(new JarEntry(className + ".class"));
+            out.write(bytes.toByteArray());
+            out.closeEntry();
+        }
+        return jar;
     }
 
     private Map<String, JarEntry> assertJarContent(
