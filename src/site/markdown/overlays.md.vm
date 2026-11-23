@@ -143,7 +143,7 @@ The `<overlay>` element can have the following child elements:
 - **groupId** - the groupId of the overlay artifact you want to configure.
 - **artifactId** - the artifactId of the overlay artifact you want to configure.
 - **type** - the type of the overlay artifact you want to configure. Default value is: `war`.
-- **classifier** - the classifier of the overlay artifact you want to configure if multiple artifacts matches the groupId/artifactId.
+- **classifier** - the classifier of the overlay artifact you want to configure if multiple artifacts match the groupId/artifactId.
 - **includes** - the files to include. By default, all files are included.
 - **excludes** - the files to exclude. By default, the `META-INF/MANIFEST.MF` file is excluded.
 - **targetPath** - the target relative path in the webapp structure, which is only available for overlays of type `war`. By default, the content of the overlay is added in the root structure of the webapp.
@@ -217,7 +217,7 @@ For instance, if `my-webapp` from the `com.example.projects` group is a dependen
 
 **Note:** In the scenario above, any other WAR dependency will be applied after the current build since they have not been configured in the `<overlays>` element.
 
-To perform an even more fine grained overwriting policy, overlays can be packaged multiple times with different includes/excludes. For instance if the `index.jsp` file of the overlay `my-webapp` **must** be set in the webapp but other files can be controlled the regular way, define two overlay configurations for `my-webapp`:
+To perform an even more fine grained overwriting policy, overlays can be packaged multiple times with different includes/excludes. For instance if the `index.jsp` file of the overlay `my-webapp` **must** be set in the webapp but other files can be controlled in the regular way, define two overlay configurations for `my-webapp`:
 
 ```xml
 <project>

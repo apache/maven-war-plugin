@@ -30,8 +30,8 @@ The WAR Plugin is responsible for collecting all artifact dependencies, classes 
 ## Goals Overview
 
 - [war:war](./war-mojo.html) is the default goal invoked during the `package` phase for projects with a packaging type of `war`. It builds a WAR file.
-- [war:exploded](./exploded-mojo.html) is generally used to speed up testing during the developement phase by creating an exploded webapp in a specified directory.
-- [war:inplace](./inplace-mojo.html) another variation of `war:explode` where the webapp is instead generated in the web application source directory, which is `src/main/webapp` by default.
+- [war:exploded](./exploded-mojo.html) is generally used to speed up testing during the development phase by creating an exploded webapp in a specified directory.
+- [war:inplace](./inplace-mojo.html) another variation of `war:exploded` where the webapp is instead generated in the web application source directory, which is `src/main/webapp` by default.
 ## Usage
 
 General instructions on how to use the WAR Plugin can be found on the [usage page](./usage.html). Some more specific use cases are described in the examples given below. To share common resources across multiple web applications, see the documentation about using [overlays](./overlays.html).
