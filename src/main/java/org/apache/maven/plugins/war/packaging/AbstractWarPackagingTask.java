@@ -21,12 +21,14 @@ package org.apache.maven.plugins.war.packaging;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 
 import org.apache.commons.io.input.XmlStreamReader;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.war.util.DirectoryUtils;
 import org.apache.maven.plugins.war.util.PathSet;
 import org.apache.maven.plugins.war.util.WebappStructure;
 import org.apache.maven.shared.filtering.MavenFilteringException;
@@ -260,7 +262,8 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
                     encoding = context.getResourceEncoding();
                 }
                 // fix for MWAR-36, ensures that the parent dir are created first
-                targetFile.getParentFile().mkdirs();
+                final Path parentDir = targetFile.toPath().getParent();
+                DirectoryUtils.createDirectoryIfNotExists(parentDir);
 
                 context.getMavenFileFilter().copyFile(file, targetFile, true, context.getFilterWrappers(), encoding);
             } catch (MavenFilteringException e) {

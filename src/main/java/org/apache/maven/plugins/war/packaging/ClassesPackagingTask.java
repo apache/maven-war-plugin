@@ -27,6 +27,7 @@ import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.war.Overlay;
 import org.apache.maven.plugins.war.util.ClassesPackager;
+import org.apache.maven.plugins.war.util.DirectoryUtils;
 import org.apache.maven.plugins.war.util.PathSet;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.interpolation.InterpolationException;
@@ -52,9 +53,7 @@ public class ClassesPackagingTask extends AbstractWarPackagingTask {
     @Override
     public void performPackaging(WarPackagingContext context) throws MojoExecutionException {
         final File webappClassesDirectory = new File(context.getWebappDirectory(), CLASSES_PATH);
-        if (!webappClassesDirectory.exists()) {
-            webappClassesDirectory.mkdirs();
-        }
+        DirectoryUtils.createDirectoryIfNotExists(webappClassesDirectory.toPath());
 
         if (context.getClassesDirectory().exists()
                 && !context.getClassesDirectory().equals(webappClassesDirectory)) {

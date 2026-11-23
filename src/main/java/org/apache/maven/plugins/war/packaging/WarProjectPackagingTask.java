@@ -26,6 +26,7 @@ import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.war.Overlay;
+import org.apache.maven.plugins.war.util.DirectoryUtils;
 import org.apache.maven.plugins.war.util.PathSet;
 import org.apache.maven.shared.filtering.MavenFilteringException;
 import org.codehaus.plexus.util.DirectoryScanner;
@@ -78,9 +79,9 @@ public class WarProjectPackagingTask extends AbstractWarPackagingTask {
 
         // Prepare the INF directories
         File webinfDir = new File(context.getWebappDirectory(), WEB_INF_PATH);
-        webinfDir.mkdirs();
+        DirectoryUtils.createDirectoryIfNotExists(webinfDir.toPath());
         File metainfDir = new File(context.getWebappDirectory(), META_INF_PATH);
-        metainfDir.mkdirs();
+        DirectoryUtils.createDirectoryIfNotExists(metainfDir.toPath());
 
         handleWebResources(context);
 

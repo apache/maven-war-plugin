@@ -47,6 +47,7 @@ import org.apache.maven.plugins.war.packaging.OverlayPackagingTask;
 import org.apache.maven.plugins.war.packaging.WarPackagingContext;
 import org.apache.maven.plugins.war.packaging.WarPackagingTask;
 import org.apache.maven.plugins.war.packaging.WarProjectPackagingTask;
+import org.apache.maven.plugins.war.util.DirectoryUtils;
 import org.apache.maven.plugins.war.util.WebappStructure;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.filtering.FilterWrapper;
@@ -460,7 +461,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
      * @throws MojoFailureException in case of failure
      */
     public void buildExplodedWebapp(File webapplicationDirectory) throws MojoExecutionException, MojoFailureException {
-        webapplicationDirectory.mkdirs();
+        DirectoryUtils.createDirectoryIfNotExists(webapplicationDirectory.toPath());
 
         try {
             buildWebapp(project, webapplicationDirectory);
