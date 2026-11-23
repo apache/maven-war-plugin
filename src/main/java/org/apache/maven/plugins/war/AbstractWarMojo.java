@@ -25,13 +25,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.TimeZone;
 
 import org.apache.maven.archiver.MavenArchiveConfiguration;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
@@ -48,7 +52,6 @@ import org.apache.maven.plugins.war.packaging.OverlayPackagingTask;
 import org.apache.maven.plugins.war.packaging.WarPackagingContext;
 import org.apache.maven.plugins.war.packaging.WarPackagingTask;
 import org.apache.maven.plugins.war.packaging.WarProjectPackagingTask;
-import org.apache.maven.plugins.war.util.MavenBuildTimestamp;
 import org.apache.maven.plugins.war.util.WebappStructure;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.filtering.FilterWrapper;
@@ -65,6 +68,17 @@ import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
  * Contains common jobs for WAR mojos.
  */
 public abstract class AbstractWarMojo extends AbstractMojo {
+
+    /**
+     * The {@code SimpleDateFormat} pattern used for {@code maven.build.timestamp} unless overridden by
+     * {@link #BUILD_TIMESTAMP_FORMAT_PROPERTY}.
+     */
+    private static final String DEFAULT_BUILD_TIMESTAMP_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+
+    /**
+     * The project property used to override {@link #DEFAULT_BUILD_TIMESTAMP_FORMAT}.
+     */
+    private static final String BUILD_TIMESTAMP_FORMAT_PROPERTY = "maven.build.timestamp.format";
 
     /**
      * Whether to fail the build if the <code>web.xml</code> file is missing. Set to <code>false</code> if you
@@ -558,13 +572,33 @@ public abstract class AbstractWarMojo extends AbstractMojo {
      */
     private Properties buildSpecialProperties(final MavenProject mavenProject) {
         final Properties additionalProperties = new Properties();
-        additionalProperties.put("maven.build.timestamp", new MavenBuildTimestamp().formattedTimestamp());
+        additionalProperties.put("maven.build.timestamp", formatBuildTimestamp(mavenProject));
         if (mavenProject.getBasedir() != null) {
             additionalProperties.put(
                     "project.baseUri",
                     mavenProject.getBasedir().getAbsoluteFile().toURI().toString());
         }
         return additionalProperties;
+    }
+
+    /**
+     * Formats the session start time the same way Maven core formats {@code ${maven.build.timestamp}} when
+     * interpolating the POM, honoring an overridden {@code maven.build.timestamp.format} project property.
+     * Duplicated from {@code maven-model-builder} because that computation isn't reachable from a plugin (same
+     * reasoning as MRESOURCES-99 in {@code maven-resources-plugin}).
+     *
+     * @param mavenProject the maven project, whose properties may override the timestamp format
+     * @return the formatted build timestamp
+     */
+    private String formatBuildTimestamp(final MavenProject mavenProject) {
+        final String timestampFormat = mavenProject
+                .getProperties()
+                .getProperty(BUILD_TIMESTAMP_FORMAT_PROPERTY, DEFAULT_BUILD_TIMESTAMP_FORMAT);
+        final SimpleDateFormat dateFormat = new SimpleDateFormat(timestampFormat);
+        dateFormat.setCalendar(new GregorianCalendar());
+        dateFormat.setTimeZone(TimeZone.getTimeZone("Etc/UTC"));
+        final Date buildStartTime = session.getStartTime() != null ? session.getStartTime() : new Date();
+        return dateFormat.format(buildStartTime);
     }
 
     /**
