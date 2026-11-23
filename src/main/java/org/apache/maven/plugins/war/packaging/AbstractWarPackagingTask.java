@@ -40,6 +40,8 @@ import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.SelectorUtils;
 
+import static org.apache.commons.io.FileUtils.contentEquals;
+
 /**
  * @author Stephane Nicoll
  */
@@ -334,8 +336,7 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
         if (onlyIfModified
                 && destination.lastModified()
                         >= readAttributes.lastModifiedTime().toMillis()
-                && (readAttributes.isDirectory()
-                        || org.apache.commons.io.FileUtils.contentEquals(source, destination))) {
+                && (readAttributes.isDirectory() || contentEquals(source, destination))) {
             context.getLog().debug(" * " + targetFilename + " is up to date.");
             return false;
         } else {
