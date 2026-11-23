@@ -329,10 +329,12 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
         context.addResource(targetFilename);
 
         BasicFileAttributes readAttributes = Files.readAttributes(source.toPath(), BasicFileAttributes.class);
+        // A directory source is archived into destination below, so its own filesystem size has no
+        // relation to the resulting jar's size; only compare sizes for a plain file source.
         if (onlyIfModified
                 && destination.lastModified()
                         >= readAttributes.lastModifiedTime().toMillis()
-                && destination.length() == readAttributes.size()) {
+                && (readAttributes.isDirectory() || destination.length() == readAttributes.size())) {
             context.getLog().debug(" * " + targetFilename + " is up to date.");
             return false;
         } else {

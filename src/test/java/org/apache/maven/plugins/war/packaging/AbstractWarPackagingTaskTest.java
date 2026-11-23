@@ -109,6 +109,35 @@ class AbstractWarPackagingTaskTest {
         assertEquals("changed content", new String(Files.readAllBytes(destination.toPath()), StandardCharsets.UTF_8));
     }
 
+    @Test
+    void testCopyFileSkipsDirectorySourceWhenNotModified() throws Exception {
+        // A directory source is archived into a jar, so its own filesystem size is unrelated to the
+        // destination jar's size; comparing them must not defeat the onlyIfModified mtime check here.
+        File source = new File(tempDir, "source-dir");
+        assertTrue(source.mkdirs());
+        Files.write(new File(source, "entry.txt").toPath(), "content".getBytes(StandardCharsets.UTF_8));
+
+        File webappDir = new File(tempDir, "webapp");
+        File destination = new File(webappDir, "test.jar");
+        assertTrue(destination.getParentFile().mkdirs());
+        Files.write(
+                destination.toPath(),
+                "previously archived jar bytes, a different size than the source directory's own entry"
+                        .getBytes(StandardCharsets.UTF_8));
+
+        long now = System.currentTimeMillis();
+        assertTrue(source.setLastModified(now));
+        assertTrue(destination.setLastModified(now + 1000));
+
+        AbstractWarPackagingTask task = createTask();
+        boolean copied = task.copyFile(new TestWarPackagingContext(webappDir), source, destination, "test.jar", true);
+
+        assertFalse(
+                copied,
+                "a directory source considered up to date by mtime must not be re-archived just because "
+                        + "its own filesystem size differs from the destination jar's size");
+    }
+
     private static AbstractWarPackagingTask createTask() {
         return new AbstractWarPackagingTask() {
             @Override
