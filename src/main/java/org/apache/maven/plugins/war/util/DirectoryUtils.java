@@ -32,9 +32,9 @@ public class DirectoryUtils {
     /**
      * Creates a directory if it does not exist (at all).
      *
-     * @param toBeCreated The directory to be created
+     * @param toBeCreated The directory to create
      * @throws MojoExecutionException if the path already exists but is not a directory, or if the directory
-     *                                does not exist <b>and</b> could not be created
+     *  does not exist <b>and</b> could not be created
      */
     public static void createDirectoryIfNotExists(Path toBeCreated) throws MojoExecutionException {
         if (Files.exists(toBeCreated)) {
