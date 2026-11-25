@@ -312,7 +312,7 @@ public abstract class AbstractWarMojo extends AbstractMojo {
     private boolean recompressZippedFiles;
 
     /**
-     * Whether dependency libraries (i.e. JAR files in {@code WEB-INF/lib/}) should be compressed (DEFLATED) when
+     * Whether JAR files in {@code WEB-INF/lib/} should be compressed (DEFLATED) when
      * added to the WAR archive. Setting this to {@code false} will store the library JARs without compression
      * (STORED mode), which can improve servlet container startup time since the JARs do not need to be decompressed.
      * Note that since JAR files are already compressed, storing them without additional compression typically has

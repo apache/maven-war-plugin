@@ -41,6 +41,10 @@ try {
         }
     }
 
+    def resource = zipFile.getEntry('WEB-INF/lib/resource.html')
+    assert resource != null
+    assert resource.method == ZipEntry.DEFLATED : "Non-JAR resource in WEB-INF/lib/ should be DEFLATED"
+
     assert foundStoredJar : "Should have found at least one JAR in WEB-INF/lib/"
     assert foundDeflatedEntry : "Should have found index.html"
 } finally {
