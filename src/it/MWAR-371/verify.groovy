@@ -38,37 +38,9 @@ boolean checkFile( String fileName, String module )
     return checkFile( fileName, module, module )
 }
 
-try {
-    if ( ! checkFile( "a1.txt", "custom" ) )
-    {
-        return false
-    }
-    if ( ! checkFile( "a2.txt", "custom" ) )
-    {
-        return false
-    }
-    if ( ! checkFile( "a3.txt", "custom", "generic" ) )
-    {
-        return false
-    }
-    if ( ! checkFile( "a1.txt", "generic" ) )
-    {
-        return false
-    }
-    if ( ! checkFile( "a2.txt", "generic" ) )
-    {
-        return false
-    }
-    if ( ! checkFile( "a3.txt", "generic" ) )
-    {
-        return false
-    }
-}
-catch ( Throwable e )
-{
-    e.printStackTrace()
-    return false
-}
-
-return true
-
+assert checkFile( "a1.txt", "custom" )
+assert checkFile( "a2.txt", "custom" )
+assert checkFile( "a3.txt", "custom", "generic" )
+assert checkFile( "a1.txt", "generic" )
+assert checkFile( "a2.txt", "generic" )
+assert checkFile( "a3.txt", "generic" )
