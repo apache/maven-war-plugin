@@ -17,30 +17,26 @@
  * under the License.
  */
 
-boolean checkFile( String fileName, String artifact, String module )
-{
-    def customA1 = new File( basedir, "${artifact}/target/${artifact}-1.0-SNAPSHOT/x/${fileName}" )
-    if ( ! customA1.exists() )
-    {
-        System.err.println( "${artifact}/target/${artifact}-1.0-SNAPSHOT/x/${fileName} does not exist." )
+boolean checkFile(String fileName, String artifact, String module) {
+    def customA1 = new File(basedir, "${artifact}/target/${artifact}-1.0-SNAPSHOT/x/${fileName}")
+    if (! customA1.exists()) {
+        System.err.println("${artifact}/target/${artifact}-1.0-SNAPSHOT/x/${fileName} does not exist.")
         return false
     }
-    if ( ! customA1.text.contains( module ) )
-    {
-        System.err.println( "${artifact}/target/${artifact}-1.0-SNAPSHOT/x/${fileName} is not ${module}." )
+    if (! customA1.text.contains(module)) {
+        System.err.println("${artifact}/target/${artifact}-1.0-SNAPSHOT/x/${fileName} is not ${module}.")
         return false
     }
     return true
 }
 
-boolean checkFile( String fileName, String module )
-{
-    return checkFile( fileName, module, module )
+boolean checkFile(String fileName, String module) {
+    return checkFile(fileName, module, module)
 }
 
-assert checkFile( "a1.txt", "custom" )
-assert checkFile( "a2.txt", "custom" )
-assert checkFile( "a3.txt", "custom", "generic" )
-assert checkFile( "a1.txt", "generic" )
-assert checkFile( "a2.txt", "generic" )
-assert checkFile( "a3.txt", "generic" )
+assert checkFile("a1.txt", "custom")
+assert checkFile("a2.txt", "custom")
+assert checkFile("a3.txt", "custom", "generic")
+assert checkFile("a1.txt", "generic")
+assert checkFile("a2.txt", "generic")
+assert checkFile("a3.txt", "generic")

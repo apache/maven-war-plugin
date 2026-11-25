@@ -18,8 +18,8 @@
  * under the License.
  */
 
-File target = new File( basedir, "target" );
+File target = new File(basedir, "target")
 assert target.exists() && target.isDirectory() : "target file is missing or not a directory."
 
-File artifact = new File( target, "maven-war-plugin-test-mwar-326-1.0-SNAPSHOT.war" );
+File artifact = new File( target, "maven-war-plugin-test-mwar-326-1.0-SNAPSHOT.war" )
 assert artifact.exists() : "default artifact should exist."

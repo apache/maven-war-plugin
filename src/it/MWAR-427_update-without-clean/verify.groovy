@@ -18,8 +18,8 @@
  */
 
 // outdated-default: MWAR-427 and MWAR-433, only WEB-INF/lib/ is checked for outdated files by default
-def defaultWar = new java.util.jar.JarFile( new File( basedir, "outdated-default/target/mwar427-1.0-SNAPSHOT.war" ), false )
-assert defaultWar.getEntry( 'WEB-INF/lib/plexus-utils-3.0.23.jar' ) != null : "updated dependency missing"
+def defaultWar = new java.util.jar.JarFile(new File(basedir, "outdated-default/target/mwar427-1.0-SNAPSHOT.war"), false)
+assert defaultWar.getEntry('WEB-INF/lib/plexus-utils-3.0.23.jar') != null : "updated dependency missing"
 assert defaultWar.getEntry( 'WEB-INF/lib/mwar427-1.0-SNAPSHOT.jar' ) != null : "archived classes missing"
 assert defaultWar.getEntry( 'index.html' ) != null : "renamed page missing"
 assert defaultWar.getEntry( "WEB-INF/lib/plexus-utils-" + plexusUtilVersion + ".jar" ) == null : "outdated dependency not removed"
