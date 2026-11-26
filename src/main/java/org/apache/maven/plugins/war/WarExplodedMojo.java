@@ -26,6 +26,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.shared.filtering.MavenFileFilter;
 import org.apache.maven.shared.filtering.MavenResourcesFiltering;
@@ -40,6 +41,12 @@ import org.codehaus.plexus.archiver.manager.ArchiverManager;
         threadSafe = true,
         requiresDependencyResolution = ResolutionScope.RUNTIME)
 public class WarExplodedMojo extends AbstractWarMojo {
+    /**
+     * Whether unchanged files should be skipped while creating the exploded webapp.
+     */
+    @Parameter(defaultValue = "false")
+    private boolean incremental;
+
     @Inject
     public WarExplodedMojo(
             ArtifactHandlerManager artifactHandlerManager,
@@ -55,5 +62,10 @@ public class WarExplodedMojo extends AbstractWarMojo {
         getLog().info("Exploding webapp");
 
         buildExplodedWebapp(getWebappDirectory());
+    }
+
+    @Override
+    protected boolean isIncremental() {
+        return incremental;
     }
 }
