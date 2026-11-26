@@ -66,4 +66,4 @@ Then start Jetty:
 
 The command will block with Jetty listening on port 8080.
 
-Check the [Jetty Plugin documentation](http://docs.codehaus.org/display/JETTY/Maven+Jetty+Plugin) for more details.
+Check the [Jetty Plugin documentation](https://jetty.org/docs/jetty/12/programming-guide/maven-jetty/jetty-maven-plugin.html) for more details.

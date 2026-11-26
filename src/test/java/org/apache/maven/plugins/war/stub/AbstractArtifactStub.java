@@ -33,6 +33,7 @@ public abstract class AbstractArtifactStub extends ArtifactStub {
         this.basedir = basedir;
     }
 
+    @Override
     public String getVersion() {
         return "0.0-Test";
     }
@@ -42,18 +43,22 @@ public abstract class AbstractArtifactStub extends ArtifactStub {
         return getVersion();
     }
 
+    @Override
     public String getScope() {
         return Artifact.SCOPE_RUNTIME;
     }
 
+    @Override
     public VersionRange getVersionRange() {
         return VersionRange.createFromVersion(getVersion());
     }
 
+    @Override
     public boolean isOptional() {
         return false;
     }
 
+    @Override
     public ArtifactHandler getArtifactHandler() {
         return new DefaultArtifactHandler(getType());
     }
@@ -61,13 +66,14 @@ public abstract class AbstractArtifactStub extends ArtifactStub {
     /*
      * TODO: Copied from org/apache/maven/artifact/DefaultArtifact.java; Consider merging...
      */
+    @Override
     public int compareTo(Artifact a) {
         /* -- We need to support groupId=null (it is missing in DefaultArtifact.java) */
         int result;
         if (a.getGroupId() != null) {
             result = getGroupId().compareTo(a.getGroupId());
         } else {
-            result = (getGroupId() == null ? 0 : -1);
+            result = getGroupId() == null ? 0 : -1;
         }
         /* -- */
 
@@ -100,6 +106,7 @@ public abstract class AbstractArtifactStub extends ArtifactStub {
     /*
      * TODO: Copied from org/apache/maven/artifact/DefaultArtifact.java; Consider merging...
      */
+    @Override
     public boolean equals(Object o) {
         if (o == this) {
             return true;

@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-plugins</artifactId>
-    <version>49</version>
+    <version>50</version>
     <relativePath />
   </parent>
 
@@ -50,7 +50,7 @@
   </contributors>
 
   <prerequisites>
-    <maven>3.6.3</maven>
+    <maven>3.9.0</maven>
   </prerequisites>
 
   <scm>
@@ -64,8 +64,8 @@
     <url>https://github.com/apache/maven-war-plugin/issues</url>
   </issueManagement>
   <ciManagement>
-    <system>Jenkins</system>
-    <url>https://ci-maven.apache.org/job/Maven/job/maven-box/job/maven-war-plugin/</url>
+    <system>GitHub</system>
+    <url>https://github.com/apache/maven-war-plugin/actions</url>
   </ciManagement>
   <distributionManagement>
     <site>
@@ -78,7 +78,6 @@
     <mavenArchiverVersion>3.6.6</mavenArchiverVersion>
     <mavenFilteringVersion>3.5.1</mavenFilteringVersion>
     <mavenVersion>3.9.16</mavenVersion>
-    <javaVersion>8</javaVersion>
 
     <!-- Used in IT-->
     <plexusUtilVersion>${version.plexus-utils}</plexusUtilVersion>
@@ -113,7 +112,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
-        <version>3.20.0</version>
+        <version>3.22.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -160,11 +159,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.shared</groupId>
-      <artifactId>maven-shared-utils</artifactId>
-      <version>3.4.2</version>
-    </dependency>
-    <dependency>
       <groupId>javax.inject</groupId>
       <artifactId>javax.inject</artifactId>
     </dependency>
@@ -177,7 +171,7 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-archiver</artifactId>
-      <version>4.14.0</version>
+      <version>4.16.0</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -194,11 +188,6 @@
       <version>${mavenFilteringVersion}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.shared</groupId>
-      <artifactId>maven-mapping</artifactId>
-      <version>3.0.0</version>
-    </dependency>
-    <dependency>
       <groupId>org.eclipse.sisu</groupId>
       <artifactId>org.eclipse.sisu.plexus</artifactId>
       <scope>provided</scope>
@@ -207,11 +196,6 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.vintage</groupId>
-      <artifactId>junit-vintage-engine</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -235,13 +219,9 @@
           <groupId>org.apache.rat</groupId>
           <artifactId>apache-rat-plugin</artifactId>
           <configuration>
-            <excludes combine.children="append">
-              <!--
-                ! No possibilities to add license information into a MANIFEST
-              -->
-              <exclude>src/it/MWAR-167/src/main/resources/MANIFEST.MF</exclude>
+            <inputExcludes>
               <exclude>src/test/resources/**</exclude>
-            </excludes>
+            </inputExcludes>
           </configuration>
         </plugin>
       </plugins>

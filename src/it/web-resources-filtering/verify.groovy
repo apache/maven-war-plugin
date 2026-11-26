@@ -18,98 +18,32 @@
  * under the License.
  */
 
-import java.io.*;
+def aao = "\u00e5\u00e4\u00f6" // a-ring, a-umlaut and o-umlaut
 
-import org.codehaus.plexus.util.*;
+def check = { String module, String finalName ->
+    def webInf = new File( basedir, "${module}/target/${finalName}/WEB-INF" )
+    assert webInf.isDirectory() : "${webInf} is missing or is not a directory"
 
-boolean result = true;
+    def jettyEnv = new File( webInf, "jetty-env.xml" )
+    assert jettyEnv.isFile() : "${jettyEnv} is missing or is a directory"
+    def jettyEnvContent = jettyEnv.getText( "UTF-8" )
+    assert jettyEnvContent.contains( "Characters that should be encoded in UTF-8: ${aao}" ) : "non-ascii characters changed encoding during filtering"
+    assert jettyEnvContent.contains( '<Set name="URL">jdbc:oracle:thin:@localhost:1521:orcl</Set>' ) : "jdbc.url not filtered correctly"
 
-try
-{
-    // Load and check jetty-env.xml
+    def myProperties = new File( webInf, "classes/my.properties" )
+    assert myProperties.isFile() : "${myProperties} is missing or is a directory"
+    def properties = new Properties()
+    myProperties.withInputStream { properties.load( it ) } // reads ISO-8859-1
+    assert properties.getProperty( "my.property" ) == "Characters that should be encoded in ISO-8859-1: ${aao}" : "non-ascii characters have wrong encoding after filtering"
 
-    File target = new File( basedir, "web/target/example-web/WEB-INF" );
-    if ( !target.exists() || !target.isDirectory() )
-    {
-        System.err.println( "web/target/example-web/WEB-INF is missing or is not a directory." );
-        return false;
-    }
-
-    File jettyEnv = new File( target, "jetty-env.xml" );
-    if ( !jettyEnv.exists() || jettyEnv.isDirectory() )
-    {
-        System.err.println( "jetty-env.xml is missing or is a directory." );
-        return false;
-    }
-
-
-    FileInputStream fis = new FileInputStream ( jettyEnv );
-    String paramContent = IOUtil.toString ( fis, "UTF-8" );
-
-    System.out.println( "content='" + paramContent + "'" );
-
-
-    int indexOf = paramContent.indexOf( "Characters that should be encoded in UTF-8: åäö" );
-    if ( indexOf < 0 )
-    {
-      System.err.println( "Non-ascii characters changed encoding during filtering" );
-      return false;
-    }
-
-    indexOf = paramContent.indexOf( "Author id: 1" );
-    if ( indexOf < 0 )
-    {
-      System.err.println( "project.developers[0].id not filtered correctly" );
-      return false;
-    }
-
-    indexOf = paramContent.indexOf( "<Set name=\"URL\">jdbc:oracle:thin:@localhost:1521:orcl</Set>" );
-    if ( indexOf < 0 )
-    {
-      System.err.println( "jdbc.url not filtered correctly" );
-      return false;
-    }
-
-    indexOf = paramContent.indexOf( '<Set name="password">${jdbc.password}</Set>' );
-    if ( indexOf < 0 )
-    {
-      System.err.println( "jdbc.password has been filtered" );
-      return false;
-    }
-
-    // Load and check my.properties
-
-    target = new File( basedir, "web/target/example-web/WEB-INF/classes" );
-    if ( !target.exists() || !target.isDirectory() )
-    {
-        System.err.println( "web/target/example-web/WEB-INF/classes is missing or is not a directory." );
-        return false;
-    }
-
-    File myProperties = new File( target, "my.properties" );
-    if ( !myProperties.exists() || myProperties.isDirectory() )
-    {
-        System.err.println( "my.properties is missing or is a directory." );
-        return false;
-    }
-
-    Properties properties = new Properties();
-    fis = new FileInputStream( myProperties );
-    properties.load( fis );
-    fis.close();
-
-    String property = properties.get( "my.property" );
-    System.out.println( "my.property='" + property + "'" );
-    if ( !"Characters that should be encoded in ISO-8859-1: åäö".equals( property ) )
-    {
-        System.err.println( "Non-ascii characters has wrong encoding after filtering" );
-        return false;
-    }
-}
-catch( IOException e )
-{
-    e.printStackTrace();
-    result = false;
+    return jettyEnvContent
 }
 
-return result;
+// default delimiters, the escaped expression stays as it is
+def defaultContent = check( "web", "example-web" )
+assert defaultContent.contains( "Author id: 1" ) : "project.developers[0].id not filtered correctly"
+assert defaultContent.contains( '<Set name="password">${jdbc.password}</Set>' ) : "jdbc.password has been filtered"
+
+// custom @@*@@ delimiters, the escaped expression stays as it is
+def delimiterContent = check( "web-delimiter", "example-web-delimiter" )
+assert delimiterContent.contains( '<Set name="password">@@jdbc.password@@</Set>' ) : "jdbc.password has been filtered"

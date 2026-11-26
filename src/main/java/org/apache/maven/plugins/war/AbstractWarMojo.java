@@ -54,7 +54,6 @@ import org.apache.maven.shared.filtering.MavenFileFilter;
 import org.apache.maven.shared.filtering.MavenFilteringException;
 import org.apache.maven.shared.filtering.MavenResourcesExecution;
 import org.apache.maven.shared.filtering.MavenResourcesFiltering;
-import org.apache.maven.shared.utils.StringUtils;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
@@ -414,12 +413,14 @@ public abstract class AbstractWarMojo extends AbstractMojo {
         }
 
         // if webXML is specified, omit the one in the source directory
-        if (webXml != null && StringUtils.isNotEmpty(webXml.getName())) {
+        if (webXml != null && (webXml.getName() != null && !webXml.getName().isEmpty())) {
             excludeList.add("**/WEB-INF/web.xml");
         }
 
         // if contextXML is specified, omit the one in the source directory
-        if (containerConfigXML != null && StringUtils.isNotEmpty(containerConfigXML.getName())) {
+        if (containerConfigXML != null
+                && (containerConfigXML.getName() != null
+                        && !containerConfigXML.getName().isEmpty())) {
             excludeList.add("**/META-INF/" + containerConfigXML.getName());
         }
 

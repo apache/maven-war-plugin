@@ -31,10 +31,12 @@ public class EJBArtifactStubWithClassifier extends AbstractArtifactStub {
         super(basedir);
     }
 
+    @Override
     public void setGroupId(String id) {
         groupId = id;
     }
 
+    @Override
     public String getGroupId() {
         if (groupId != null) {
             return groupId;
@@ -43,10 +45,12 @@ public class EJBArtifactStubWithClassifier extends AbstractArtifactStub {
         }
     }
 
+    @Override
     public String getType() {
         return "ejb";
     }
 
+    @Override
     public String getArtifactId() {
         return "ejbartifact";
     }
@@ -55,16 +59,20 @@ public class EJBArtifactStubWithClassifier extends AbstractArtifactStub {
         this.classifier = classifier;
     }
 
+    @Override
     public String getClassifier() {
         return classifier;
     }
 
+    @Override
     public File getFile() {
         return new File(basedir, "/target/test-classes/unit/sample_wars/ejb.jar");
     }
 
+    @Override
     public ArtifactHandler getArtifactHandler() {
         return new DefaultArtifactHandler() {
+            @Override
             public String getExtension() {
                 return "jar";
             }

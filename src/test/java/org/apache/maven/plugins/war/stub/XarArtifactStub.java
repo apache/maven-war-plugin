@@ -35,10 +35,12 @@ public class XarArtifactStub extends AbstractArtifactStub {
         this.artifactHandler = artifactHandler;
     }
 
+    @Override
     public void setGroupId(String id) {
         groupId = id;
     }
 
+    @Override
     public String getGroupId() {
         if (groupId != null) {
             return groupId;
@@ -47,18 +49,22 @@ public class XarArtifactStub extends AbstractArtifactStub {
         }
     }
 
+    @Override
     public String getType() {
         return "xar";
     }
 
+    @Override
     public String getArtifactId() {
         return "xarartifact";
     }
 
+    @Override
     public File getFile() {
         return new File(basedir, "/target/test-classes/unit/sample_wars/simple.xar");
     }
 
+    @Override
     public ArtifactHandler getArtifactHandler() {
         return artifactHandler;
     }

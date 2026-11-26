@@ -30,12 +30,11 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.war.util.PathSet;
 import org.apache.maven.plugins.war.util.WebappStructure;
 import org.apache.maven.shared.filtering.MavenFilteringException;
-import org.apache.maven.shared.mapping.MappingUtils;
-import org.apache.maven.shared.utils.StringUtils;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
+import org.codehaus.plexus.archiver.util.DefaultFileSet;
 import org.codehaus.plexus.interpolation.InterpolationException;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
@@ -173,14 +172,17 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
         if (file.isFile()) {
             context.getWebappStructure()
                     .registerFile(sourceId, targetFilename, new WebappStructure.RegistrationCallback() {
+                        @Override
                         public void registered(String ownerId, String targetFilename) throws IOException {
                             copyFile(context, file, targetFile, targetFilename, context.isIncremental());
                         }
 
+                        @Override
                         public void alreadyRegistered(String ownerId, String targetFilename) throws IOException {
                             copyFile(context, file, targetFile, targetFilename, context.isIncremental());
                         }
 
+                        @Override
                         public void refused(String ownerId, String targetFilename, String actualOwnerId)
                                 throws IOException {
                             context.getLog()
@@ -191,6 +193,7 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
                                             + actualOwnerId + "].");
                         }
 
+                        @Override
                         public void superseded(String ownerId, String targetFilename, String deprecatedOwnerId)
                                 throws IOException {
                             context.getLog()
@@ -202,6 +205,7 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
                             copyFile(context, file, targetFile, targetFilename, false);
                         }
 
+                        @Override
                         public void supersededUnknownOwner(String ownerId, String targetFilename, String unknownOwnerId)
                                 throws IOException {
                             // CHECKSTYLE_OFF: LineLength
@@ -247,7 +251,9 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
                 if (isXmlFile(file)) {
                     // For xml-files we extract the encoding from the files
                     encoding = getEncoding(file);
-                } else if (isPropertiesFile(file) && StringUtils.isNotEmpty(context.getPropertiesEncoding())) {
+                } else if (isPropertiesFile(file)
+                        && (context.getPropertiesEncoding() != null
+                                && !context.getPropertiesEncoding().isEmpty())) {
                     encoding = context.getPropertiesEncoding();
                 } else {
                     // For all others we use the configured encoding
@@ -335,7 +341,9 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
 
                 try {
                     JarArchiver archiver = context.getJarArchiver();
-                    archiver.addDirectory(source);
+                    DefaultFileSet fileSet = new DefaultFileSet();
+                    fileSet.setDirectory(source);
+                    archiver.addFileSet(fileSet);
                     archiver.setDestFile(destination);
                     archiver.createArchive();
                 } catch (ArchiverException e) {
@@ -427,6 +435,12 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
     }
 
     /**
+     * The default file name mapping; {@code @{dashClassifier?}@} expands to nothing when the artifact has no classifier.
+     */
+    private static final String DEFAULT_FILE_NAME_MAPPING =
+            "@{artifactId}@-@{baseVersion}@@{dashClassifier?}@.@{extension}@";
+
+    /**
      * Returns the final name of the specified artifact.
      *
      * If the {@code outputFileNameMapping} is set, it is used, otherwise the standard naming scheme is used.
@@ -438,16 +452,8 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
      */
     protected String getArtifactFinalName(WarPackagingContext context, Artifact artifact)
             throws InterpolationException {
-        if (context.getOutputFileNameMapping() != null) {
-            return MappingUtils.evaluateFileNameMapping(context.getOutputFileNameMapping(), artifact);
-        }
-
-        String classifier = artifact.getClassifier();
-        if (classifier != null && !(classifier.trim().isEmpty())) {
-            return MappingUtils.evaluateFileNameMapping(MappingUtils.DEFAULT_FILE_NAME_MAPPING_CLASSIFIER, artifact);
-        } else {
-            return MappingUtils.evaluateFileNameMapping(MappingUtils.DEFAULT_FILE_NAME_MAPPING, artifact);
-        }
+        String mapping = context.getOutputFileNameMapping();
+        return FileNameMapping.evaluate(mapping != null ? mapping : DEFAULT_FILE_NAME_MAPPING, artifact);
     }
 
     /**

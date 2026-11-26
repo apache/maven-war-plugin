@@ -44,18 +44,22 @@ public class WarOverlayStub extends AbstractArtifactStub {
         this.file = warFile;
     }
 
+    @Override
     public String getType() {
         return "war";
     }
 
+    @Override
     public String getArtifactId() {
         return artifactId;
     }
 
+    @Override
     public String getGroupId() {
         return "wartests";
     }
 
+    @Override
     public File getFile() {
         return file;
     }

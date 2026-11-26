@@ -198,12 +198,12 @@ public class OverlayManager {
      * @return boolean true if equals
      */
     private boolean compareOverlayWithArtifact(Overlay overlay, Artifact artifact) {
-        return (Objects.equals(overlay.getGroupId(), artifact.getGroupId())
+        return Objects.equals(overlay.getGroupId(), artifact.getGroupId())
                 && Objects.equals(overlay.getArtifactId(), artifact.getArtifactId())
                 && Objects.equals(overlay.getType(), artifact.getType())
                 // MWAR-241 Make sure to treat null and "" as equal when comparing the classifier
                 && Objects.equals(
-                        Objects.toString(overlay.getClassifier()), Objects.toString(artifact.getClassifier())));
+                        Objects.toString(overlay.getClassifier()), Objects.toString(artifact.getClassifier()));
     }
 
     /**
