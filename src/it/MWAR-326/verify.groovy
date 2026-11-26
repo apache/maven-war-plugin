@@ -18,35 +18,8 @@
  * under the License.
  */
 
-import java.io.*;
-import java.util.*;
-import java.util.jar.*;
-import org.codehaus.plexus.util.*;
+File target = new File(basedir, "target")
+assert target.exists() && target.isDirectory() : "target file is missing or not a directory."
 
-boolean result = true;
-
-try
-{
-    File target = new File( basedir, "target" );
-    if ( !target.exists() || !target.isDirectory() )
-    {
-        System.err.println( "target file is missing or not a directory." );
-        return false;
-    }
-
-    File artifact = new File( target, "maven-war-plugin-test-mwar-326-1.0-SNAPSHOT.war" );
-    if ( !artifact.exists() )
-    {
-        System.err.println( "default artifact should exist." );
-        return false;
-    }
-
-    return true;
-}
-catch( Throwable e )
-{
-    e.printStackTrace();
-    return false;
-}
-
-return false;
+File artifact = new File( target, "maven-war-plugin-test-mwar-326-1.0-SNAPSHOT.war" )
+assert artifact.exists() : "default artifact should exist."

@@ -18,60 +18,22 @@
  * under the License.
  */
 
-import java.io.*;
-import org.codehaus.plexus.util.*;
+// Make sure the -classes jar from the first webapp is installed into the local repo
+File localRepoClassesJar = new File(basedir,
+        "../../../target/local-repo/com/example/mwar131-webapp/1.0-SNAPSHOT/mwar131-webapp-1.0-SNAPSHOT-classes.jar")
+assert localRepoClassesJar.exists() && !localRepoClassesJar.isDirectory() : "The -classes jar file is missing or is a directory."
 
-boolean result = true;
+// Make sure the -classes jar is included in WEB-INF/lib of the second webapp
+File classesJar = new File( basedir,
+        "mwar131-webapp2/target/mwar131-webapp2/WEB-INF/lib/mwar131-webapp-1.0-SNAPSHOT-classes.jar")
+assert classesJar.exists() && !classesJar.isDirectory() : "The -classes jar file is missing or is a directory."
 
-try
-{
+// Make sure dependencies of the -classes jar are included in WEB-INF/lib of the second webapp
+File strutsJar = new File( basedir,
+        "mwar131-webapp2/target/mwar131-webapp2/WEB-INF/lib/struts-core-1.3.9.jar")
+assert strutsJar.exists() && !strutsJar.isDirectory() : "The Struts 1.3.9 jar file is missing or is a directory."
 
-  // Make sure the -classes jar from the first webapp is installed into the local repo
-  File localRepoClassesJar = new File( basedir,
-      "../../../target/local-repo/com/example/mwar131-webapp/1.0-SNAPSHOT/mwar131-webapp-1.0-SNAPSHOT-classes.jar");
-
-  if ( !localRepoClassesJar.exists() || localRepoClassesJar.isDirectory() )
-  {
-      System.err.println( "The -classes jar file is missing or is a directory." );
-      return false;
-  }
-
-  // Make sure the -classes jar is included in WEB-INF/lib of the second webapp
-  File classesJar = new File( basedir,
-      "mwar131-webapp2/target/mwar131-webapp2/WEB-INF/lib/mwar131-webapp-1.0-SNAPSHOT-classes.jar");
-
-  if ( !classesJar.exists() || classesJar.isDirectory() )
-  {
-      System.err.println( "The -classes jar file is missing or is a directory." );
-      return false;
-  }
-
-  // Make sure dependencies of the -classes jar are included in WEB-INF/lib of the second webapp
-  File strutsJar = new File( basedir,
-      "mwar131-webapp2/target/mwar131-webapp2/WEB-INF/lib/struts-core-1.3.9.jar");
-
-  if ( !strutsJar.exists() || strutsJar.isDirectory() )
-  {
-      System.err.println( "The Struts 1.3.9 jar file is missing or is a directory." );
-      return false;
-  }
-
-  // Make sure transitive dependencies of the -classes jar are included in WEB-INF/lib of the second webapp
-  File digesterJar = new File( basedir,
-      "mwar131-webapp2/target/mwar131-webapp2/WEB-INF/lib/commons-digester-1.8.jar");
-
-  if ( !digesterJar.exists() || digesterJar.isDirectory() )
-  {
-      System.err.println( "The Commons Digester 1.8 jar file is missing or is a directory." );
-      return false;
-  }
-
-}
-catch( Throwable e )
-{
-    e.printStackTrace();
-    result = false;
-}
-
-return result;
-
+// Make sure transitive dependencies of the -classes jar are included in WEB-INF/lib of the second webapp
+File digesterJar = new File( basedir,
+        "mwar131-webapp2/target/mwar131-webapp2/WEB-INF/lib/commons-digester-1.8.jar")
+assert digesterJar.exists() && !digesterJar.isDirectory() : "The Commons Digester 1.8 jar file is missing or is a directory."

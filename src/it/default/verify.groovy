@@ -17,81 +17,42 @@
  * under the License.
  */
 
-import java.io.*;
-import java.util.*;
-import java.util.jar.*;
-import java.util.regex.*;
+import java.util.jar.*
 
-try
-{
-    File explodedDir = new File( basedir, "target/maven-it-it0016-1.0" );
-    System.out.println( "Checking for existence of exploded directory " + explodedDir );
-    if ( !explodedDir.isDirectory() )
-    {
-        System.out.println( "FAILURE!" );
-        return false;
-    }
+File explodedDir = new File(basedir, "target/maven-it-it0016-1.0")
+System.out.println("Checking for existence of exploded directory " + explodedDir)
+assert explodedDir.isDirectory()
 
-    String[] expectedPaths = [
-            "index.html",
-            "WEB-INF/classes/org/apache/maven/it0016/Person.class",
-            "WEB-INF/lib/commons-logging-1.0.3.jar",
-    ];
-    for ( String path : expectedPaths )
-    {
-        File file = new File( explodedDir, path );
-        System.out.println( "Checking for existence of " + file );
-        if ( !file.exists() )
-        {
-            System.out.println( "FAILURE!" );
-            return false;
-        }
-    }
-
-    String[] unexpectedPaths = [
-            "WEB-INF/lib/servlet-api-2.4.jar",
-    ];
-    for ( String path : unexpectedPaths )
-    {
-        File file = new File( explodedDir, path );
-        System.out.println( "Checking for absence of " + file );
-        if ( file.exists() )
-        {
-            System.out.println( "FAILURE!" );
-            return false;
-        }
-    }
-
-    File warFile = new File( basedir, "target/maven-it-it0016-1.0.war" );
-    System.out.println( "Checking for existence of " + warFile );
-    if ( !warFile.isFile() )
-    {
-        System.out.println( "FAILURE!" );
-        return false;
-    }
-
-    JarFile war = new JarFile( warFile );
-
-    String[] includedEntries = [
-        "WEB-INF/classes/org/apache/maven/it0016/Person.class",
-        "WEB-INF/lib/commons-logging-1.0.3.jar",
-    ];
-    for ( String included : includedEntries )
-    {
-        System.out.println( "Checking for existence of " + included );
-        if ( war.getEntry( included ) == null )
-        {
-            System.out.println( "FAILURE!" );
-            return false;
-        }
-    }
-
-    war.close();
-}
-catch( Throwable t )
-{
-    t.printStackTrace();
-    return false;
+String[] expectedPaths = [
+    "index.html",
+    "WEB-INF/classes/org/apache/maven/it0016/Person.class",
+    "WEB-INF/lib/commons-logging-1.0.3.jar",
+]
+for (String path : expectedPaths) {
+    File file = new File(explodedDir, path)
+    System.out.println("Checking for existence of " + file)
+    assert file.exists()
 }
 
-return true;
+String[] unexpectedPaths = ["WEB-INF/lib/servlet-api-2.4.jar",]
+for (String path : unexpectedPaths) {
+    File file = new File(explodedDir, path)
+    System.out.println("Checking for absence of " + file)
+    assert !file.exists()
+}
+
+File warFile = new File(basedir, "target/maven-it-it0016-1.0.war")
+System.out.println("Checking for existence of " + warFile)
+assert warFile.isFile()
+
+JarFile war = new JarFile(warFile)
+
+String[] includedEntries = ["WEB-INF/classes/org/apache/maven/it0016/Person.class", "WEB-INF/lib/commons-logging-1.0.3.jar",]
+for (String included : includedEntries) {
+    System.out.println("Checking for existence of " + included)
+    assert war.getEntry(included) != null
+}
+
+war.close()
+
+return true

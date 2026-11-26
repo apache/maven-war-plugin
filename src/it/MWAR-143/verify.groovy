@@ -18,107 +18,60 @@
  * under the License.
  */
 
-import java.io.*;
-import org.codehaus.plexus.util.*;
+import org.codehaus.plexus.util.*
 
-boolean result = true;
-
-boolean filesAreIdentical( File expected, File current )
-    throws IOException
-{
-    if ( expected.length() != current.length() )
-    {
-        return false;
+boolean filesAreIdentical(File expected, File current)
+throws IOException {
+    if (expected.length() != current.length()) {
+        return false
     }
-    FileInputStream expectedIn = new FileInputStream( expected );
-    FileInputStream currentIn = new FileInputStream( current );
-    try
-    {
-        byte[] expectedBuffer = IOUtil.toByteArray( expectedIn );
+    FileInputStream expectedIn = new FileInputStream(expected)
+    FileInputStream currentIn = new FileInputStream(current)
+    try {
+        byte[] expectedBuffer = IOUtil.toByteArray(expectedIn)
 
-        byte[] currentBuffer = IOUtil.toByteArray( currentIn );
-        if ( expectedBuffer.length != currentBuffer.length )
-        {
-            return false;
+        byte[] currentBuffer = IOUtil.toByteArray(currentIn)
+        if (expectedBuffer.length != currentBuffer.length) {
+            return false
         }
-        for ( int i = 0,size = expectedBuffer.length; i<size; i++ )
-        {
-            if ( expectedBuffer[i] != currentBuffer[i] )
-            {
-                return false;
+        for (int i = 0, size = expectedBuffer.length; i<size; i++) {
+            if (expectedBuffer[i] != currentBuffer[i]) {
+                return false
             }
         }
     }
-    finally
-    {
-        expectedIn.close();
-        currentIn.close();
+    finally {
+        expectedIn.close()
+        currentIn.close()
     }
-    return true;
+    return true
 }
 
-try
-{
+File originalImg = new File(basedir, "war-common/src/main/images/duke-beer.jpg")
 
-    File originalImg = new File( basedir, "war-common/src/main/images/duke-beer.jpg" );
+File targetImg = new File(basedir, "war-common/target/common-overlay-1.0-SNAPSHOT/duke-beer.jpg")
 
-    File targetImg = new File( basedir, "war-common/target/common-overlay-1.0-SNAPSHOT/duke-beer.jpg" );
+boolean identical = filesAreIdentical(originalImg, targetImg)
 
-    boolean identical = filesAreIdentical( originalImg, targetImg );
+assert identical : "filtered images are not identical in war-common."
 
-    if ( !identical )
-    {
-        System.err.println( "filtered images are not identical in war-common." );
-        return false;
-    }
+File target = new File( basedir, "war-filter-overlay/target" )
+assert target.exists() && target.isDirectory() : "target file is missing or not a directory."
 
-    File target = new File( basedir, "war-filter-overlay/target" );
-    if ( !target.exists() || !target.isDirectory() )
-    {
-        System.err.println( "target file is missing or not a directory." );
-        return false;
-    }
+File webappDirectory = new File( target, "custom-manifest-1.0-SNAPSHOT" )
+assert webappDirectory.exists() && webappDirectory.isDirectory() : "webappDirectory is missing or not a directory."
 
-    File webappDirectory = new File( target, "custom-manifest-1.0-SNAPSHOT" );
-    if ( !webappDirectory.exists() || !webappDirectory.isDirectory() )
-    {
-        System.err.println( "webappDirectory is missing or not a directory." );
-        return false;
-    }
-
-    File param = new File( webappDirectory, "WEB-INF/classes/filter.properties" );
-    if ( !param.exists() || param.isDirectory() )
-    {
-        System.err.println( "filter.properties file is missing or a directory." );
-        return false;
-    }
+File param = new File( webappDirectory, "WEB-INF/classes/filter.properties" )
+assert param.exists() && !param.isDirectory() : "filter.properties file is missing or a directory."
 
 
-    String paramContent = FileUtils.fileRead( param );
+String paramContent = param.getText( 'UTF-8' )
 
-    int indexOf = paramContent.indexOf( "debug.test = hello world !" );
-    if ( indexOf < 0 )
-    {
-        System.err.println( "filter.properties does not contains debug.test = hello world !" );
-        return false;
-    }
+int indexOf = paramContent.indexOf( "debug.test = hello world !" )
+assert indexOf >= 0 : "filter.properties does not contains debug.test = hello world !"
 
-    targetImg = new File( basedir, "war-filter-overlay/target/custom-manifest-1.0-SNAPSHOT/duke-beer.jpg" );
+targetImg = new File( basedir, "war-filter-overlay/target/custom-manifest-1.0-SNAPSHOT/duke-beer.jpg" )
 
-    identical = filesAreIdentical( originalImg, targetImg );
+identical = filesAreIdentical( originalImg, targetImg )
 
-    if ( !identical )
-    {
-        System.err.println( "filtered images are not identical with overlay." );
-        return false;
-    }
-
-}
-catch( Throwable e )
-{
-    e.printStackTrace();
-    result = false;
-}
-
-return result;
-
+assert identical : "filtered images are not identical with overlay."
