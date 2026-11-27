@@ -40,6 +40,8 @@ import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.SelectorUtils;
 
+import static org.apache.commons.io.FileUtils.contentEquals;
+
 /**
  * @author Stephane Nicoll
  */
@@ -329,9 +331,12 @@ public abstract class AbstractWarPackagingTask implements WarPackagingTask {
         context.addResource(targetFilename);
 
         BasicFileAttributes readAttributes = Files.readAttributes(source.toPath(), BasicFileAttributes.class);
+        // A directory source is archived into destination below, so destination's content can't be compared
+        // to it directly; fall back to the mtime-only check that was already used for directories.
         if (onlyIfModified
                 && destination.lastModified()
-                        >= readAttributes.lastModifiedTime().toMillis()) {
+                        >= readAttributes.lastModifiedTime().toMillis()
+                && (readAttributes.isDirectory() || contentEquals(source, destination))) {
             context.getLog().debug(" * " + targetFilename + " is up to date.");
             return false;
         } else {
