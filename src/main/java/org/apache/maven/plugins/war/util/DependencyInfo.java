@@ -86,8 +86,6 @@ public class DependencyInfo {
     @Override
     public int hashCode() {
         int result;
-        result = dependency != null ? dependency.hashCode() : 0;
-        result = 31 * result + (targetFileName != null ? targetFileName.hashCode() : 0);
-        return result;
+        return dependency != null ? dependency.hashCode() : 0;
     }
 }
