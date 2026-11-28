@@ -176,10 +176,12 @@ public class OverlayManager {
         }
 
         // maybe its a project dependencies zip or an other type
-        Set<Artifact> projectArtifacts = this.project.getDependencyArtifacts();
+        // getDependencyArtifacts() is deprecated since Maven 3; use getArtifacts() narrowed to
+        // direct dependencies (dependency trail of [project, artifact])
+        Set<Artifact> projectArtifacts = this.project.getArtifacts();
         if (projectArtifacts != null) {
             for (Artifact artifact : projectArtifacts) {
-                if (compareOverlayWithArtifact(overlay, artifact)) {
+                if (isDirectDependency(artifact) && compareOverlayWithArtifact(overlay, artifact)) {
                     return artifact;
                 }
             }
@@ -188,6 +190,20 @@ public class OverlayManager {
         throw new InvalidOverlayConfigurationException("overlay [" + overlay + "] is not a dependency of the project.");
         // CHECKSTYLE_ON: LineLength
 
+    }
+
+    /**
+     * Whether the artifact is a direct dependency of the project. Direct dependencies have the
+     * two-element dependency trail {@code [project, artifact]}; a null trail means the trail was not
+     * recorded (e.g. in tests), in which case the artifact is treated as direct so behaviour matches
+     * the old {@code getDependencyArtifacts()} fallback.
+     *
+     * @param artifact the artifact to check
+     * @return true if the artifact is a direct dependency
+     */
+    private static boolean isDirectDependency(Artifact artifact) {
+        List<String> trail = artifact.getDependencyTrail();
+        return trail == null || trail.size() == 2;
     }
 
     /**
